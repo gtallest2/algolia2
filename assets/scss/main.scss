@@ -1,0 +1,276 @@
+html {
+  box-sizing: border-box;
+}
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+
+body {
+  font-family: 'Open Sans', sans-serif;
+  font-size: 13px;
+  background-image: url('./resources/graphics/background.png');
+}
+
+.panel {
+  margin: 50px auto 0;
+  text-align: center;
+  font-size: 2em;
+  background:white;
+  padding: 0px;
+  width: 80vw;
+  height: 80vh;
+
+  p {
+    margin: 5px;
+  }
+}
+
+
+.search {
+  width:100%;
+  background:#1c688e;
+  height:15%;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+
+  input {
+    width:90%;
+    height: 45px;
+    border-radius:3px;
+    border-style:hidden;
+    font-size:16px;
+    padding:0 10px;
+  }
+}
+
+.lower-area {
+  display:flex;
+  height:85%;
+
+  .filters {
+    width:25%;
+    height:100%;
+    display:flex;
+    border-right:1px solid #e6e6e6;
+    padding:10px;
+    flex-direction:column;
+    font-size:14px;
+    text-align:left;
+
+    h4 {
+      font-size:14px;
+      margin: 10px;
+      padding:0;
+    }
+
+    ul {
+      list-style-type: none;
+      margin:0 5px;
+      padding:0;
+    }
+
+    .cuisine {
+
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+
+      li {
+
+          display:flex;
+          justify-content:space-between;
+          padding:5px;
+          border-radius:5px;
+          width:90%;
+
+        .food-type,
+        .foot-type-amount {
+          display:inline-flex;
+        }
+        .foot-type-amount {
+          color:#e6e6e6;
+        }
+
+      }
+
+      li:hover {
+        background:#2897c5;
+        color:white;
+        cursor:pointer;
+      }
+
+    }
+
+
+    .ratings {
+        display:flex;
+        flex-direction:column;
+
+
+        li {
+          margin:2px 15px;
+        }
+
+      .no-star {
+        background:url('./resources/graphics/stars-icons.png');
+        background-size:100px;
+        width: 100px;
+        height: 19px;
+      }
+      .one-star {
+        background:url('./resources/graphics/stars-icons.png');
+        background-size:100px;
+        width: 100px;
+        height: 19px;
+
+      }
+      .two-star {
+        background:url('./resources/graphics/stars-icons.png');
+        background-size:100px;
+        width: 100px;
+        height: 19px;
+      }
+      .three-star {
+        background:url('./resources/graphics/stars-icons.png');
+        background-size:100px;
+        width: 100px;
+        height: 19px;
+      }
+      .four-star {
+        background:url('./resources/graphics/stars-icons.png');
+        background-size:100px;
+        width: 100px;
+        height: 19px;
+      }
+      .five-star {
+        background:url('./resources/graphics/stars-icons.png');
+        background-size:100px;
+        width: 100px;
+        height: 19px;
+        background-position-y:-20px;
+      }
+
+
+
+    }
+
+    .payment-options {
+      li {
+        margin:5px 10px;
+      }
+      input {
+        margin-right:5px;
+      }
+
+      .card {
+        width:32px;
+        height:20px;
+        display:inline-block;
+        background:url('./resources/graphics/cc-icons.png');
+        background-size:122px;
+        vertical-align:middle;
+        margin-left:5px;
+      }
+
+      .cc-ae{
+        background-position:0 20px;
+      }
+      .cc-visa{
+        background-position:32px 0;
+      }
+      .cc-discover{
+        background-position:32px 20px;
+      }
+      .cc-mc{
+        background-position:77px 0;
+      }
+    }
+
+  }
+
+.results {
+    width:75%;
+    height:100%;
+    display:flex;
+    padding:20px 30px;
+    flex-direction:column;
+    align-items:center;
+
+    h4 {
+      margin:0;
+    }
+
+    .result {
+      margin:20px;
+      display:flex;
+      width:100%;
+      height:90px;
+
+      .result-image {
+        display:flex;
+        border-radius:5px;
+        width:90px;
+        border:1px solid #a9a9a9;
+      }
+
+      .result-text {
+        font-size:16px;
+        color:#a9a9a9;
+        display:flex;
+        flex-direction:column;
+        align-items:baseline;
+        margin-left:20px;
+        justify-content: space-between;
+
+        h4 {
+          font-size:16px;
+          color:black;
+        }
+
+        img {
+          background-size:100px;
+          width: 100px;
+          height: 19px;
+        }
+        span {
+          display:block;
+        }
+
+        .result-rating {
+          background:url('./resources/graphics/stars-icons.png');
+          background-size:100px;
+          width: 100px;
+          height: 18px;
+          vertical-align:middle;
+          display:inline-block;
+          margin:0 5px;
+        }
+
+        .rating-number {
+          color:#ffab66;
+          display:inline-block;
+        }
+      }
+
+    }
+
+    .show-more {
+      width:180px;
+      background:none;
+      padding:10px;
+      border-radius:5px;
+      border-style:solid;
+      font-size:16px;
+      border:1px solid #a9a9a9;
+      color:#a9a9a9;
+      margin-top:20px;
+    }
+
+    .show-more:hover {
+      background:#a9a9a9;
+      color:white;
+    }
+  }
+}
+

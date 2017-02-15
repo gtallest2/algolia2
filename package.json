@@ -1,0 +1,37 @@
+{
+  "name": "csstest-restaurant-locator",
+  "version": "1.0.0",
+  "description": "Please refer to the README file for the test instructions",
+  "main": "index.html",
+  "scripts": {
+    "dev": "gulp dev",
+    "server": "gulp server",
+    "build": "webpack",
+    "start": "webpack-dev-server",
+    "watch": "npm run build -- --watch"
+  },
+  "author": "Algolia",
+  "license": "Algolia",
+  "devDependencies": {
+    "babel-core": "^6.23.1",
+    "babel-loader": "^6.2.10",
+    "babel-preset-react": "^6.23.0",
+    "browser-sync": "^2.12.10",
+    "css-loader": "^0.26.1",
+    "gulp": "^3.9.1",
+    "gulp-less-sourcemap": "^1.4.3",
+    "gulp-sass": "^2.3.1",
+    "html-webpack-plugin": "^2.28.0",
+    "node-sass": "^4.5.0",
+    "sass-loader": "^6.0.0",
+    "style-loader": "^0.13.1",
+    "webpack": "^2.2.1",
+    "webpack-dev-server": "^2.3.0"
+  },
+  "dependencies": {
+    "algoliasearch": "^3.21.1",
+    "dsv-loader": "^2.0.0",
+    "react": "^15.4.2",
+    "react-dom": "^15.4.2"
+  }
+}

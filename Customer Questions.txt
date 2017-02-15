@@ -1,0 +1,93 @@
+Question 1: Hello,
+
+I'm new to search engines, and there are a lot of concepts I'm not educated on. To make my onboarding smoother, it'd help if you could provide me with some definitions of the following concepts:
+
+Records
+Indexing
+I'm also struggling with understanding what types of metrics would be useful to include in the "Custom Ranking."
+
+Cheers, George
+---
+Answer:
+
+Hi George,
+
+First of all, welcome to the world of search! My name is Marc and I would be happy to help you get up to speed on all things related to search and Algolia.
+
+We'll first dive into records and indexing. These two concepts are structures which Algolia uses to organize the data that will be searched. 
+
+You can think of an index like a directory/phone book, and records are like each person/phone number in it. A record can contain any amount of data that you would like, and the best part is: all of it is searchable! And just like there are different directories for different places in the world, we can create different indices for different groups of data we may have.
+
+Let's cover Custom Ranking next. When search results come back, they display in a certain order. Now, if we want to have more control over that order, we can set certain Custom Ranking attributes that will determine what shows up first. Examples of helpful attributes to sort with are: year, number of views (for videos), number in stock (for products). Basically, Custom Ranking helps us define specifc priorities or relevance that we would want for our searches.
+
+For example, say we've implemented Algolia on our DVD/Blu-Ray online store. We've created our index of movies, and added each product as a record. We figure that our customers are looking for the latest releases to buy, so we decide that when users search for movies by name, the most recent releases should be the most relevant. This is where Custom Ranking comes in. We could tell Algolia to prioritize movie release dates in the Custom Ranking, so that if a customer searches for "Star Wars", "Rogue One (2016)" and "The Force Awakens (2015)" would appear at the top.
+
+
+Hopefully that helps clear things up! If there are any other search concepts you would like to know more about, please do not hesitate to ask, I'm here to help. Good luck on your journey in search!
+
+Regards,
+-Marc
+###.###.####
+marc.wong@algolia.com
+
+---
+Question 2: Hello,
+
+Sorry to give you the kind of feedback that I know you do not want to hear, but I really hate the new dashboard design. Clearing and deleting indexes are now several clicks away. I am needing to use these features while iterating, so this is inconvenient.
+
+Regards, Matt
+---
+Answer:
+
+Hi Matt,
+
+We apologize that your experience with Algolia has not been the best that it can be. We are trying out a new dashboard design and have decided to move clearing and deleting to another area because _______. But, as evidenced by your email, it may not be having as much of a positive impact as we thought. I will be sure to forward your feedback to our design & development team. 
+
+As an alternative, may I suggest utilizing an API Client to assist in the clearing and deleting of indices? I realize that this will require a bit more technical ability, but will surely speed up the process. I would be happy to walk you through it if you'd like!
+
+And please do not feel bad about sending us your thoughts! Here at Algolia we truly value our customers' feedback, be it positive or constructive. Our goal is to constantly make improvements to provide our users with the best experience, so we really appreciate that you took the time to contact us.
+
+If there are any updates on the dashboard design, I will be sure to follow up and let you know. In the meantime, if there is anything else I can help with, or if you have some other feedback, just let me know! We're here to help.
+
+
+Best,
+-Marc
+###.###.####
+marc.wong@algolia.com
+
+---
+Question 3: Hi,
+
+I'm looking to integrate Algolia in my website. Will this be a lot of development work for me? What's the high level process look like?
+
+Regards, Leo
+---
+Answer:
+
+Hi Leo,
+
+Thank you for reaching out to Algolia! My name is Marc and I will be happy to help you through the integration process.
+
+Algolia offers many different options, so the amount of development work needed will depend on what you are hoping to achieve with Algolia. Would you be able to share with me what you are hoping to do with Algolia, so that I can get a better idea of the amount of work needed?
+
+And before we get too technical, I would just like to ask, how much development experience have you had in the past? [Algolia is widely customizable depending on your needs and development experience][We've designed Algolia to be as easy to use as possible for developers and non-developers alike.], so hopefully we will be able to arrive at a solution to suit your needs!
+
+ The integration process can be broken down into 3 steps, with only the 3rd step being more development heavy:
+
+1. Data Synchronization
+	This is where we tell Algolia what data we will be working with. The data can easily be uploaded through the Algolia dashboard interface.
+
+2. Ranking Configuration
+	Next, we configure how exactly we want Algolia to show us data. We can set different priorities for our results, ensuring a great search experience for our users.
+
+3. Website Implementation
+	The last step is to integrate Algolia with your website, which is where most of the heavy lifting takes place. 
+
+I hope this helps clear some things up. If you would like to dive a bit deeper into the details, we can definitely schedule a call to chat. I will be available at these times: _____. If none of those times work, just let me know and we can work something out.
+
+We want your integration process to be as smooth as possible, so if you have any other questions, please do not hesitate to reach out!
+
+Thanks again,
+-Marc
+###.###.####
+marc.wong@algolia.com
