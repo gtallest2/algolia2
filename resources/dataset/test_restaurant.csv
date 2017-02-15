@@ -1,4 +1,6 @@
 objectID;food_type;stars_count;reviews_count;neighborhood;phone_number;price_range;dining_style
-116272;Steak;4.2;204;PepperPike;(216)378-8988;$31to$50;FineDining
-138901;Sushi;4.3;75;Medina;(330)661-0606;$30andunder;CasualDining
-96892;Italian;4.3;161;Bath;(330)666-9990;$30andunder;CasualDining
+116272;Steak;4.2;204;Pepper Pike;(216) 378-8988;$31 to $50;Fine Dining
+138901;Sushi;4.3;75;Medina;(330) 661-0606;$30 and under;Casual Dining
+96892;Italian;4.3;161;Bath;(330) 666-9990;$30 and under;Casual Dining
+108532;American;4.5;159;Boardman;(330) 965-5899;$30 and under;Casual Dining
+25840;Sushi;4.5;332;Shaker Heights;(216) 767-1111;$30 and under;Casual Dining

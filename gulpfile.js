@@ -2,6 +2,10 @@ var gulp = require('gulp');
 var browserSync = require('browser-sync').create();
 var sass = require('gulp-sass');
 var less = require('gulp-less-sourcemap');
+var csv2json = require('gulp-csv2json');
+var rename = require('gulp-rename');
+var merge = require('gulp-merge-json');
+var sortJSONArray = require('./assets/js/sort-array');
 
 // Static Server
 gulp.task('serve', function() {
@@ -38,6 +42,36 @@ gulp.task('less', function() {
     }))
     .pipe(gulp.dest("assets/css"))
     .pipe(browserSync.stream());
+});
+
+gulp.task('convertcsv', function() {
+
+  var csvParseOptions = {
+    delimiter: ';'
+  };
+
+  gulp.src('resources/dataset/restaurants_info.csv')
+    .pipe(csv2json(csvParseOptions))
+    .pipe(rename('restaurants_info.json'))
+    .pipe(gulp.dest('resources/dataset/'));
+});
+
+gulp.task('sortJSON', function() {
+  gulp.src('resources/dataset/restaurants_info.json')
+    .sort((a, b) => a.objectID < b.objectID ? 1 : -1)
+    .pipe(gulp.dest('dist'))
+});
+
+gulp.task('mergejson', function(){
+  gulp.src('resources/dataset/*.json')
+    .pipe(merge({
+      startObj: [],
+      edit: (parsedJson, file) => {
+        return parsedJson.sort((a, b) => a.objectID < b.objectID ? 1 : -1)
+      }
+    }))
+
+    .pipe(gulp.dest('dist'))
 });
 
 

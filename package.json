@@ -19,7 +19,9 @@
     "browser-sync": "^2.12.10",
     "css-loader": "^0.26.1",
     "gulp": "^3.9.1",
+    "gulp-csv2json": "^0.2.5",
     "gulp-less-sourcemap": "^1.4.3",
+    "gulp-merge-json": "^1.0.0",
     "gulp-sass": "^2.3.1",
     "html-webpack-plugin": "^2.28.0",
     "node-sass": "^4.5.0",
@@ -30,6 +32,7 @@
   },
   "dependencies": {
     "algoliasearch": "^3.21.1",
+    "csvtojson": "^1.1.4",
     "dsv-loader": "^2.0.0",
     "react": "^15.4.2",
     "react-dom": "^15.4.2"

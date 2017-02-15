@@ -1,7 +1,8 @@
 import React from 'react'
-import { client, index } from './algolia'
-import preload from '../../resources/dataset/test_restaurants.json'
-// import data from '../../resources/dataset/test_restaurant.csv'
+import { client, index, addIndex } from './algolia'
+
+import { sortedInfo, sortedList, combinedList } from './sort-array'
+
 
 import Search from './Search'
 import Filters from './Filters'
@@ -30,13 +31,15 @@ const Panel = React.createClass({
     this.setState({ results: state });
   },
   render() {
-    // console.log(data);
+    // console.log(sortedList);
+    // console.log(sortedInfo);
+    console.log(combinedList);
     return (
       <div className="panel">
         <Search onSearch={this.handleSearch}/>
         <div className="lower-area">
           <Filters />
-          <Results searchResults={preload}/>
+          <Results searchResults={[]}/>
         </div>
       </div>
     )
