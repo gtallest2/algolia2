@@ -7,11 +7,11 @@ const Result = React.createClass({
   render() {
     return(
       <div className="result">
-        <img className="result-image" src={this.props.image_url} alt="Result Image"/>
+        <a href={this.props.reserve_url}><img className="result-image" src={this.props.image_url} alt="Result Image"/></a>
           <div className="result-text">
-          <h4>{this.props.name}</h4>
-          <span><span className="rating-number">4.1</span><span className="result-rating"></span>(____ reviews)</span>
-          <span>Food Type | Location | Price Range</span>
+          <a href={this.props.reserve_url}><h4>{this.props.name}</h4></a>
+          <span><span className="rating-number">{this.props.stars_count}</span><span className="result-rating"></span>({this.props.review_count} reviews)</span>
+          <span>{this.props.food_type} | {this.props.area} | {this.props.price_range}</span>
         </div>
       </div>
     )

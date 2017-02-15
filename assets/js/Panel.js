@@ -1,8 +1,5 @@
 import React from 'react'
-import { client, index, addIndex } from './algolia'
-
-import { sortedInfo, sortedList, combinedList } from './sort-array'
-
+import { client, index } from './algolia'
 
 import Search from './Search'
 import Filters from './Filters'
@@ -11,7 +8,7 @@ import Results from './Results'
 const Panel = React.createClass({
   getInitialState(){
     return {
-      results: {}
+      results: []
     }
   },
   handleSearch(query){
@@ -33,13 +30,12 @@ const Panel = React.createClass({
   render() {
     // console.log(sortedList);
     // console.log(sortedInfo);
-    console.log(combinedList);
     return (
       <div className="panel">
         <Search onSearch={this.handleSearch}/>
         <div className="lower-area">
           <Filters />
-          <Results searchResults={[]}/>
+          <Results searchResults={this.state.results}/>
         </div>
       </div>
     )
