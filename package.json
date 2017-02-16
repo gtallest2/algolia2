@@ -32,6 +32,7 @@
   },
   "dependencies": {
     "algoliasearch": "^3.21.1",
+    "algoliasearch-helper": "^2.18.1",
     "csvtojson": "^1.1.4",
     "dsv-loader": "^2.0.0",
     "react": "^15.4.2",
