@@ -1,0 +1,18 @@
+Sounds good. I also have a few more questions I was hoping you could help with:
+
+
+1. Could you clarify what is the expected deliverable(s) in terms of the data manipulation task and the import script? Is it okay to approach the task using Gulp and/or Node to convert the .csv, merge the .json files, then import through the API? And are plugins/packages allowed in the process?
+
+2. For the Food Type facet/filtering functionality, is the behavior expected to be conjunctive or disjunctive? I am leaning towards conjunctive since it looks similar to the example in the documentation, where it is displayed with links rather than checkboxes. However in the mockup, since the 3 search results have the American food type, and if the blue highlight can indicate an "active" American state, I think it's possible that it could also be interpreted as disjunctive.
+
+3. Would it be okay to include any additional images, or am I restricted to just using what was provided in the ./resources folder? I thought about creating an image sprite to use for the rating stars, and also thought about adding small credit card icons next to the payment options.
+
+4. And lastly, how much freedom do we generally have in terms of adding things that aren't included in the mockup/specifications? Do clients usually enjoy seeing some changes to the design? I guess I'm just trying to get a sense of boundaries, and where to draw the line between over-engineering and going beyond what was asked.
+
+For example, I thought about adding a couple items, with one being the pagination feature. I think this would be another good display of an Algolia feature that improves the search experience, so would it be okay to replace the Show More button with the pagination?. On the other hand, I also thought to add a 'bookmark' or 'save for later' feature where users could keep track of interesting restaurants in their current search. Would this be considered over-engineering as this may be unrelated to how a feature of Algolia can improve the search experience? (I'm still going through all the docs, so if I missed this feature just let me know).
+
+
+I apologize for the lengthy email, and if any of these are silly questions. Please correct me if I've made any wrong assumptions. Thanks for your help!
+
+
+-Marc

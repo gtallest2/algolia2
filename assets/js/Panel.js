@@ -7,19 +7,41 @@ import Results from './Results'
 
 const Panel = React.createClass({
   getInitialState(){
+
     return {
       searchQuery: '',
       results: [],
       hitsPerPage: 3,
+      location: 'start',
     }
   },
-  componentDidMount(){
-     helper.on('result', (content) => {
+  componentWillMount() {
+    helper.search()
+    helper.on('result', (content) => {
      this.updateResults(content);
+     this.geo()
     });
+
+  },
+  componentDidMount(){
+
+  },
+  geo(prevProps, prevState){
+    if(this.state.location === 'start'){
+      if(this.state.results.aroundLatLng){
+        const coordinates = this.state.results.aroundLatLng
+        console.log(this.state.results.aroundLatLng)
+        this.setState({ location: coordinates })
+      } else {
+        this.setState({ location: '' })
+      }
+
+    }
+
   },
   handleSearch(query){
     helper.setQuery(query).search();
+
 
     // let updateResults = this.updateResults;
     // let result;
@@ -52,7 +74,7 @@ const Panel = React.createClass({
     this.setState({
       results: results
     });
-    console.log(this.state.results);
+    // console.log(this.state.results);
   },
   updateQuery(query) {
     this.setState({
@@ -85,13 +107,31 @@ const Panel = React.createClass({
     const upperBound = value + 1;
     helper.removeNumericRefinement('stars_count', '<', upperBound).removeNumericRefinement('stars_count', '>=', lowerBound).search()
   },
+  setLocation(coordinates){
+    this.setState({ location: coordinates })
+    helper.setQueryParameter('aroundLatLng', coordinates).search()
+  },
+  handleSetLocation(coordinates){
+    this.setLocation(coordinates)
+  },
   render() {
+    const geo = (
+      <div className="geo-selector">
+        <span className="geo-header">Please select your closest city:</span>
+        <ul className="geo-list">
+          <li onClick={this.handleSetLocation.bind(null,'37.7576948,-122.4726194')} className="geo-location">San Francisco</li>
+          <li onClick={this.handleSetLocation.bind(null,'40.705565,-74.118086')} className="geo-location">New York</li>
+          <li onClick={this.handleSetLocation.bind(null,'48.8588377,2.2775176')} className="geo-location">Paris</li>
+        </ul>
+      </div>
+    )
     return (
       <div className="panel">
         <Search onSearch={this.handleSearch} />
+        <div>{this.state.location ? '' : geo}</div>
         <div className="lower-area">
           <Filters searchResults={this.state.results} foodFacet={this.foodFacetRefinement} addPayment={this.addPaymentDisjunctive} removePayment={this.removePaymentDisjunctive} addRating={this.addRatingFilter} removeRating={this.removeRatingFilter} />
-          <Results searchResults={this.state.results} onShowMore={this.showMore}/>
+          <Results searchResults={this.state.results} onShowMore={this.showMore} userLocation={this.state.location} />
         </div>
       </div>
     )

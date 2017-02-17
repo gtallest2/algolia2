@@ -1,4 +1,5 @@
 import React from 'react'
+import haversine from 'haversine'
 
 const Result = React.createClass({
   renderName() {
@@ -10,7 +11,6 @@ const Result = React.createClass({
   },
   renderStarsClass() {
     const stars = parseFloat(this.props.stars_count)
-    console.log(stars, this.props.name);
     if(stars === 5) {
       return (
         <span className="stars five-star">
@@ -80,9 +80,24 @@ const Result = React.createClass({
         </span>
       )
     }
+  },
+  renderDistance(userGeo, resultGeo){
+    const user = userGeo.split(',')
+    const userLat = parseFloat(user[0])
+    const userLon = parseFloat(user[1])
+    const start = {
+      latitude: userLat,
+      longitude: userLon
+    }
 
+    const end = {
+      latitude: resultGeo.lat,
+      longitude: resultGeo.lng
+    }
 
-
+    return (
+      <span>About {parseInt(haversine(start, end))} miles away</span>
+    )
   },
   render() {
     return(
@@ -92,6 +107,7 @@ const Result = React.createClass({
           <a href={this.props.reserve_url}><h4 dangerouslySetInnerHTML={{ __html: this.props._highlightResult.name.value }}></h4></a>
           <span><span className="rating-number">{this.props.stars_count}</span>{this.renderStarsClass()}({this.props.reviews_count} reviews)</span>
           <span>{this.props.food_type} | {this.props.area} | {this.props.price_range}</span>
+          {!this.props.userLocation ? '' : this.renderDistance(this.props.userLocation, this.props._geoloc)}
         </div>
       </div>
     )

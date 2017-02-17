@@ -8,7 +8,7 @@ const Results = React.createClass({
   renderResults() {
     return this.props.searchResults.hits.map((result, i) => {
           return (
-            <Result key={i} {...result} />
+            <Result key={i} {...result} userLocation={this.props.userLocation} />
           )
         })
   },

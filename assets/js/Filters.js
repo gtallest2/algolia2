@@ -3,7 +3,8 @@ import React from 'react'
 const Filters = React.createClass({
   getInitialState() {
     return {
-      currentFilter:0,
+      currentRatingFilter:'',
+      currentFoodType:'',
       payments: {
         AMEX: false,
         Discover: false,
@@ -13,14 +14,19 @@ const Filters = React.createClass({
     }
   },
   handleFoodTypeClick(facetValue){
+    if(this.state.currentFoodType === ''){
+      this.setState({ currentFoodType: facetValue })
+    } else {
+      this.setState({ currentFoodType: '' })
+    }
     this.props.foodFacet('food_type', facetValue)
-    console.log(this);
+
   },
   renderFoodTypes(){
     const foodTypes = this.props.searchResults.getFacetValues('food_type')
     return foodTypes.map((type, i) => {
       return (
-        <li key={i} onClick={this.handleFoodTypeClick.bind(null, type.name)}>
+        <li key={i} onClick={this.handleFoodTypeClick.bind(null, type.name)} className={this.state.currentFoodType === type.name ? 'active' : ''} >
           <span className="food-type">{type.name}</span>
           <span className="food-type">{type.count}</span>
         </li>
@@ -48,17 +54,17 @@ const Filters = React.createClass({
     this.props.removeRating(value)
   },
   handleRatingFilter(value){
-    if(this.state.currentFilter === '') {
+    if(this.state.currentRatingFilter === '') {
       this.addRatingFilter(value)
-      this.setState({ currentFilter:value })
+      this.setState({ currentRatingFilter:value })
     } else {
-        if(this.state.currentFilter === value) {
+        if(this.state.currentRatingFilter === value) {
         this.removeRatingFilter(value)
-        this.setState({ currentFilter: '' })
+        this.setState({ currentRatingFilter: '' })
        } else {
         this.addRatingFilter(value)
-        this.removeRatingFilter(this.state.currentFilter)
-        this.setState({ currentFilter: value })
+        this.removeRatingFilter(this.state.currentRatingFilter)
+        this.setState({ currentRatingFilter: value })
        }
     }
 
@@ -68,16 +74,16 @@ const Filters = React.createClass({
       <div className="filters">
         <h4>Cuisine/Food Type</h4>
         <ul className="cuisine">
-          {this.props.searchResults.length === 0 ? '' : this.renderFoodTypes()}
+          {this.props.searchResults.length === 0 ? 'What are you feeling?' : this.renderFoodTypes()}
         </ul>
         <h4>Rating</h4>
         <ul className="ratings">
-          <li onClick={this.handleRatingFilter.bind(null, 0)} className="stars no-star"></li>
-          <li onClick={this.handleRatingFilter.bind(null, 1)} className="stars one-star"></li>
-          <li onClick={this.handleRatingFilter.bind(null, 2)} className="stars two-star"></li>
-          <li onClick={this.handleRatingFilter.bind(null, 3)} className="stars three-star"></li>
-          <li onClick={this.handleRatingFilter.bind(null, 4)} className="stars four-star"></li>
-          <li onClick={this.handleRatingFilter.bind(null, 5)} className="stars five-star"></li>
+          <li onClick={this.handleRatingFilter.bind(null, 0)} className={this.state.currentRatingFilter === 0 ? 'active stars no-star' : 'stars no-star'}></li>
+          <li onClick={this.handleRatingFilter.bind(null, 1)} className={this.state.currentRatingFilter === 1 ? 'active stars one-star' : 'stars one-star' }></li>
+          <li onClick={this.handleRatingFilter.bind(null, 2)} className={this.state.currentRatingFilter === 2 ? 'active stars two-star' : 'stars two-star' }></li>
+          <li onClick={this.handleRatingFilter.bind(null, 3)} className={this.state.currentRatingFilter === 3 ? 'active stars three-star' : 'stars three-star' }></li>
+          <li onClick={this.handleRatingFilter.bind(null, 4)} className={this.state.currentRatingFilter === 4 ? 'active stars four-star' : 'stars four-star'}></li>
+          <li onClick={this.handleRatingFilter.bind(null, 5)} className={this.state.currentRatingFilter === 5 ? 'active stars five-star' : 'stars five-star'}></li>
         </ul>
         <h4>Payment Options</h4>
         <ul className="payment-options">

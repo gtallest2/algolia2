@@ -1,3 +1,3 @@
 $(function () {
-  console.log('Page loaded');
+  // console.log('Page loaded');
 });

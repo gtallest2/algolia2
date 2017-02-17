@@ -10394,16 +10394,32 @@ const Panel = __WEBPACK_IMPORTED_MODULE_0_react___default.a.createClass({
   displayName: 'Panel',
 
   getInitialState() {
+
     return {
       searchQuery: '',
       results: [],
-      hitsPerPage: 3
+      hitsPerPage: 3,
+      location: 'start'
     };
   },
-  componentDidMount() {
+  componentWillMount() {
+    __WEBPACK_IMPORTED_MODULE_1__algolia__["a" /* helper */].search();
     __WEBPACK_IMPORTED_MODULE_1__algolia__["a" /* helper */].on('result', content => {
       this.updateResults(content);
+      this.geo();
     });
+  },
+  componentDidMount() {},
+  geo(prevProps, prevState) {
+    if (this.state.location === 'start') {
+      if (this.state.results.aroundLatLng) {
+        const coordinates = this.state.results.aroundLatLng;
+        console.log(this.state.results.aroundLatLng);
+        this.setState({ location: coordinates });
+      } else {
+        this.setState({ location: '' });
+      }
+    }
   },
   handleSearch(query) {
     __WEBPACK_IMPORTED_MODULE_1__algolia__["a" /* helper */].setQuery(query).search();
@@ -10437,7 +10453,7 @@ const Panel = __WEBPACK_IMPORTED_MODULE_0_react___default.a.createClass({
     this.setState({
       results: results
     });
-    console.log(this.state.results);
+    // console.log(this.state.results);
   },
   updateQuery(query) {
     this.setState({
@@ -10470,16 +10486,56 @@ const Panel = __WEBPACK_IMPORTED_MODULE_0_react___default.a.createClass({
     const upperBound = value + 1;
     __WEBPACK_IMPORTED_MODULE_1__algolia__["a" /* helper */].removeNumericRefinement('stars_count', '<', upperBound).removeNumericRefinement('stars_count', '>=', lowerBound).search();
   },
+  setLocation(coordinates) {
+    this.setState({ location: coordinates });
+    __WEBPACK_IMPORTED_MODULE_1__algolia__["a" /* helper */].setQueryParameter('aroundLatLng', coordinates).search();
+  },
+  handleSetLocation(coordinates) {
+    this.setLocation(coordinates);
+  },
   render() {
+    const geo = __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+      'div',
+      { className: 'geo-selector' },
+      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+        'span',
+        { className: 'geo-header' },
+        'Please select your closest city:'
+      ),
+      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+        'ul',
+        { className: 'geo-list' },
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+          'li',
+          { onClick: this.handleSetLocation.bind(null, '37.7576948,-122.4726194'), className: 'geo-location' },
+          'San Francisco'
+        ),
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+          'li',
+          { onClick: this.handleSetLocation.bind(null, '40.705565,-74.118086'), className: 'geo-location' },
+          'New York'
+        ),
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+          'li',
+          { onClick: this.handleSetLocation.bind(null, '48.8588377,2.2775176'), className: 'geo-location' },
+          'Paris'
+        )
+      )
+    );
     return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
       'div',
       { className: 'panel' },
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_2__Search__["a" /* default */], { onSearch: this.handleSearch }),
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         'div',
+        null,
+        this.state.location ? '' : geo
+      ),
+      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+        'div',
         { className: 'lower-area' },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_3__Filters__["a" /* default */], { searchResults: this.state.results, foodFacet: this.foodFacetRefinement, addPayment: this.addPaymentDisjunctive, removePayment: this.removePaymentDisjunctive, addRating: this.addRatingFilter, removeRating: this.removeRatingFilter }),
-        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_4__Results__["a" /* default */], { searchResults: this.state.results, onShowMore: this.showMore })
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_4__Results__["a" /* default */], { searchResults: this.state.results, onShowMore: this.showMore, userLocation: this.state.location })
       )
     );
   }
@@ -13771,7 +13827,8 @@ const Filters = __WEBPACK_IMPORTED_MODULE_0_react___default.a.createClass({
 
   getInitialState() {
     return {
-      currentFilter: 0,
+      currentRatingFilter: '',
+      currentFoodType: '',
       payments: {
         AMEX: false,
         Discover: false,
@@ -13781,15 +13838,19 @@ const Filters = __WEBPACK_IMPORTED_MODULE_0_react___default.a.createClass({
     };
   },
   handleFoodTypeClick(facetValue) {
+    if (this.state.currentFoodType === '') {
+      this.setState({ currentFoodType: facetValue });
+    } else {
+      this.setState({ currentFoodType: '' });
+    }
     this.props.foodFacet('food_type', facetValue);
-    console.log(this);
   },
   renderFoodTypes() {
     const foodTypes = this.props.searchResults.getFacetValues('food_type');
     return foodTypes.map((type, i) => {
       return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         'li',
-        { key: i, onClick: this.handleFoodTypeClick.bind(null, type.name) },
+        { key: i, onClick: this.handleFoodTypeClick.bind(null, type.name), className: this.state.currentFoodType === type.name ? 'active' : '' },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           'span',
           { className: 'food-type' },
@@ -13823,17 +13884,17 @@ const Filters = __WEBPACK_IMPORTED_MODULE_0_react___default.a.createClass({
     this.props.removeRating(value);
   },
   handleRatingFilter(value) {
-    if (this.state.currentFilter === '') {
+    if (this.state.currentRatingFilter === '') {
       this.addRatingFilter(value);
-      this.setState({ currentFilter: value });
+      this.setState({ currentRatingFilter: value });
     } else {
-      if (this.state.currentFilter === value) {
+      if (this.state.currentRatingFilter === value) {
         this.removeRatingFilter(value);
-        this.setState({ currentFilter: '' });
+        this.setState({ currentRatingFilter: '' });
       } else {
         this.addRatingFilter(value);
-        this.removeRatingFilter(this.state.currentFilter);
-        this.setState({ currentFilter: value });
+        this.removeRatingFilter(this.state.currentRatingFilter);
+        this.setState({ currentRatingFilter: value });
       }
     }
   },
@@ -13849,7 +13910,7 @@ const Filters = __WEBPACK_IMPORTED_MODULE_0_react___default.a.createClass({
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         'ul',
         { className: 'cuisine' },
-        this.props.searchResults.length === 0 ? '' : this.renderFoodTypes()
+        this.props.searchResults.length === 0 ? 'What are you feeling?' : this.renderFoodTypes()
       ),
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         'h4',
@@ -13859,12 +13920,12 @@ const Filters = __WEBPACK_IMPORTED_MODULE_0_react___default.a.createClass({
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         'ul',
         { className: 'ratings' },
-        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('li', { onClick: this.handleRatingFilter.bind(null, 0), className: 'stars no-star' }),
-        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('li', { onClick: this.handleRatingFilter.bind(null, 1), className: 'stars one-star' }),
-        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('li', { onClick: this.handleRatingFilter.bind(null, 2), className: 'stars two-star' }),
-        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('li', { onClick: this.handleRatingFilter.bind(null, 3), className: 'stars three-star' }),
-        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('li', { onClick: this.handleRatingFilter.bind(null, 4), className: 'stars four-star' }),
-        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('li', { onClick: this.handleRatingFilter.bind(null, 5), className: 'stars five-star' })
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('li', { onClick: this.handleRatingFilter.bind(null, 0), className: this.state.currentRatingFilter === 0 ? 'active stars no-star' : 'stars no-star' }),
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('li', { onClick: this.handleRatingFilter.bind(null, 1), className: this.state.currentRatingFilter === 1 ? 'active stars one-star' : 'stars one-star' }),
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('li', { onClick: this.handleRatingFilter.bind(null, 2), className: this.state.currentRatingFilter === 2 ? 'active stars two-star' : 'stars two-star' }),
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('li', { onClick: this.handleRatingFilter.bind(null, 3), className: this.state.currentRatingFilter === 3 ? 'active stars three-star' : 'stars three-star' }),
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('li', { onClick: this.handleRatingFilter.bind(null, 4), className: this.state.currentRatingFilter === 4 ? 'active stars four-star' : 'stars four-star' }),
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('li', { onClick: this.handleRatingFilter.bind(null, 5), className: this.state.currentRatingFilter === 5 ? 'active stars five-star' : 'stars five-star' })
       ),
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         'h4',
@@ -13932,97 +13993,122 @@ const Filters = __WEBPACK_IMPORTED_MODULE_0_react___default.a.createClass({
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(19);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_haversine__ = __webpack_require__(526);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_haversine___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_haversine__);
+
 
 
 const Result = __WEBPACK_IMPORTED_MODULE_0_react___default.a.createClass({
-  displayName: "Result",
+  displayName: 'Result',
 
   renderName() {
     return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-      "span",
+      'span',
       null,
-      "this.props._highlightResult.name.value"
+      'this.props._highlightResult.name.value'
     );
   },
   renderStarsClass() {
     const stars = parseFloat(this.props.stars_count);
-    console.log(stars, this.props.name);
     if (stars === 5) {
-      return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement("span", { className: "stars five-star" });
+      return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('span', { className: 'stars five-star' });
     }
     if (stars >= 4.5) {
-      return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement("span", { className: "stars four-half-star" });
+      return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('span', { className: 'stars four-half-star' });
     }
     if (stars >= 4) {
-      return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement("span", { className: "stars four-star" });
+      return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('span', { className: 'stars four-star' });
     }
 
     if (stars >= 3.5) {
-      return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement("span", { className: "stars three-half-star" });
+      return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('span', { className: 'stars three-half-star' });
     }
     if (stars >= 3) {
-      return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement("span", { className: "stars three-star" });
+      return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('span', { className: 'stars three-star' });
     }
 
     if (stars >= 2.5) {
-      return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement("span", { className: "stars two-half-star" });
+      return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('span', { className: 'stars two-half-star' });
     }
     if (stars >= 2) {
-      return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement("span", { className: "stars two-star" });
+      return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('span', { className: 'stars two-star' });
     }
 
     if (stars >= 1.5) {
-      return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement("span", { className: "stars one-half-star" });
+      return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('span', { className: 'stars one-half-star' });
     }
     if (stars >= 1) {
-      return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement("span", { className: "stars one-star" });
+      return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('span', { className: 'stars one-star' });
     }
     if (stars >= 0.5) {
-      return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement("span", { className: "stars half-star" });
+      return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('span', { className: 'stars half-star' });
     }
     if (stars <= 0) {
-      return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement("span", { className: "stars no-star" });
+      return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('span', { className: 'stars no-star' });
     }
+  },
+  renderDistance(userGeo, resultGeo) {
+    const user = userGeo.split(',');
+    const userLat = parseFloat(user[0]);
+    const userLon = parseFloat(user[1]);
+    const start = {
+      latitude: userLat,
+      longitude: userLon
+    };
+
+    const end = {
+      latitude: resultGeo.lat,
+      longitude: resultGeo.lng
+    };
+
+    return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+      'span',
+      null,
+      'About ',
+      parseInt(__WEBPACK_IMPORTED_MODULE_1_haversine___default()(start, end)),
+      ' miles away'
+    );
   },
   render() {
     return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-      "div",
-      { className: "result" },
+      'div',
+      { className: 'result' },
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-        "a",
+        'a',
         { href: this.props.reserve_url },
-        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement("img", { className: "result-image", src: this.props.image_url, alt: "Result Image" })
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('img', { className: 'result-image', src: this.props.image_url, alt: 'Result Image' })
       ),
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-        "div",
-        { className: "result-text" },
+        'div',
+        { className: 'result-text' },
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-          "a",
+          'a',
           { href: this.props.reserve_url },
-          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement("h4", { dangerouslySetInnerHTML: { __html: this.props._highlightResult.name.value } })
+          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('h4', { dangerouslySetInnerHTML: { __html: this.props._highlightResult.name.value } })
         ),
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-          "span",
+          'span',
           null,
           __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-            "span",
-            { className: "rating-number" },
+            'span',
+            { className: 'rating-number' },
             this.props.stars_count
           ),
           this.renderStarsClass(),
-          "(",
+          '(',
           this.props.reviews_count,
-          " reviews)"
+          ' reviews)'
         ),
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-          "span",
+          'span',
           null,
           this.props.food_type,
-          " | ",
+          ' | ',
           this.props.area,
-          " | ",
+          ' | ',
           this.props.price_range
-        )
+        ),
+        !this.props.userLocation ? '' : this.renderDistance(this.props.userLocation, this.props._geoloc)
       )
     );
   }
@@ -14052,7 +14138,7 @@ const Results = __WEBPACK_IMPORTED_MODULE_0_react___default.a.createClass({
 
   renderResults() {
     return this.props.searchResults.hits.map((result, i) => {
-      return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_2__Result__["a" /* default */], _extends({ key: i }, result));
+      return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_2__Result__["a" /* default */], _extends({ key: i }, result, { userLocation: this.props.userLocation }));
     });
   },
   millisecondsMatter() {
@@ -14145,7 +14231,8 @@ const index = client.initIndex('merged');
 
 const helper = __WEBPACK_IMPORTED_MODULE_1_algoliasearch_helper___default()(client, 'merged', {
   facets: ['food_type', 'stars_count'],
-  disjunctiveFacets: ['payment_options']
+  disjunctiveFacets: ['payment_options'],
+  aroundLatLngViaIP: true
 });
 /* harmony export (immutable) */ __webpack_exports__["a"] = helper;
 
@@ -14160,7 +14247,7 @@ exports = module.exports = __webpack_require__(119)();
 
 
 // module
-exports.push([module.i, "html {\n  box-sizing: border-box; }\n\n*, *:before, *:after {\n  box-sizing: inherit; }\n\nbody {\n  font-family: 'Open Sans', sans-serif;\n  font-size: 13px;\n  background-image: url(\"./resources/graphics/background.png\"); }\n\n.panel {\n  margin: 50px auto 0;\n  text-align: center;\n  font-size: 2em;\n  background: white;\n  padding: 0px;\n  width: 80vw;\n  height: auto; }\n  .panel p {\n    margin: 5px; }\n\n.search {\n  width: 100%;\n  background: #1c688e;\n  height: 100px;\n  display: flex;\n  justify-content: center;\n  align-items: center; }\n  .search input {\n    width: 90%;\n    height: 45px;\n    border-radius: 3px;\n    border-style: hidden;\n    font-size: 16px;\n    padding: 0 10px; }\n\n.lower-area {\n  display: flex;\n  height: auto; }\n  .lower-area .filters {\n    width: 25%;\n    height: auto;\n    display: inline-block;\n    border-right: 1px solid #e6e6e6;\n    padding: 10px;\n    flex-direction: column;\n    font-size: 14px;\n    text-align: left; }\n    .lower-area .filters h4 {\n      font-size: 14px;\n      margin: 10px;\n      padding: 0; }\n    .lower-area .filters ul {\n      list-style-type: none;\n      margin: 0 5px;\n      padding: 0; }\n    .lower-area .filters .cuisine {\n      display: flex;\n      flex-direction: column;\n      align-items: center; }\n      .lower-area .filters .cuisine li {\n        display: flex;\n        justify-content: space-between;\n        padding: 5px;\n        border-radius: 5px;\n        width: 90%; }\n        .lower-area .filters .cuisine li .food-type,\n        .lower-area .filters .cuisine li .foot-type-amount {\n          display: inline-flex; }\n        .lower-area .filters .cuisine li .foot-type-amount {\n          color: #e6e6e6; }\n      .lower-area .filters .cuisine li:hover,\n      .lower-area .filters .cuisine .active {\n        background: #2897c5;\n        color: white;\n        cursor: pointer; }\n    .lower-area .filters .ratings {\n      display: flex;\n      flex-direction: column; }\n      .lower-area .filters .ratings li {\n        margin: 2px 15px;\n        cursor: pointer; }\n    .lower-area .filters .payment-options li {\n      margin: 5px 10px; }\n    .lower-area .filters .payment-options input {\n      margin-right: 5px; }\n    .lower-area .filters .payment-options .card {\n      width: 32px;\n      height: 20px;\n      display: inline-block;\n      background: url(\"./resources/graphics/cc-icons.png\");\n      background-size: 122px;\n      vertical-align: middle;\n      margin-left: 5px; }\n    .lower-area .filters .payment-options .cc-ae {\n      background-position: 0 20px; }\n    .lower-area .filters .payment-options .cc-visa {\n      background-position: 32px 0; }\n    .lower-area .filters .payment-options .cc-discover {\n      background-position: 32px 20px; }\n    .lower-area .filters .payment-options .cc-mc {\n      background-position: 77px 0; }\n  .lower-area .results {\n    width: 75%;\n    height: 100%;\n    display: inline-block;\n    padding: 20px 30px;\n    flex-direction: column;\n    align-items: center; }\n    .lower-area .results a {\n      text-decoration: none; }\n    .lower-area .results h4 {\n      margin: 0; }\n    .lower-area .results .result {\n      margin: 20px;\n      display: flex;\n      width: 100%;\n      height: 90px; }\n      .lower-area .results .result em {\n        background: rgba(255, 0, 0, 0.3);\n        font-style: normal; }\n      .lower-area .results .result .result-image {\n        display: flex;\n        border-radius: 5px;\n        width: 90px;\n        border: 1px solid #a9a9a9; }\n      .lower-area .results .result .result-text {\n        font-size: 16px;\n        color: #a9a9a9;\n        display: flex;\n        flex-direction: column;\n        align-items: baseline;\n        margin-left: 20px;\n        justify-content: space-between; }\n        .lower-area .results .result .result-text h4 {\n          font-size: 16px;\n          color: black; }\n        .lower-area .results .result .result-text img {\n          background-size: 100px;\n          width: 100px;\n          height: 19px; }\n        .lower-area .results .result .result-text span {\n          display: block; }\n        .lower-area .results .result .result-text .stars {\n          display: inline-block; }\n        .lower-area .results .result .result-text .result-rating {\n          background: url(\"./resources/graphics/all-stars.png\");\n          background-size: 100px;\n          width: 100px;\n          height: 18px;\n          vertical-align: middle;\n          display: inline-block;\n          margin: 0 5px; }\n        .lower-area .results .result .result-text .rating-number {\n          color: #ffab66;\n          display: inline-block; }\n    .lower-area .results .show-more {\n      width: 180px;\n      background: none;\n      padding: 10px;\n      border-radius: 5px;\n      border-style: solid;\n      font-size: 16px;\n      border: 1px solid #a9a9a9;\n      color: #a9a9a9;\n      margin-top: 20px; }\n    .lower-area .results .show-more:hover {\n      background: #a9a9a9;\n      color: white; }\n\n.stars {\n  background: url(\"./resources/graphics/all-stars.png\");\n  background-size: 100px;\n  width: 100px;\n  height: 19px;\n  vertical-align: middle;\n  display: inline-block;\n  margin: 0 5px; }\n\n.half-star {\n  background-position-y: -19px; }\n\n.one-star {\n  background-position-y: -38px; }\n\n.one-half-star {\n  background-position-y: -57px; }\n\n.two-star {\n  background-position-y: -76px; }\n\n.two-half-star {\n  background-position-y: -95px; }\n\n.three-star {\n  background-position-y: -114px; }\n\n.three-half-star {\n  background-position-y: -133px; }\n\n.four-star {\n  background-position-y: -152px; }\n\n.four-half-star {\n  background-position-y: -171px; }\n\n.five-star {\n  background-position-y: 19px; }\n", ""]);
+exports.push([module.i, "html {\n  box-sizing: border-box; }\n\n*, *:before, *:after {\n  box-sizing: inherit; }\n\nbody {\n  font-family: 'Open Sans', sans-serif;\n  font-size: 13px;\n  background-image: url(\"./resources/graphics/background.png\"); }\n\n.panel {\n  margin: 50px auto 0;\n  text-align: center;\n  font-size: 2em;\n  background: white;\n  padding: 0px;\n  width: 80vw;\n  height: auto; }\n  .panel p {\n    margin: 5px; }\n\n.search {\n  width: 100%;\n  background: #1c688e;\n  height: 100px;\n  display: flex;\n  justify-content: center;\n  align-items: center; }\n  .search input {\n    width: 90%;\n    height: 45px;\n    border-radius: 3px;\n    border-style: hidden;\n    font-size: 16px;\n    padding: 0 10px; }\n\n.geo-selector {\n  width: 100%;\n  height: auto;\n  background: #bbbbbb;\n  text-align: left;\n  padding: 5px 15px; }\n  .geo-selector .geo-header {\n    display: inline-block;\n    color: white;\n    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);\n    font-size: 16px;\n    vertical-align: middle;\n    width: 20%;\n    text-align: center; }\n  .geo-selector .geo-list {\n    margin: 0;\n    padding: 10px;\n    display: inline-block;\n    width: 80%;\n    vertical-align: middle; }\n    .geo-selector .geo-list .geo-location {\n      list-style-type: none;\n      display: inline-block;\n      margin: 0 10px;\n      background: #1c688e;\n      color: white;\n      padding: 2px 15px;\n      border-radius: 15px;\n      font-size: 20px;\n      vertical-align: middle;\n      box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3); }\n      .geo-selector .geo-list .geo-location:hover {\n        background: #3793c1;\n        cursor: pointer; }\n      .geo-selector .geo-list .geo-location:active {\n        transform: translate(2px, 2px);\n        box-shadow: none; }\n\n.lower-area {\n  display: flex;\n  height: auto; }\n  .lower-area .filters {\n    width: 25%;\n    height: auto;\n    display: inline-block;\n    border-right: 1px solid #e6e6e6;\n    padding: 10px;\n    flex-direction: column;\n    font-size: 14px;\n    text-align: left; }\n    .lower-area .filters h4 {\n      font-size: 14px;\n      margin: 10px;\n      padding: 0; }\n    .lower-area .filters ul {\n      list-style-type: none;\n      margin: 0 5px;\n      padding: 0; }\n    .lower-area .filters .cuisine {\n      display: flex;\n      flex-direction: column;\n      align-items: center; }\n      .lower-area .filters .cuisine li {\n        display: flex;\n        justify-content: space-between;\n        padding: 5px;\n        border-radius: 5px;\n        width: 90%; }\n        .lower-area .filters .cuisine li .food-type,\n        .lower-area .filters .cuisine li .foot-type-amount {\n          display: inline-flex; }\n        .lower-area .filters .cuisine li .foot-type-amount {\n          color: #e6e6e6; }\n      .lower-area .filters .cuisine li:hover,\n      .lower-area .filters .cuisine .active {\n        background: #2897c5;\n        color: white;\n        cursor: pointer; }\n    .lower-area .filters .ratings {\n      display: flex;\n      flex-direction: column; }\n      .lower-area .filters .ratings li {\n        margin: 2px 15px;\n        cursor: pointer; }\n        .lower-area .filters .ratings li:hover {\n          border: 2px solid orange; }\n        .lower-area .filters .ratings li.active {\n          border-left: 10px solid orange; }\n    .lower-area .filters .payment-options li {\n      margin: 5px 10px; }\n    .lower-area .filters .payment-options input {\n      margin-right: 5px; }\n    .lower-area .filters .payment-options .card {\n      width: 32px;\n      height: 20px;\n      display: inline-block;\n      background: url(\"./resources/graphics/cc-icons.png\");\n      background-size: 122px;\n      vertical-align: middle;\n      margin-left: 5px; }\n    .lower-area .filters .payment-options .cc-ae {\n      background-position: 0 20px; }\n    .lower-area .filters .payment-options .cc-visa {\n      background-position: 32px 0; }\n    .lower-area .filters .payment-options .cc-discover {\n      background-position: 32px 20px; }\n    .lower-area .filters .payment-options .cc-mc {\n      background-position: 77px 0; }\n  .lower-area .results {\n    width: 75%;\n    height: 100%;\n    display: inline-block;\n    padding: 20px 30px;\n    flex-direction: column;\n    align-items: center; }\n    .lower-area .results a {\n      text-decoration: none; }\n    .lower-area .results h4 {\n      margin: 0; }\n    .lower-area .results .result {\n      margin: 20px;\n      display: flex;\n      width: 100%;\n      height: 105px;\n      border-radius: 10px;\n      padding: 10px; }\n      .lower-area .results .result:hover {\n        background-color: #ececec; }\n        .lower-area .results .result:hover .result-text {\n          color: #1c688e; }\n      .lower-area .results .result em {\n        background: rgba(255, 0, 0, 0.3);\n        font-style: normal; }\n      .lower-area .results .result .result-image {\n        display: flex;\n        border-radius: 5px;\n        width: 85px;\n        border: 1px solid #a9a9a9; }\n      .lower-area .results .result .result-text {\n        font-size: 16px;\n        color: #a9a9a9;\n        display: flex;\n        flex-direction: column;\n        align-items: baseline;\n        margin-left: 20px;\n        justify-content: space-between; }\n        .lower-area .results .result .result-text h4 {\n          font-size: 16px;\n          color: black; }\n        .lower-area .results .result .result-text img {\n          background-size: 100px;\n          width: 100px;\n          height: 19px; }\n        .lower-area .results .result .result-text span {\n          display: block; }\n        .lower-area .results .result .result-text .stars {\n          display: inline-block; }\n        .lower-area .results .result .result-text .result-rating {\n          background: url(\"./resources/graphics/all-stars.png\");\n          background-size: 100px;\n          width: 100px;\n          height: 18px;\n          vertical-align: middle;\n          display: inline-block;\n          margin: 0 5px; }\n        .lower-area .results .result .result-text .rating-number {\n          color: #ffab66;\n          display: inline-block; }\n    .lower-area .results .show-more {\n      width: 180px;\n      background: none;\n      padding: 10px;\n      border-radius: 5px;\n      border-style: solid;\n      font-size: 16px;\n      border: 1px solid #a9a9a9;\n      color: #a9a9a9;\n      margin-top: 20px; }\n    .lower-area .results .show-more:hover {\n      background: #a9a9a9;\n      color: white; }\n\n.stars {\n  background: url(\"./resources/graphics/all-stars.png\");\n  background-size: 100px;\n  width: 100px;\n  height: 19px;\n  vertical-align: middle;\n  display: inline-block;\n  margin: 0 5px; }\n\n.half-star {\n  background-position-y: -19px; }\n\n.one-star {\n  background-position-y: -38px; }\n\n.one-half-star {\n  background-position-y: -57px; }\n\n.two-star {\n  background-position-y: -76px; }\n\n.two-half-star {\n  background-position-y: -95px; }\n\n.three-star {\n  background-position-y: -114px; }\n\n.three-half-star {\n  background-position-y: -133px; }\n\n.four-star {\n  background-position-y: -152px; }\n\n.four-half-star {\n  background-position-y: -171px; }\n\n.five-star {\n  background-position-y: 19px; }\n", ""]);
 
 // exports
 
@@ -44469,6 +44556,55 @@ module.exports = function isBuffer(arg) {
     && typeof arg.fill === 'function'
     && typeof arg.readUInt8 === 'function';
 }
+
+/***/ }),
+/* 525 */,
+/* 526 */
+/***/ (function(module, exports) {
+
+var haversine = (function () {
+
+  // convert to radians
+  var toRad = function (num) {
+    return num * Math.PI / 180
+  }
+
+  return function haversine (start, end, options) {
+    options   = options || {}
+
+    var radii = {
+      km:    6371,
+      mile:  3960,
+      meter: 6371000,
+      nmi:   3440
+    }
+
+    var R = options.unit in radii
+      ? radii[options.unit]
+      : radii.km
+
+    var dLat = toRad(end.latitude - start.latitude)
+    var dLon = toRad(end.longitude - start.longitude)
+    var lat1 = toRad(start.latitude)
+    var lat2 = toRad(end.latitude)
+
+    var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+            Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(lat1) * Math.cos(lat2)
+    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a))
+
+    if (options.threshold) {
+      return options.threshold > (R * c)
+    }
+
+    return R * c
+  }
+
+})()
+
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = haversine
+}
+
 
 /***/ })
 /******/ ]);
