@@ -13,6 +13,7 @@ const Panel = React.createClass({
       results: [],
       hitsPerPage: 3,
       location: 'start',
+      mobileMenu:false,
     }
   },
   componentWillMount() {
@@ -114,6 +115,10 @@ const Panel = React.createClass({
   handleSetLocation(coordinates){
     this.setLocation(coordinates)
   },
+  toggleMobile(){
+    console.log('toggling mobile menu!');
+    this.setState({ mobileMenu: !this.state.mobileMenu })
+  },
   render() {
     const geo = (
       <div className="geo-selector">
@@ -127,10 +132,10 @@ const Panel = React.createClass({
     )
     return (
       <div className="panel">
-        <Search onSearch={this.handleSearch} />
+        <Search onSearch={this.handleSearch} toggleMobile={this.toggleMobile} />
         <div>{this.state.location ? '' : geo}</div>
         <div className="lower-area">
-          <Filters searchResults={this.state.results} foodFacet={this.foodFacetRefinement} addPayment={this.addPaymentDisjunctive} removePayment={this.removePaymentDisjunctive} addRating={this.addRatingFilter} removeRating={this.removeRatingFilter} />
+          <Filters toggleMobile={this.toggleMobile} mobileMenu={this.state.mobileMenu} searchResults={this.state.results} foodFacet={this.foodFacetRefinement} addPayment={this.addPaymentDisjunctive} removePayment={this.removePaymentDisjunctive} addRating={this.addRatingFilter} removeRating={this.removeRatingFilter} />
           <Results searchResults={this.state.results} onShowMore={this.showMore} userLocation={this.state.location} />
         </div>
       </div>

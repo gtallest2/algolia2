@@ -99,15 +99,37 @@ const Result = React.createClass({
       <span>About {parseInt(haversine(start, end))} miles away</span>
     )
   },
+  renderTyDollarSign(num){
+    const signs = new Array(num).fill('$').join('')
+    return (
+      <span>
+        {signs}
+      </span>
+    )
+  },
   render() {
+    const highlightedFoodAndArea = `${this.props._highlightResult.food_type.value} | ${this.props._highlightResult.area.value} | ${this.props.price_range}`
+    const highlightedFood = `${this.props._highlightResult.food_type.value} | `
+    const highlightedArea = `${this.props._highlightResult.area.value} | `
+    const highlightedCity = `${this.props._highlightResult.city.value} |&nbsp;`
     return(
       <div className="result">
         <a href={this.props.reserve_url}><img className="result-image" src={this.props.image_url} alt="Result Image"/></a>
           <div className="result-text">
           <a href={this.props.reserve_url}><h4 dangerouslySetInnerHTML={{ __html: this.props._highlightResult.name.value }}></h4></a>
-          <span><span className="rating-number">{this.props.stars_count}</span>{this.renderStarsClass()}({this.props.reviews_count} reviews)</span>
-          <span>{this.props.food_type} | {this.props.area} | {this.props.price_range}</span>
-          {!this.props.userLocation ? '' : this.renderDistance(this.props.userLocation, this.props._geoloc)}
+          <span>
+            <span className="rating-number">{this.props.stars_count}</span>
+            {this.renderStarsClass()}
+            <span className="review-count">({this.props.reviews_count} reviews)</span>
+          </span>
+          <span className="result-third-line">
+            <span dangerouslySetInnerHTML={{ __html: highlightedFood }} className="result-foodtype"></span>
+            <span dangerouslySetInnerHTML={{ __html: highlightedArea }} className="result-area"></span>
+            <span dangerouslySetInnerHTML={{ __html: highlightedCity }} className="result-city"></span>
+            <span className="result-price-range">{this.props.price_range}</span>
+            <span className="result-price">{this.renderTyDollarSign(this.props.price)}</span>
+          </span>
+          <span className="result-distance">{!this.props.userLocation ? '' : this.renderDistance(this.props.userLocation, this.props._geoloc)}</span>
         </div>
       </div>
     )

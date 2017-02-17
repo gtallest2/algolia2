@@ -10399,7 +10399,8 @@ const Panel = __WEBPACK_IMPORTED_MODULE_0_react___default.a.createClass({
       searchQuery: '',
       results: [],
       hitsPerPage: 3,
-      location: 'start'
+      location: 'start',
+      mobileMenu: false
     };
   },
   componentWillMount() {
@@ -10493,6 +10494,10 @@ const Panel = __WEBPACK_IMPORTED_MODULE_0_react___default.a.createClass({
   handleSetLocation(coordinates) {
     this.setLocation(coordinates);
   },
+  toggleMobile() {
+    console.log('toggling mobile menu!');
+    this.setState({ mobileMenu: !this.state.mobileMenu });
+  },
   render() {
     const geo = __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
       'div',
@@ -10525,7 +10530,7 @@ const Panel = __WEBPACK_IMPORTED_MODULE_0_react___default.a.createClass({
     return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
       'div',
       { className: 'panel' },
-      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_2__Search__["a" /* default */], { onSearch: this.handleSearch }),
+      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_2__Search__["a" /* default */], { onSearch: this.handleSearch, toggleMobile: this.toggleMobile }),
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         'div',
         null,
@@ -10534,7 +10539,7 @@ const Panel = __WEBPACK_IMPORTED_MODULE_0_react___default.a.createClass({
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         'div',
         { className: 'lower-area' },
-        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_3__Filters__["a" /* default */], { searchResults: this.state.results, foodFacet: this.foodFacetRefinement, addPayment: this.addPaymentDisjunctive, removePayment: this.removePaymentDisjunctive, addRating: this.addRatingFilter, removeRating: this.removeRatingFilter }),
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_3__Filters__["a" /* default */], { toggleMobile: this.toggleMobile, mobileMenu: this.state.mobileMenu, searchResults: this.state.results, foodFacet: this.foodFacetRefinement, addPayment: this.addPaymentDisjunctive, removePayment: this.removePaymentDisjunctive, addRating: this.addRatingFilter, removeRating: this.removeRatingFilter }),
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_4__Results__["a" /* default */], { searchResults: this.state.results, onShowMore: this.showMore, userLocation: this.state.location })
       )
     );
@@ -13898,10 +13903,25 @@ const Filters = __WEBPACK_IMPORTED_MODULE_0_react___default.a.createClass({
       }
     }
   },
+  closeMenu() {
+    this.props.toggleMobile();
+  },
+  handleCloseMenu() {
+    this.props.toggleMobile();
+  },
   render() {
     return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
       'div',
-      { className: 'filters' },
+      { style: this.props.mobileMenu ? { transform: 'translateX(0)' } : {}, className: 'filters' },
+      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+        'div',
+        { className: 'mobile-header' },
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+          'div',
+          { onClick: this.closeMenu, className: 'mobile-menu-close' },
+          'x'
+        )
+      ),
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         'h4',
         null,
@@ -14069,7 +14089,19 @@ const Result = __WEBPACK_IMPORTED_MODULE_0_react___default.a.createClass({
       ' miles away'
     );
   },
+  renderTyDollarSign(num) {
+    const signs = new Array(num).fill('$').join('');
+    return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+      'span',
+      null,
+      signs
+    );
+  },
   render() {
+    const highlightedFoodAndArea = `${this.props._highlightResult.food_type.value} | ${this.props._highlightResult.area.value} | ${this.props.price_range}`;
+    const highlightedFood = `${this.props._highlightResult.food_type.value} | `;
+    const highlightedArea = `${this.props._highlightResult.area.value} | `;
+    const highlightedCity = `${this.props._highlightResult.city.value} |&nbsp;`;
     return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
       'div',
       { className: 'result' },
@@ -14095,20 +14127,36 @@ const Result = __WEBPACK_IMPORTED_MODULE_0_react___default.a.createClass({
             this.props.stars_count
           ),
           this.renderStarsClass(),
-          '(',
-          this.props.reviews_count,
-          ' reviews)'
+          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+            'span',
+            { className: 'review-count' },
+            '(',
+            this.props.reviews_count,
+            ' reviews)'
+          )
         ),
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           'span',
-          null,
-          this.props.food_type,
-          ' | ',
-          this.props.area,
-          ' | ',
-          this.props.price_range
+          { className: 'result-third-line' },
+          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('span', { dangerouslySetInnerHTML: { __html: highlightedFood }, className: 'result-foodtype' }),
+          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('span', { dangerouslySetInnerHTML: { __html: highlightedArea }, className: 'result-area' }),
+          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('span', { dangerouslySetInnerHTML: { __html: highlightedCity }, className: 'result-city' }),
+          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+            'span',
+            { className: 'result-price-range' },
+            this.props.price_range
+          ),
+          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+            'span',
+            { className: 'result-price' },
+            this.renderTyDollarSign(this.props.price)
+          )
         ),
-        !this.props.userLocation ? '' : this.renderDistance(this.props.userLocation, this.props._geoloc)
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+          'span',
+          { className: 'result-distance' },
+          !this.props.userLocation ? '' : this.renderDistance(this.props.userLocation, this.props._geoloc)
+        )
       )
     );
   }
@@ -14166,7 +14214,7 @@ const Results = __WEBPACK_IMPORTED_MODULE_0_react___default.a.createClass({
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         'h4',
         null,
-        this.props.searchResults.length === 0 || this.props.searchResults.nbHits === 5000 ? 'Please enter search.' : this.millisecondsMatter()
+        this.props.searchResults.length === 0 || this.props.searchResults.nbHits === 5000 ? 'Where are you eating tonight? 🍴' : this.millisecondsMatter()
       ),
       this.props.searchResults.length === 0 || this.props.searchResults.nbHits === 5000 ? '' : this.renderResults(),
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -14200,10 +14248,22 @@ const Search = __WEBPACK_IMPORTED_MODULE_0_react___default.a.createClass({
   handleSearchTermChange(event) {
     this.props.onSearch(event.target.value);
   },
+  openMobileMenu() {
+    this.props.toggleMobile();
+  },
   render() {
     return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
       'div',
       { className: 'search' },
+      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+        'div',
+        { onClick: this.openMobileMenu, className: 'mobile-menu' },
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+          'span',
+          { className: 'menu-bars' },
+          '|||'
+        )
+      ),
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('input', { type: 'text', onChange: this.handleSearchTermChange, placeholder: 'Search for Restaurants by Name, Cuisine, Location' })
     );
   }
@@ -14247,7 +14307,7 @@ exports = module.exports = __webpack_require__(119)();
 
 
 // module
-exports.push([module.i, "html {\n  box-sizing: border-box; }\n\n*, *:before, *:after {\n  box-sizing: inherit; }\n\nbody {\n  font-family: 'Open Sans', sans-serif;\n  font-size: 13px;\n  background-image: url(\"./resources/graphics/background.png\"); }\n\n.panel {\n  margin: 50px auto 0;\n  text-align: center;\n  font-size: 2em;\n  background: white;\n  padding: 0px;\n  width: 80vw;\n  height: auto; }\n  .panel p {\n    margin: 5px; }\n\n.search {\n  width: 100%;\n  background: #1c688e;\n  height: 100px;\n  display: flex;\n  justify-content: center;\n  align-items: center; }\n  .search input {\n    width: 90%;\n    height: 45px;\n    border-radius: 3px;\n    border-style: hidden;\n    font-size: 16px;\n    padding: 0 10px; }\n\n.geo-selector {\n  width: 100%;\n  height: auto;\n  background: #bbbbbb;\n  text-align: left;\n  padding: 5px 15px; }\n  .geo-selector .geo-header {\n    display: inline-block;\n    color: white;\n    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);\n    font-size: 16px;\n    vertical-align: middle;\n    width: 20%;\n    text-align: center; }\n  .geo-selector .geo-list {\n    margin: 0;\n    padding: 10px;\n    display: inline-block;\n    width: 80%;\n    vertical-align: middle; }\n    .geo-selector .geo-list .geo-location {\n      list-style-type: none;\n      display: inline-block;\n      margin: 0 10px;\n      background: #1c688e;\n      color: white;\n      padding: 2px 15px;\n      border-radius: 15px;\n      font-size: 20px;\n      vertical-align: middle;\n      box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3); }\n      .geo-selector .geo-list .geo-location:hover {\n        background: #3793c1;\n        cursor: pointer; }\n      .geo-selector .geo-list .geo-location:active {\n        transform: translate(2px, 2px);\n        box-shadow: none; }\n\n.lower-area {\n  display: flex;\n  height: auto; }\n  .lower-area .filters {\n    width: 25%;\n    height: auto;\n    display: inline-block;\n    border-right: 1px solid #e6e6e6;\n    padding: 10px;\n    flex-direction: column;\n    font-size: 14px;\n    text-align: left; }\n    .lower-area .filters h4 {\n      font-size: 14px;\n      margin: 10px;\n      padding: 0; }\n    .lower-area .filters ul {\n      list-style-type: none;\n      margin: 0 5px;\n      padding: 0; }\n    .lower-area .filters .cuisine {\n      display: flex;\n      flex-direction: column;\n      align-items: center; }\n      .lower-area .filters .cuisine li {\n        display: flex;\n        justify-content: space-between;\n        padding: 5px;\n        border-radius: 5px;\n        width: 90%; }\n        .lower-area .filters .cuisine li .food-type,\n        .lower-area .filters .cuisine li .foot-type-amount {\n          display: inline-flex; }\n        .lower-area .filters .cuisine li .foot-type-amount {\n          color: #e6e6e6; }\n      .lower-area .filters .cuisine li:hover,\n      .lower-area .filters .cuisine .active {\n        background: #2897c5;\n        color: white;\n        cursor: pointer; }\n    .lower-area .filters .ratings {\n      display: flex;\n      flex-direction: column; }\n      .lower-area .filters .ratings li {\n        margin: 2px 15px;\n        cursor: pointer; }\n        .lower-area .filters .ratings li:hover {\n          border: 2px solid orange; }\n        .lower-area .filters .ratings li.active {\n          border-left: 10px solid orange; }\n    .lower-area .filters .payment-options li {\n      margin: 5px 10px; }\n    .lower-area .filters .payment-options input {\n      margin-right: 5px; }\n    .lower-area .filters .payment-options .card {\n      width: 32px;\n      height: 20px;\n      display: inline-block;\n      background: url(\"./resources/graphics/cc-icons.png\");\n      background-size: 122px;\n      vertical-align: middle;\n      margin-left: 5px; }\n    .lower-area .filters .payment-options .cc-ae {\n      background-position: 0 20px; }\n    .lower-area .filters .payment-options .cc-visa {\n      background-position: 32px 0; }\n    .lower-area .filters .payment-options .cc-discover {\n      background-position: 32px 20px; }\n    .lower-area .filters .payment-options .cc-mc {\n      background-position: 77px 0; }\n  .lower-area .results {\n    width: 75%;\n    height: 100%;\n    display: inline-block;\n    padding: 20px 30px;\n    flex-direction: column;\n    align-items: center; }\n    .lower-area .results a {\n      text-decoration: none; }\n    .lower-area .results h4 {\n      margin: 0; }\n    .lower-area .results .result {\n      margin: 20px;\n      display: flex;\n      width: 100%;\n      height: 105px;\n      border-radius: 10px;\n      padding: 10px; }\n      .lower-area .results .result:hover {\n        background-color: #ececec; }\n        .lower-area .results .result:hover .result-text {\n          color: #1c688e; }\n      .lower-area .results .result em {\n        background: rgba(255, 0, 0, 0.3);\n        font-style: normal; }\n      .lower-area .results .result .result-image {\n        display: flex;\n        border-radius: 5px;\n        width: 85px;\n        border: 1px solid #a9a9a9; }\n      .lower-area .results .result .result-text {\n        font-size: 16px;\n        color: #a9a9a9;\n        display: flex;\n        flex-direction: column;\n        align-items: baseline;\n        margin-left: 20px;\n        justify-content: space-between; }\n        .lower-area .results .result .result-text h4 {\n          font-size: 16px;\n          color: black; }\n        .lower-area .results .result .result-text img {\n          background-size: 100px;\n          width: 100px;\n          height: 19px; }\n        .lower-area .results .result .result-text span {\n          display: block; }\n        .lower-area .results .result .result-text .stars {\n          display: inline-block; }\n        .lower-area .results .result .result-text .result-rating {\n          background: url(\"./resources/graphics/all-stars.png\");\n          background-size: 100px;\n          width: 100px;\n          height: 18px;\n          vertical-align: middle;\n          display: inline-block;\n          margin: 0 5px; }\n        .lower-area .results .result .result-text .rating-number {\n          color: #ffab66;\n          display: inline-block; }\n    .lower-area .results .show-more {\n      width: 180px;\n      background: none;\n      padding: 10px;\n      border-radius: 5px;\n      border-style: solid;\n      font-size: 16px;\n      border: 1px solid #a9a9a9;\n      color: #a9a9a9;\n      margin-top: 20px; }\n    .lower-area .results .show-more:hover {\n      background: #a9a9a9;\n      color: white; }\n\n.stars {\n  background: url(\"./resources/graphics/all-stars.png\");\n  background-size: 100px;\n  width: 100px;\n  height: 19px;\n  vertical-align: middle;\n  display: inline-block;\n  margin: 0 5px; }\n\n.half-star {\n  background-position-y: -19px; }\n\n.one-star {\n  background-position-y: -38px; }\n\n.one-half-star {\n  background-position-y: -57px; }\n\n.two-star {\n  background-position-y: -76px; }\n\n.two-half-star {\n  background-position-y: -95px; }\n\n.three-star {\n  background-position-y: -114px; }\n\n.three-half-star {\n  background-position-y: -133px; }\n\n.four-star {\n  background-position-y: -152px; }\n\n.four-half-star {\n  background-position-y: -171px; }\n\n.five-star {\n  background-position-y: 19px; }\n", ""]);
+exports.push([module.i, "html {\n  box-sizing: border-box; }\n\n*, *:before, *:after {\n  box-sizing: inherit; }\n\nbody {\n  font-family: 'Open Sans', sans-serif;\n  font-size: 13px;\n  background-image: url(\"./resources/graphics/background.png\"); }\n\n.panel {\n  margin: 50px auto 50px;\n  text-align: center;\n  font-size: 2em;\n  background: white;\n  padding: 0px;\n  width: 80vw;\n  height: auto; }\n  .panel p {\n    margin: 5px; }\n\n.search {\n  width: 100%;\n  background: #1c688e;\n  height: 100px;\n  display: flex;\n  justify-content: center;\n  align-items: center; }\n  .search .mobile-menu {\n    display: none;\n    height: 35px;\n    width: 50px;\n    border: 1px solid #e6e6e6;\n    cursor: pointer;\n    border-radius: 10px;\n    margin-right: 10px;\n    align-items: center;\n    justify-content: center; }\n    .search .mobile-menu:hover {\n      background: #3793c1; }\n    .search .mobile-menu .menu-bars {\n      color: white;\n      font-size: 30px;\n      transform: rotate(90deg); }\n  .search input {\n    display: inline-block;\n    width: 90%;\n    height: 45px;\n    border-radius: 3px;\n    border-style: hidden;\n    font-size: 16px;\n    padding: 0 10px; }\n\n.geo-selector {\n  width: 100%;\n  height: auto;\n  background: #bbbbbb;\n  text-align: left;\n  padding: 5px 15px; }\n  .geo-selector .geo-header {\n    display: inline-block;\n    color: white;\n    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);\n    font-size: 16px;\n    vertical-align: middle;\n    width: 20%;\n    text-align: center; }\n  .geo-selector .geo-list {\n    margin: 0;\n    padding: 10px;\n    display: inline-block;\n    width: 80%;\n    vertical-align: middle; }\n    .geo-selector .geo-list .geo-location {\n      list-style-type: none;\n      display: inline-block;\n      margin: 0 10px;\n      background: #1c688e;\n      color: white;\n      padding: 2px 15px;\n      border-radius: 15px;\n      font-size: 20px;\n      vertical-align: middle;\n      box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3); }\n      .geo-selector .geo-list .geo-location:hover {\n        background: #3793c1;\n        cursor: pointer; }\n      .geo-selector .geo-list .geo-location:active {\n        transform: translate(2px, 2px);\n        box-shadow: none; }\n\n.lower-area {\n  display: flex;\n  height: auto; }\n  .lower-area .filters {\n    width: 25%;\n    height: auto;\n    display: inline-block;\n    border-right: 1px solid #e6e6e6;\n    padding: 10px;\n    flex-direction: column;\n    font-size: 14px;\n    text-align: left; }\n    .lower-area .filters .mobile-header {\n      display: none; }\n    .lower-area .filters h4 {\n      font-size: 14px;\n      margin: 10px;\n      padding: 0; }\n    .lower-area .filters ul {\n      list-style-type: none;\n      margin: 0 5px;\n      padding: 0; }\n    .lower-area .filters .cuisine {\n      display: flex;\n      flex-direction: column;\n      align-items: center; }\n      .lower-area .filters .cuisine li {\n        display: flex;\n        justify-content: space-between;\n        padding: 5px;\n        border-radius: 5px;\n        width: 90%; }\n        .lower-area .filters .cuisine li .food-type,\n        .lower-area .filters .cuisine li .foot-type-amount {\n          display: inline-flex; }\n        .lower-area .filters .cuisine li .foot-type-amount {\n          color: #e6e6e6; }\n      .lower-area .filters .cuisine li:hover,\n      .lower-area .filters .cuisine .active {\n        background: #2897c5;\n        color: white;\n        cursor: pointer; }\n    .lower-area .filters .ratings {\n      display: flex;\n      flex-direction: column; }\n      .lower-area .filters .ratings li {\n        margin: 2px 15px;\n        cursor: pointer; }\n        .lower-area .filters .ratings li:hover {\n          border: 2px solid orange; }\n        .lower-area .filters .ratings li.active {\n          border-left: 10px solid orange; }\n    .lower-area .filters .payment-options li {\n      margin: 5px 10px; }\n    .lower-area .filters .payment-options input {\n      margin-right: 5px; }\n    .lower-area .filters .payment-options .card {\n      width: 32px;\n      height: 20px;\n      display: inline-block;\n      background: url(\"./resources/graphics/cc-icons.png\");\n      background-size: 122px;\n      vertical-align: middle;\n      margin-left: 5px; }\n    .lower-area .filters .payment-options .cc-ae {\n      background-position: 0 20px; }\n    .lower-area .filters .payment-options .cc-visa {\n      background-position: 32px 0; }\n    .lower-area .filters .payment-options .cc-discover {\n      background-position: 32px 20px; }\n    .lower-area .filters .payment-options .cc-mc {\n      background-position: 77px 0; }\n  .lower-area .results {\n    width: 75%;\n    height: 100%;\n    display: inline-block;\n    padding: 20px 30px;\n    flex-direction: column;\n    align-items: center; }\n    .lower-area .results a {\n      text-decoration: none; }\n    .lower-area .results h4 {\n      margin: 0; }\n    .lower-area .results .result {\n      margin: 20px;\n      display: flex;\n      width: 100%;\n      height: 105px;\n      border-radius: 10px;\n      padding: 10px; }\n      .lower-area .results .result:hover {\n        background-color: #ececec; }\n        .lower-area .results .result:hover .result-text {\n          color: #1c688e; }\n      .lower-area .results .result em {\n        background: rgba(255, 0, 0, 0.3);\n        font-style: normal; }\n      .lower-area .results .result .result-image {\n        display: flex;\n        border-radius: 5px;\n        width: 85px;\n        border: 1px solid #a9a9a9; }\n      .lower-area .results .result .result-text {\n        font-size: 16px;\n        color: #a9a9a9;\n        display: flex;\n        flex-direction: column;\n        align-items: baseline;\n        margin-left: 20px;\n        justify-content: space-between; }\n        .lower-area .results .result .result-text h4 {\n          font-size: 16px;\n          color: black; }\n        .lower-area .results .result .result-text img {\n          background-size: 100px;\n          width: 100px;\n          height: 19px; }\n        .lower-area .results .result .result-text .stars {\n          display: inline-block; }\n        .lower-area .results .result .result-text .result-rating {\n          background: url(\"./resources/graphics/all-stars.png\");\n          background-size: 100px;\n          width: 100px;\n          height: 18px;\n          vertical-align: middle;\n          display: inline-block;\n          margin: 0 5px; }\n        .lower-area .results .result .result-text .rating-number {\n          color: #ffab66;\n          display: inline-block; }\n        .lower-area .results .result .result-text .review-count {\n          display: inline-block; }\n        .lower-area .results .result .result-text .result-city {\n          display: none; }\n        .lower-area .results .result .result-text .result-price {\n          display: none; }\n    .lower-area .results .show-more {\n      width: 180px;\n      background: none;\n      padding: 10px;\n      border-radius: 5px;\n      border-style: solid;\n      font-size: 16px;\n      border: 1px solid #a9a9a9;\n      color: #a9a9a9;\n      margin-top: 20px; }\n    .lower-area .results .show-more:hover {\n      background: #a9a9a9;\n      color: white; }\n\n.stars {\n  background: url(\"./resources/graphics/all-stars.png\");\n  background-size: 100px;\n  width: 100px;\n  height: 19px;\n  vertical-align: middle;\n  display: inline-block;\n  margin: 0 5px; }\n\n.half-star {\n  background-position-y: -19px; }\n\n.one-star {\n  background-position-y: -38px; }\n\n.one-half-star {\n  background-position-y: -57px; }\n\n.two-star {\n  background-position-y: -76px; }\n\n.two-half-star {\n  background-position-y: -95px; }\n\n.three-star {\n  background-position-y: -114px; }\n\n.three-half-star {\n  background-position-y: -133px; }\n\n.four-star {\n  background-position-y: -152px; }\n\n.four-half-star {\n  background-position-y: -171px; }\n\n.five-star {\n  background-position-y: 19px; }\n\n@media only screen and (max-width: 768px) {\n  .lower-area .filters {\n    position: fixed;\n    top: 0;\n    left: 0;\n    background: white;\n    height: 100vh;\n    width: 50vw;\n    transform: translate(-50vw);\n    transition: 0.5s;\n    padding: 0;\n    overflow: scroll; }\n    .lower-area .filters .mobile-header {\n      display: block;\n      width: 100%;\n      height: 35px;\n      background: #1c688e;\n      margin: 0;\n      text-align: right; }\n      .lower-area .filters .mobile-header .mobile-menu-close {\n        font-size: 20px;\n        height: 100%;\n        color: white;\n        font-weight: bold;\n        cursor: pointer;\n        border-left: 1px solid #e6e6e6;\n        display: flex;\n        width: 35px;\n        align-items: center;\n        justify-content: center;\n        margin-left: auto; }\n  .lower-area .results {\n    width: 100%;\n    display: flex; }\n    .lower-area .results .result .result-image {\n      width: 70px; }\n    .lower-area .results .result .result-text {\n      font-size: 12px;\n      text-align: left;\n      align-items: baseline;\n      justify-content: initial; }\n      .lower-area .results .result .result-text a h4 {\n        font-size: 14px; }\n      .lower-area .results .result .result-text .stars {\n        margin: 0; }\n      .lower-area .results .result .result-text .rating-number {\n        display: none; }\n      .lower-area .results .result .result-text .result-area {\n        display: none; }\n      .lower-area .results .result .result-text .review-count {\n        display: none; }\n      .lower-area .results .result .result-text .result-city {\n        display: inline-block; }\n      .lower-area .results .result .result-text .result-price {\n        display: inline-block; }\n      .lower-area .results .result .result-text .result-price-range {\n        display: none; }\n  .search {\n    height: 75px; }\n    .search .mobile-menu {\n      display: flex; }\n    .search input {\n      width: 75%;\n      height: 35px;\n      font-size: 12px; } }\n", ""]);
 
 // exports
 

@@ -16,7 +16,7 @@ body {
 }
 
 .panel {
-  margin: 50px auto 0;
+  margin: 50px auto 50px;
   text-align: center;
   font-size: 2em;
   background:white;
@@ -38,7 +38,30 @@ body {
   justify-content:center;
   align-items:center;
 
+  .mobile-menu {
+    display:none;
+    height:35px;
+    width:50px;
+    border:1px solid $border-grey;
+    cursor:pointer;
+    border-radius:10px;
+    margin-right:10px;
+    align-items:center;
+    justify-content:center;
+
+    &:hover {
+      background:$lighter-search-blue;
+    }
+
+    .menu-bars {
+      color:white;
+      font-size:30px;
+      transform:rotate(90deg);
+    }
+  }
+
   input {
+    display:inline-block;
     width:90%;
     height: 45px;
     border-radius:3px;
@@ -111,6 +134,10 @@ body {
     flex-direction:column;
     font-size:14px;
     text-align:left;
+
+    .mobile-header{
+      display:none;
+    }
 
     h4 {
       font-size:14px;
@@ -278,7 +305,7 @@ body {
           height: 19px;
         }
         span {
-          display:block;
+
         }
         .stars {
           display:inline-block;
@@ -298,7 +325,21 @@ body {
           color:#ffab66;
           display:inline-block;
         }
+
+        .review-count {
+          display:inline-block;
+        }
+        .result-city {
+          display:none;
+        }
+        .result-price {
+          display:none;
+        }
       }
+
+      // .review-third-line span {
+      //   display:inline-block;
+      // }
 
     }
 
@@ -364,3 +405,101 @@ body {
         background-position-y:19px;
       }
 
+@media only screen and (max-width:768px){
+  .lower-area .filters {
+    position:fixed;
+    top:0;
+    left:0;
+    background:white;
+    height:100vh;
+    width:50vw;
+    transform:translate(-50vw);
+    transition:0.5s;
+    padding:0;
+    overflow:scroll;
+
+    .mobile-header {
+      display:block;
+      width:100%;
+      height:35px;
+      background:$search-blue;
+      margin:0;
+      text-align: right;
+
+      .mobile-menu-close {
+        font-size:20px;
+        height:100%;
+        color:white;
+        font-weight:bold;
+        cursor:pointer;
+        border-left:1px solid $border-grey;
+        display: flex;
+        width:35px;
+        align-items:center;
+        justify-content:center;
+        margin-left:auto;
+      }
+    }
+  }
+  .lower-area .results {
+    width:100%;
+    display:flex;
+
+    .result {
+
+      .result-image {
+        width:70px;
+      }
+
+      .result-text {
+        font-size:12px;
+        text-align:left;
+        align-items:baseline;
+        justify-content:initial;
+
+        a h4 {
+          font-size:14px;
+        }
+
+        .stars {
+          margin:0;
+        }
+        .rating-number {
+          display:none;
+        }
+        .result-area {
+          display:none;
+        }
+
+        .review-count {
+          display:none;
+        }
+        .result-city {
+          display:inline-block;
+        }
+        .result-price {
+          display:inline-block;
+       }
+        .result-price-range {
+          display:none;
+       }
+
+    }
+
+    }
+
+  }
+
+  .search {
+    height:75px;
+
+    .mobile-menu {
+      display:flex;
+    }
+      input {
+      width:75%;
+      height: 35px;
+      font-size:12px;
+    }
+  }
+}

@@ -69,9 +69,16 @@ const Filters = React.createClass({
     }
 
   },
+  closeMenu(){
+    this.props.toggleMobile()
+  },
+  handleCloseMenu(){
+    this.props.toggleMobile()
+  },
   render() {
     return (
-      <div className="filters">
+      <div style={this.props.mobileMenu ? {transform:'translateX(0)'} : {} } className="filters">
+        <div className="mobile-header"><div onClick={this.closeMenu} className="mobile-menu-close">x</div></div>
         <h4>Cuisine/Food Type</h4>
         <ul className="cuisine">
           {this.props.searchResults.length === 0 ? 'What are you feeling?' : this.renderFoodTypes()}

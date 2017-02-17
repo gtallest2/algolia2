@@ -25,7 +25,7 @@ const Results = React.createClass({
   render() {
     return (
       <div className="results">
-        <h4>{this.props.searchResults.length === 0 || this.props.searchResults.nbHits === 5000 ? 'Please enter search.' : this.millisecondsMatter()}</h4>
+        <h4>{this.props.searchResults.length === 0 || this.props.searchResults.nbHits === 5000 ? 'Where are you eating tonight? 🍴' : this.millisecondsMatter()}</h4>
         {this.props.searchResults.length === 0 || this.props.searchResults.nbHits === 5000 ? '' : this.renderResults()}
         <button onClick={this.handleShowMore} className="show-more" value="Show More">Show More</button>
       </div>
