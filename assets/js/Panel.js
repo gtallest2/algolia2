@@ -89,11 +89,28 @@ const Panel = React.createClass({
     helper.toggleFacetRefinement(type, value).search()
   },
   addPaymentDisjunctive(type, value){
-    helper.addDisjunctiveFacetRefinement('payment_options', value).search()
+    if(value === 'Discover'){
+      helper
+        .addDisjunctiveFacetRefinement('payment_options', value)
+        .addDisjunctiveFacetRefinement('payment_options', 'Carte Blanche')
+        .addDisjunctiveFacetRefinement('payment_options', 'Diners Club')
+        .search()
+    }
+    else {
+      helper.addDisjunctiveFacetRefinement('payment_options', value).search()
+    }
     console.log(`add disj ${value}`)
   },
   removePaymentDisjunctive(type, value){
-    helper.removeDisjunctiveFacetRefinement('payment_options', value).search()
+    if(value === 'Discover'){
+      helper
+        .removeDisjunctiveFacetRefinement('payment_options', value)
+        .removeDisjunctiveFacetRefinement('payment_options', 'Carte Blanche')
+        .removeDisjunctiveFacetRefinement('payment_options', 'Diners Club')
+        .search()
+    } else {
+      helper.removeDisjunctiveFacetRefinement('payment_options', value).search()
+    }
     console.log(`remove disj ${value}`)
   },
   addRatingFilter(value) {
@@ -119,6 +136,29 @@ const Panel = React.createClass({
     console.log('toggling mobile menu!');
     this.setState({ mobileMenu: !this.state.mobileMenu })
   },
+  previousPage(){
+    if(this.state.results.page > 0) {
+      const prevPage = helper.previousPage().getPage()
+      console.log(prevPage);
+      (prevPage >= 0 && helper.setPage(prevPage).search())
+    } else {
+      console.log('Page at 0');
+    }
+  },
+  nextPage(){
+    if(this.state.results.page < this.state.results.nbPages - 1){
+      const nextPage = helper.nextPage().getPage()
+      console.log(nextPage);
+      helper.setPage(nextPage).search()
+    } else {
+      console.log('Max page reached');
+    }
+
+  },
+  closeMobileMenu(e){
+    console.log('close?');
+    (this.state.mobileMenu && this.toggleMobile())
+  },
   render() {
     const geo = (
       <div className="geo-selector">
@@ -132,11 +172,30 @@ const Panel = React.createClass({
     )
     return (
       <div className="panel">
-        <Search onSearch={this.handleSearch} toggleMobile={this.toggleMobile} />
+        <Search
+          onSearch={this.handleSearch}
+          toggleMobile={this.toggleMobile}
+        />
         <div>{this.state.location ? '' : geo}</div>
         <div className="lower-area">
-          <Filters toggleMobile={this.toggleMobile} mobileMenu={this.state.mobileMenu} searchResults={this.state.results} foodFacet={this.foodFacetRefinement} addPayment={this.addPaymentDisjunctive} removePayment={this.removePaymentDisjunctive} addRating={this.addRatingFilter} removeRating={this.removeRatingFilter} />
-          <Results searchResults={this.state.results} onShowMore={this.showMore} userLocation={this.state.location} />
+          <Filters
+            toggleMobile={this.toggleMobile}
+            mobileMenu={this.state.mobileMenu}
+            searchResults={this.state.results}
+            foodFacet={this.foodFacetRefinement}
+            addPayment={this.addPaymentDisjunctive}
+            removePayment={this.removePaymentDisjunctive}
+            addRating={this.addRatingFilter}
+            removeRating={this.removeRatingFilter}
+            blurMenu={this.closeMobileMenu}
+          />
+          <Results
+            searchResults={this.state.results}
+            onShowMore={this.showMore}
+            userLocation={this.state.location}
+            prevPage={this.previousPage}
+            nextPage={this.nextPage}
+          />
         </div>
       </div>
     )

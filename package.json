@@ -36,7 +36,9 @@
     "csvtojson": "^1.1.4",
     "dsv-loader": "^2.0.0",
     "haversine": "^1.0.2",
+    "npm-font-open-sans": "^1.0.2",
     "react": "^15.4.2",
-    "react-dom": "^15.4.2"
+    "react-dom": "^15.4.2",
+    "react-onclickoutside": "^5.9.0"
   }
 }

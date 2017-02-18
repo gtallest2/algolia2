@@ -1,6 +1,7 @@
 import React from 'react'
+import onClickOutside from 'react-onclickoutside'
 
-const Filters = React.createClass({
+const Filters = onClickOutside(React.createClass({
   getInitialState() {
     return {
       currentRatingFilter:'',
@@ -28,7 +29,7 @@ const Filters = React.createClass({
       return (
         <li key={i} onClick={this.handleFoodTypeClick.bind(null, type.name)} className={this.state.currentFoodType === type.name ? 'active' : ''} >
           <span className="food-type">{type.name}</span>
-          <span className="food-type">{type.count}</span>
+          <span className="food-type-amount">{type.count}</span>
         </li>
       )
     }, this)
@@ -72,12 +73,12 @@ const Filters = React.createClass({
   closeMenu(){
     this.props.toggleMobile()
   },
-  handleCloseMenu(){
-    this.props.toggleMobile()
+  handleClickOutside(){
+    this.props.blurMenu()
   },
   render() {
     return (
-      <div style={this.props.mobileMenu ? {transform:'translateX(0)'} : {} } className="filters">
+      <div style={this.props.mobileMenu ? {transform:'translateX(0)'} : {} } className="filters" >
         <div className="mobile-header"><div onClick={this.closeMenu} className="mobile-menu-close">x</div></div>
         <h4>Cuisine/Food Type</h4>
         <ul className="cuisine">
@@ -100,36 +101,35 @@ const Filters = React.createClass({
             <span className="card cc-ae"></span>
           </li>
           <li className="payment-type">
-            <input onClick={this.handlePaymentToggle.bind(null, 'Visa')} type="checkbox"/>
-            Visa
-            <span className="card cc-visa"></span>
-          </li>
-          <li className="payment-type">
            <input onClick={this.handlePaymentToggle.bind(null, 'Discover')} type="checkbox"/>
            Discover
            <span className="card cc-discover"></span>
-            <ul className="nested-payment">
-              <li className="payment-type">
-                <input type="checkbox"/>
-                Diners Club
-              </li>
-              <li className="payment-type">
-                <input type="checkbox"/>
-                Carte Blanche
-              </li>
-            </ul>
+            {/*<ul className="nested-payment">
+                          <li className="payment-type">
+                            <input type="checkbox"/>
+                            Diners Club
+                          </li>
+                          <li className="payment-type">
+                            <input type="checkbox"/>
+                            Carte Blanche
+                          </li>
+                        </ul>*/}
           </li>
           <li className="payment-type">
             <input onClick={this.handlePaymentToggle.bind(null, 'MasterCard')} type="checkbox"/>
             MasterCard
             <span className="card cc-mc"></span>
           </li>
-
+          <li className="payment-type">
+            <input onClick={this.handlePaymentToggle.bind(null, 'Visa')} type="checkbox"/>
+            Visa
+            <span className="card cc-visa"></span>
+          </li>
         </ul>
       </div>
     )
   }
-})
+}))
 
 
 export default Filters

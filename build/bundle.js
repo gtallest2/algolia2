@@ -10468,11 +10468,19 @@ const Panel = __WEBPACK_IMPORTED_MODULE_0_react___default.a.createClass({
     __WEBPACK_IMPORTED_MODULE_1__algolia__["a" /* helper */].toggleFacetRefinement(type, value).search();
   },
   addPaymentDisjunctive(type, value) {
-    __WEBPACK_IMPORTED_MODULE_1__algolia__["a" /* helper */].addDisjunctiveFacetRefinement('payment_options', value).search();
+    if (value === 'Discover') {
+      __WEBPACK_IMPORTED_MODULE_1__algolia__["a" /* helper */].addDisjunctiveFacetRefinement('payment_options', value).addDisjunctiveFacetRefinement('payment_options', 'Carte Blanche').addDisjunctiveFacetRefinement('payment_options', 'Diners Club').search();
+    } else {
+      __WEBPACK_IMPORTED_MODULE_1__algolia__["a" /* helper */].addDisjunctiveFacetRefinement('payment_options', value).search();
+    }
     console.log(`add disj ${value}`);
   },
   removePaymentDisjunctive(type, value) {
-    __WEBPACK_IMPORTED_MODULE_1__algolia__["a" /* helper */].removeDisjunctiveFacetRefinement('payment_options', value).search();
+    if (value === 'Discover') {
+      __WEBPACK_IMPORTED_MODULE_1__algolia__["a" /* helper */].removeDisjunctiveFacetRefinement('payment_options', value).removeDisjunctiveFacetRefinement('payment_options', 'Carte Blanche').removeDisjunctiveFacetRefinement('payment_options', 'Diners Club').search();
+    } else {
+      __WEBPACK_IMPORTED_MODULE_1__algolia__["a" /* helper */].removeDisjunctiveFacetRefinement('payment_options', value).search();
+    }
     console.log(`remove disj ${value}`);
   },
   addRatingFilter(value) {
@@ -10497,6 +10505,28 @@ const Panel = __WEBPACK_IMPORTED_MODULE_0_react___default.a.createClass({
   toggleMobile() {
     console.log('toggling mobile menu!');
     this.setState({ mobileMenu: !this.state.mobileMenu });
+  },
+  previousPage() {
+    if (this.state.results.page > 0) {
+      const prevPage = __WEBPACK_IMPORTED_MODULE_1__algolia__["a" /* helper */].previousPage().getPage();
+      console.log(prevPage);
+      prevPage >= 0 && __WEBPACK_IMPORTED_MODULE_1__algolia__["a" /* helper */].setPage(prevPage).search();
+    } else {
+      console.log('Page at 0');
+    }
+  },
+  nextPage() {
+    if (this.state.results.page < this.state.results.nbPages - 1) {
+      const nextPage = __WEBPACK_IMPORTED_MODULE_1__algolia__["a" /* helper */].nextPage().getPage();
+      console.log(nextPage);
+      __WEBPACK_IMPORTED_MODULE_1__algolia__["a" /* helper */].setPage(nextPage).search();
+    } else {
+      console.log('Max page reached');
+    }
+  },
+  closeMobileMenu(e) {
+    console.log('close?');
+    this.state.mobileMenu && this.toggleMobile();
   },
   render() {
     const geo = __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -10530,7 +10560,10 @@ const Panel = __WEBPACK_IMPORTED_MODULE_0_react___default.a.createClass({
     return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
       'div',
       { className: 'panel' },
-      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_2__Search__["a" /* default */], { onSearch: this.handleSearch, toggleMobile: this.toggleMobile }),
+      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_2__Search__["a" /* default */], {
+        onSearch: this.handleSearch,
+        toggleMobile: this.toggleMobile
+      }),
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         'div',
         null,
@@ -10539,8 +10572,24 @@ const Panel = __WEBPACK_IMPORTED_MODULE_0_react___default.a.createClass({
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         'div',
         { className: 'lower-area' },
-        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_3__Filters__["a" /* default */], { toggleMobile: this.toggleMobile, mobileMenu: this.state.mobileMenu, searchResults: this.state.results, foodFacet: this.foodFacetRefinement, addPayment: this.addPaymentDisjunctive, removePayment: this.removePaymentDisjunctive, addRating: this.addRatingFilter, removeRating: this.removeRatingFilter }),
-        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_4__Results__["a" /* default */], { searchResults: this.state.results, onShowMore: this.showMore, userLocation: this.state.location })
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_3__Filters__["a" /* default */], {
+          toggleMobile: this.toggleMobile,
+          mobileMenu: this.state.mobileMenu,
+          searchResults: this.state.results,
+          foodFacet: this.foodFacetRefinement,
+          addPayment: this.addPaymentDisjunctive,
+          removePayment: this.removePaymentDisjunctive,
+          addRating: this.addRatingFilter,
+          removeRating: this.removeRatingFilter,
+          blurMenu: this.closeMobileMenu
+        }),
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_4__Results__["a" /* default */], {
+          searchResults: this.state.results,
+          onShowMore: this.showMore,
+          userLocation: this.state.location,
+          prevPage: this.previousPage,
+          nextPage: this.nextPage
+        })
       )
     );
   }
@@ -13825,9 +13874,12 @@ module.exports = '3.21.1';
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(19);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react_onclickoutside__ = __webpack_require__(527);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react_onclickoutside___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_react_onclickoutside__);
 
 
-const Filters = __WEBPACK_IMPORTED_MODULE_0_react___default.a.createClass({
+
+const Filters = __WEBPACK_IMPORTED_MODULE_1_react_onclickoutside___default()(__WEBPACK_IMPORTED_MODULE_0_react___default.a.createClass({
   displayName: 'Filters',
 
   getInitialState() {
@@ -13863,7 +13915,7 @@ const Filters = __WEBPACK_IMPORTED_MODULE_0_react___default.a.createClass({
         ),
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           'span',
-          { className: 'food-type' },
+          { className: 'food-type-amount' },
           type.count
         )
       );
@@ -13906,8 +13958,8 @@ const Filters = __WEBPACK_IMPORTED_MODULE_0_react___default.a.createClass({
   closeMenu() {
     this.props.toggleMobile();
   },
-  handleCloseMenu() {
-    this.props.toggleMobile();
+  handleClickOutside() {
+    this.props.blurMenu();
   },
   render() {
     return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -13965,32 +14017,9 @@ const Filters = __WEBPACK_IMPORTED_MODULE_0_react___default.a.createClass({
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           'li',
           { className: 'payment-type' },
-          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('input', { onClick: this.handlePaymentToggle.bind(null, 'Visa'), type: 'checkbox' }),
-          'Visa',
-          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('span', { className: 'card cc-visa' })
-        ),
-        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-          'li',
-          { className: 'payment-type' },
           __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('input', { onClick: this.handlePaymentToggle.bind(null, 'Discover'), type: 'checkbox' }),
           'Discover',
-          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('span', { className: 'card cc-discover' }),
-          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-            'ul',
-            { className: 'nested-payment' },
-            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-              'li',
-              { className: 'payment-type' },
-              __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('input', { type: 'checkbox' }),
-              'Diners Club'
-            ),
-            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-              'li',
-              { className: 'payment-type' },
-              __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('input', { type: 'checkbox' }),
-              'Carte Blanche'
-            )
-          )
+          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('span', { className: 'card cc-discover' })
         ),
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           'li',
@@ -13998,11 +14027,18 @@ const Filters = __WEBPACK_IMPORTED_MODULE_0_react___default.a.createClass({
           __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('input', { onClick: this.handlePaymentToggle.bind(null, 'MasterCard'), type: 'checkbox' }),
           'MasterCard',
           __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('span', { className: 'card cc-mc' })
+        ),
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+          'li',
+          { className: 'payment-type' },
+          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('input', { onClick: this.handlePaymentToggle.bind(null, 'Visa'), type: 'checkbox' }),
+          'Visa',
+          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('span', { className: 'card cc-visa' })
         )
       )
     );
   }
-});
+}));
 
 /* harmony default export */ __webpack_exports__["a"] = Filters;
 
@@ -14192,36 +14228,64 @@ const Results = __WEBPACK_IMPORTED_MODULE_0_react___default.a.createClass({
   millisecondsMatter() {
     return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
       'div',
-      null,
-      this.props.searchResults.nbHits,
-      ' results found ',
+      { className: 'search-stats' },
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         'span',
-        null,
-        ' in ',
-        this.props.searchResults.processingTimeMS / 1000,
-        ' seconds '
+        { className: 'search-stats-text' },
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+          'span',
+          { className: 'results-count' },
+          this.props.searchResults.nbHits,
+          ' results found'
+        ),
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+          'span',
+          { className: 'results-speed' },
+          '\xA0 in ',
+          this.props.searchResults.processingTimeMS / 1000,
+          ' seconds'
+        )
       )
     );
   },
   handleShowMore() {
     this.props.onShowMore();
   },
+  renderPagination() {
+    const { page, nbPages: pageTotal } = this.props.searchResults;
+    return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+      'div',
+      { className: 'pagination' },
+      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+        'button',
+        { disabled: page <= 0, onClick: this.props.prevPage, className: 'prev-page' },
+        'Prev'
+      ),
+      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+        'span',
+        { className: 'page-number' },
+        page + 1,
+        ' / ',
+        pageTotal
+      ),
+      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+        'button',
+        { disabled: page >= pageTotal - 1, onClick: this.props.nextPage, className: 'next-page' },
+        'Next'
+      )
+    );
+  },
   render() {
     return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
       'div',
       { className: 'results' },
-      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+      this.props.searchResults.length === 0 || this.props.searchResults.nbHits === 5000 ? __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         'h4',
         null,
-        this.props.searchResults.length === 0 || this.props.searchResults.nbHits === 5000 ? 'Where are you eating tonight? 🍴' : this.millisecondsMatter()
-      ),
+        'Where are you eating tonight? \uD83C\uDF74'
+      ) : this.millisecondsMatter(),
       this.props.searchResults.length === 0 || this.props.searchResults.nbHits === 5000 ? '' : this.renderResults(),
-      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-        'button',
-        { onClick: this.handleShowMore, className: 'show-more', value: 'Show More' },
-        'Show More'
-      )
+      this.props.searchResults.length !== 0 && this.props.searchResults.nbHits !== 5000 && this.renderPagination()
     );
   }
 });
@@ -14307,7 +14371,7 @@ exports = module.exports = __webpack_require__(119)();
 
 
 // module
-exports.push([module.i, "html {\n  box-sizing: border-box; }\n\n*, *:before, *:after {\n  box-sizing: inherit; }\n\nbody {\n  font-family: 'Open Sans', sans-serif;\n  font-size: 13px;\n  background-image: url(\"./resources/graphics/background.png\"); }\n\n.panel {\n  margin: 50px auto 50px;\n  text-align: center;\n  font-size: 2em;\n  background: white;\n  padding: 0px;\n  width: 80vw;\n  height: auto; }\n  .panel p {\n    margin: 5px; }\n\n.search {\n  width: 100%;\n  background: #1c688e;\n  height: 100px;\n  display: flex;\n  justify-content: center;\n  align-items: center; }\n  .search .mobile-menu {\n    display: none;\n    height: 35px;\n    width: 50px;\n    border: 1px solid #e6e6e6;\n    cursor: pointer;\n    border-radius: 10px;\n    margin-right: 10px;\n    align-items: center;\n    justify-content: center; }\n    .search .mobile-menu:hover {\n      background: #3793c1; }\n    .search .mobile-menu .menu-bars {\n      color: white;\n      font-size: 30px;\n      transform: rotate(90deg); }\n  .search input {\n    display: inline-block;\n    width: 90%;\n    height: 45px;\n    border-radius: 3px;\n    border-style: hidden;\n    font-size: 16px;\n    padding: 0 10px; }\n\n.geo-selector {\n  width: 100%;\n  height: auto;\n  background: #bbbbbb;\n  text-align: left;\n  padding: 5px 15px; }\n  .geo-selector .geo-header {\n    display: inline-block;\n    color: white;\n    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);\n    font-size: 16px;\n    vertical-align: middle;\n    width: 20%;\n    text-align: center; }\n  .geo-selector .geo-list {\n    margin: 0;\n    padding: 10px;\n    display: inline-block;\n    width: 80%;\n    vertical-align: middle; }\n    .geo-selector .geo-list .geo-location {\n      list-style-type: none;\n      display: inline-block;\n      margin: 0 10px;\n      background: #1c688e;\n      color: white;\n      padding: 2px 15px;\n      border-radius: 15px;\n      font-size: 20px;\n      vertical-align: middle;\n      box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3); }\n      .geo-selector .geo-list .geo-location:hover {\n        background: #3793c1;\n        cursor: pointer; }\n      .geo-selector .geo-list .geo-location:active {\n        transform: translate(2px, 2px);\n        box-shadow: none; }\n\n.lower-area {\n  display: flex;\n  height: auto; }\n  .lower-area .filters {\n    width: 25%;\n    height: auto;\n    display: inline-block;\n    border-right: 1px solid #e6e6e6;\n    padding: 10px;\n    flex-direction: column;\n    font-size: 14px;\n    text-align: left; }\n    .lower-area .filters .mobile-header {\n      display: none; }\n    .lower-area .filters h4 {\n      font-size: 14px;\n      margin: 10px;\n      padding: 0; }\n    .lower-area .filters ul {\n      list-style-type: none;\n      margin: 0 5px;\n      padding: 0; }\n    .lower-area .filters .cuisine {\n      display: flex;\n      flex-direction: column;\n      align-items: center; }\n      .lower-area .filters .cuisine li {\n        display: flex;\n        justify-content: space-between;\n        padding: 5px;\n        border-radius: 5px;\n        width: 90%; }\n        .lower-area .filters .cuisine li .food-type,\n        .lower-area .filters .cuisine li .foot-type-amount {\n          display: inline-flex; }\n        .lower-area .filters .cuisine li .foot-type-amount {\n          color: #e6e6e6; }\n      .lower-area .filters .cuisine li:hover,\n      .lower-area .filters .cuisine .active {\n        background: #2897c5;\n        color: white;\n        cursor: pointer; }\n    .lower-area .filters .ratings {\n      display: flex;\n      flex-direction: column; }\n      .lower-area .filters .ratings li {\n        margin: 2px 15px;\n        cursor: pointer; }\n        .lower-area .filters .ratings li:hover {\n          border: 2px solid orange; }\n        .lower-area .filters .ratings li.active {\n          border-left: 10px solid orange; }\n    .lower-area .filters .payment-options li {\n      margin: 5px 10px; }\n    .lower-area .filters .payment-options input {\n      margin-right: 5px; }\n    .lower-area .filters .payment-options .card {\n      width: 32px;\n      height: 20px;\n      display: inline-block;\n      background: url(\"./resources/graphics/cc-icons.png\");\n      background-size: 122px;\n      vertical-align: middle;\n      margin-left: 5px; }\n    .lower-area .filters .payment-options .cc-ae {\n      background-position: 0 20px; }\n    .lower-area .filters .payment-options .cc-visa {\n      background-position: 32px 0; }\n    .lower-area .filters .payment-options .cc-discover {\n      background-position: 32px 20px; }\n    .lower-area .filters .payment-options .cc-mc {\n      background-position: 77px 0; }\n  .lower-area .results {\n    width: 75%;\n    height: 100%;\n    display: inline-block;\n    padding: 20px 30px;\n    flex-direction: column;\n    align-items: center; }\n    .lower-area .results a {\n      text-decoration: none; }\n    .lower-area .results h4 {\n      margin: 0; }\n    .lower-area .results .result {\n      margin: 20px;\n      display: flex;\n      width: 100%;\n      height: 105px;\n      border-radius: 10px;\n      padding: 10px; }\n      .lower-area .results .result:hover {\n        background-color: #ececec; }\n        .lower-area .results .result:hover .result-text {\n          color: #1c688e; }\n      .lower-area .results .result em {\n        background: rgba(255, 0, 0, 0.3);\n        font-style: normal; }\n      .lower-area .results .result .result-image {\n        display: flex;\n        border-radius: 5px;\n        width: 85px;\n        border: 1px solid #a9a9a9; }\n      .lower-area .results .result .result-text {\n        font-size: 16px;\n        color: #a9a9a9;\n        display: flex;\n        flex-direction: column;\n        align-items: baseline;\n        margin-left: 20px;\n        justify-content: space-between; }\n        .lower-area .results .result .result-text h4 {\n          font-size: 16px;\n          color: black; }\n        .lower-area .results .result .result-text img {\n          background-size: 100px;\n          width: 100px;\n          height: 19px; }\n        .lower-area .results .result .result-text .stars {\n          display: inline-block; }\n        .lower-area .results .result .result-text .result-rating {\n          background: url(\"./resources/graphics/all-stars.png\");\n          background-size: 100px;\n          width: 100px;\n          height: 18px;\n          vertical-align: middle;\n          display: inline-block;\n          margin: 0 5px; }\n        .lower-area .results .result .result-text .rating-number {\n          color: #ffab66;\n          display: inline-block; }\n        .lower-area .results .result .result-text .review-count {\n          display: inline-block; }\n        .lower-area .results .result .result-text .result-city {\n          display: none; }\n        .lower-area .results .result .result-text .result-price {\n          display: none; }\n    .lower-area .results .show-more {\n      width: 180px;\n      background: none;\n      padding: 10px;\n      border-radius: 5px;\n      border-style: solid;\n      font-size: 16px;\n      border: 1px solid #a9a9a9;\n      color: #a9a9a9;\n      margin-top: 20px; }\n    .lower-area .results .show-more:hover {\n      background: #a9a9a9;\n      color: white; }\n\n.stars {\n  background: url(\"./resources/graphics/all-stars.png\");\n  background-size: 100px;\n  width: 100px;\n  height: 19px;\n  vertical-align: middle;\n  display: inline-block;\n  margin: 0 5px; }\n\n.half-star {\n  background-position-y: -19px; }\n\n.one-star {\n  background-position-y: -38px; }\n\n.one-half-star {\n  background-position-y: -57px; }\n\n.two-star {\n  background-position-y: -76px; }\n\n.two-half-star {\n  background-position-y: -95px; }\n\n.three-star {\n  background-position-y: -114px; }\n\n.three-half-star {\n  background-position-y: -133px; }\n\n.four-star {\n  background-position-y: -152px; }\n\n.four-half-star {\n  background-position-y: -171px; }\n\n.five-star {\n  background-position-y: 19px; }\n\n@media only screen and (max-width: 768px) {\n  .lower-area .filters {\n    position: fixed;\n    top: 0;\n    left: 0;\n    background: white;\n    height: 100vh;\n    width: 50vw;\n    transform: translate(-50vw);\n    transition: 0.5s;\n    padding: 0;\n    overflow: scroll; }\n    .lower-area .filters .mobile-header {\n      display: block;\n      width: 100%;\n      height: 35px;\n      background: #1c688e;\n      margin: 0;\n      text-align: right; }\n      .lower-area .filters .mobile-header .mobile-menu-close {\n        font-size: 20px;\n        height: 100%;\n        color: white;\n        font-weight: bold;\n        cursor: pointer;\n        border-left: 1px solid #e6e6e6;\n        display: flex;\n        width: 35px;\n        align-items: center;\n        justify-content: center;\n        margin-left: auto; }\n  .lower-area .results {\n    width: 100%;\n    display: flex; }\n    .lower-area .results .result .result-image {\n      width: 70px; }\n    .lower-area .results .result .result-text {\n      font-size: 12px;\n      text-align: left;\n      align-items: baseline;\n      justify-content: initial; }\n      .lower-area .results .result .result-text a h4 {\n        font-size: 14px; }\n      .lower-area .results .result .result-text .stars {\n        margin: 0; }\n      .lower-area .results .result .result-text .rating-number {\n        display: none; }\n      .lower-area .results .result .result-text .result-area {\n        display: none; }\n      .lower-area .results .result .result-text .review-count {\n        display: none; }\n      .lower-area .results .result .result-text .result-city {\n        display: inline-block; }\n      .lower-area .results .result .result-text .result-price {\n        display: inline-block; }\n      .lower-area .results .result .result-text .result-price-range {\n        display: none; }\n  .search {\n    height: 75px; }\n    .search .mobile-menu {\n      display: flex; }\n    .search input {\n      width: 75%;\n      height: 35px;\n      font-size: 12px; } }\n", ""]);
+exports.push([module.i, "@font-face {\n  font-family: 'Open Sans';\n  font-weight: 300;\n  font-style: normal;\n  src: url(\"./node_modules/npm-font-open-sans/fonts/Light/OpenSans-Light.eot\");\n  src: url(\"./node_modules/npm-font-open-sans/fonts/Light/OpenSans-Light.eot?#iefix\") format(\"embedded-opentype\"), url(\"./node_modules/npm-font-open-sans/fonts/Light/OpenSans-Light.woff\") format(\"woff\"), url(\"./node_modules/npm-font-open-sans/fonts/Light/OpenSans-Light.woff2\") format(\"woff2\"), url(\"./node_modules/npm-font-open-sans/fonts/Light/OpenSans-Light.ttf\") format(\"truetype\"), url(\"./node_modules/npm-font-open-sans/fonts/Light/OpenSans-Light.svg#OpenSansLight\") format(\"svg\"); }\n\n@font-face {\n  font-family: 'Open Sans';\n  font-weight: 300;\n  font-style: italic;\n  src: url(\"./node_modules/npm-font-open-sans/fonts/LightItalic/OpenSans-LightItalic.eot\");\n  src: url(\"./node_modules/npm-font-open-sans/fonts/LightItalic/OpenSans-LightItalic.eot?#iefix\") format(\"embedded-opentype\"), url(\"./node_modules/npm-font-open-sans/fonts/LightItalic/OpenSans-LightItalic.woff\") format(\"woff\"), url(\"./node_modules/npm-font-open-sans/fonts/LightItalic/OpenSans-LightItalic.woff2\") format(\"woff2\"), url(\"./node_modules/npm-font-open-sans/fonts/LightItalic/OpenSans-LightItalic.ttf\") format(\"truetype\"), url(\"./node_modules/npm-font-open-sans/fonts/LightItalic/OpenSans-LightItalic.svg#OpenSansLightItalic\") format(\"svg\"); }\n\n@font-face {\n  font-family: 'Open Sans';\n  font-weight: normal;\n  font-style: normal;\n  src: url(\"./node_modules/npm-font-open-sans/fonts/Regular/OpenSans-Regular.eot\");\n  src: url(\"./node_modules/npm-font-open-sans/fonts/Regular/OpenSans-Regular.eot?#iefix\") format(\"embedded-opentype\"), url(\"./node_modules/npm-font-open-sans/fonts/Regular/OpenSans-Regular.woff\") format(\"woff\"), url(\"./node_modules/npm-font-open-sans/fonts/Regular/OpenSans-Regular.woff2\") format(\"woff2\"), url(\"./node_modules/npm-font-open-sans/fonts/Regular/OpenSans-Regular.ttf\") format(\"truetype\"), url(\"./node_modules/npm-font-open-sans/fonts/Regular/OpenSans-Regular.svg#OpenSansRegular\") format(\"svg\"); }\n\n@font-face {\n  font-family: 'Open Sans';\n  font-weight: normal;\n  font-style: italic;\n  src: url(\"./node_modules/npm-font-open-sans/fonts/Italic/OpenSans-Italic.eot\");\n  src: url(\"./node_modules/npm-font-open-sans/fonts/Italic/OpenSans-Italic.eot?#iefix\") format(\"embedded-opentype\"), url(\"./node_modules/npm-font-open-sans/fonts/Italic/OpenSans-Italic.woff\") format(\"woff\"), url(\"./node_modules/npm-font-open-sans/fonts/Italic/OpenSans-Italic.woff2\") format(\"woff2\"), url(\"./node_modules/npm-font-open-sans/fonts/Italic/OpenSans-Italic.ttf\") format(\"truetype\"), url(\"./node_modules/npm-font-open-sans/fonts/Italic/OpenSans-Italic.svg#OpenSansItalic\") format(\"svg\"); }\n\n@font-face {\n  font-family: 'Open Sans';\n  font-weight: 600;\n  font-style: normal;\n  src: url(\"./node_modules/npm-font-open-sans/fonts/Semibold/OpenSans-Semibold.eot\");\n  src: url(\"./node_modules/npm-font-open-sans/fonts/Semibold/OpenSans-Semibold.eot?#iefix\") format(\"embedded-opentype\"), url(\"./node_modules/npm-font-open-sans/fonts/Semibold/OpenSans-Semibold.woff\") format(\"woff\"), url(\"./node_modules/npm-font-open-sans/fonts/Semibold/OpenSans-Semibold.woff2\") format(\"woff2\"), url(\"./node_modules/npm-font-open-sans/fonts/Semibold/OpenSans-Semibold.ttf\") format(\"truetype\"), url(\"./node_modules/npm-font-open-sans/fonts/Semibold/OpenSans-Semibold.svg#OpenSansSemibold\") format(\"svg\"); }\n\n@font-face {\n  font-family: 'Open Sans';\n  font-weight: 600;\n  font-style: italic;\n  src: url(\"./node_modules/npm-font-open-sans/fonts/SemiboldItalic/OpenSans-SemiboldItalic.eot\");\n  src: url(\"./node_modules/npm-font-open-sans/fonts/SemiboldItalic/OpenSans-SemiboldItalic.eot?#iefix\") format(\"embedded-opentype\"), url(\"./node_modules/npm-font-open-sans/fonts/SemiboldItalic/OpenSans-SemiboldItalic.woff\") format(\"woff\"), url(\"./node_modules/npm-font-open-sans/fonts/SemiboldItalic/OpenSans-SemiboldItalic.woff2\") format(\"woff2\"), url(\"./node_modules/npm-font-open-sans/fonts/SemiboldItalic/OpenSans-SemiboldItalic.ttf\") format(\"truetype\"), url(\"./node_modules/npm-font-open-sans/fonts/SemiboldItalic/OpenSans-SemiboldItalic.svg#OpenSansSemiboldItalic\") format(\"svg\"); }\n\n@font-face {\n  font-family: 'Open Sans';\n  font-weight: bold;\n  font-style: normal;\n  src: url(\"./node_modules/npm-font-open-sans/fonts/Bold/OpenSans-Bold.eot\");\n  src: url(\"./node_modules/npm-font-open-sans/fonts/Bold/OpenSans-Bold.eot?#iefix\") format(\"embedded-opentype\"), url(\"./node_modules/npm-font-open-sans/fonts/Bold/OpenSans-Bold.woff\") format(\"woff\"), url(\"./node_modules/npm-font-open-sans/fonts/Bold/OpenSans-Bold.woff2\") format(\"woff2\"), url(\"./node_modules/npm-font-open-sans/fonts/Bold/OpenSans-Bold.ttf\") format(\"truetype\"), url(\"./node_modules/npm-font-open-sans/fonts/Bold/OpenSans-Bold.svg#OpenSansBold\") format(\"svg\"); }\n\n@font-face {\n  font-family: 'Open Sans';\n  font-weight: bold;\n  font-style: italic;\n  src: url(\"./node_modules/npm-font-open-sans/fonts/BoldItalic/OpenSans-BoldItalic.eot\");\n  src: url(\"./node_modules/npm-font-open-sans/fonts/BoldItalic/OpenSans-BoldItalic.eot?#iefix\") format(\"embedded-opentype\"), url(\"./node_modules/npm-font-open-sans/fonts/BoldItalic/OpenSans-BoldItalic.woff\") format(\"woff\"), url(\"./node_modules/npm-font-open-sans/fonts/BoldItalic/OpenSans-BoldItalic.woff2\") format(\"woff2\"), url(\"./node_modules/npm-font-open-sans/fonts/BoldItalic/OpenSans-BoldItalic.ttf\") format(\"truetype\"), url(\"./node_modules/npm-font-open-sans/fonts/BoldItalic/OpenSans-BoldItalic.svg#OpenSansBoldItalic\") format(\"svg\"); }\n\n@font-face {\n  font-family: 'Open Sans';\n  font-weight: 800;\n  font-style: normal;\n  src: url(\"./node_modules/npm-font-open-sans/fonts/ExtraBold/OpenSans-ExtraBold.eot\");\n  src: url(\"./node_modules/npm-font-open-sans/fonts/ExtraBold/OpenSans-ExtraBold.eot?#iefix\") format(\"embedded-opentype\"), url(\"./node_modules/npm-font-open-sans/fonts/ExtraBold/OpenSans-ExtraBold.woff\") format(\"woff\"), url(\"./node_modules/npm-font-open-sans/fonts/ExtraBold/OpenSans-ExtraBold.woff2\") format(\"woff2\"), url(\"./node_modules/npm-font-open-sans/fonts/ExtraBold/OpenSans-ExtraBold.ttf\") format(\"truetype\"), url(\"./node_modules/npm-font-open-sans/fonts/ExtraBold/OpenSans-ExtraBold.svg#OpenSansExtrabold\") format(\"svg\"); }\n\n@font-face {\n  font-family: 'Open Sans';\n  font-weight: 800;\n  font-style: italic;\n  src: url(\"./node_modules/npm-font-open-sans/fonts/ExtraBoldItalic/OpenSans-ExtraBoldItalic.eot\");\n  src: url(\"./node_modules/npm-font-open-sans/fonts/ExtraBoldItalic/OpenSans-ExtraBoldItalic.eot?#iefix\") format(\"embedded-opentype\"), url(\"./node_modules/npm-font-open-sans/fonts/ExtraBoldItalic/OpenSans-ExtraBoldItalic.woff\") format(\"woff\"), url(\"./node_modules/npm-font-open-sans/fonts/ExtraBoldItalic/OpenSans-ExtraBoldItalic.woff2\") format(\"woff2\"), url(\"./node_modules/npm-font-open-sans/fonts/ExtraBoldItalic/OpenSans-ExtraBoldItalic.ttf\") format(\"truetype\"), url(\"./node_modules/npm-font-open-sans/fonts/ExtraBoldItalic/OpenSans-ExtraBoldItalic.svg#OpenSansExtraboldItalic\") format(\"svg\"); }\n\nhtml {\n  box-sizing: border-box; }\n\n*, *:before, *:after {\n  box-sizing: inherit; }\n\nbody {\n  font-family: 'Open Sans', sans-serif;\n  font-size: 13px;\n  font-weight: 300;\n  background-image: url(\"./resources/graphics/background.png\"); }\n\n.panel {\n  margin: 50px auto 50px;\n  text-align: center;\n  font-size: 2em;\n  background: white;\n  padding: 0px;\n  width: 80vw;\n  height: auto; }\n  .panel p {\n    margin: 5px; }\n\n.search {\n  width: 100%;\n  background: #1c688e;\n  height: 100px;\n  display: flex;\n  justify-content: center;\n  align-items: center; }\n  .search .mobile-menu {\n    display: none;\n    height: 35px;\n    width: 50px;\n    border: 1px solid #e6e6e6;\n    cursor: pointer;\n    border-radius: 10px;\n    margin-right: 10px;\n    align-items: center;\n    justify-content: center; }\n    .search .mobile-menu:hover {\n      background: #3793c1; }\n    .search .mobile-menu .menu-bars {\n      color: white;\n      font-size: 30px;\n      transform: rotate(90deg); }\n  .search input {\n    display: inline-block;\n    width: 90%;\n    height: 45px;\n    border-radius: 3px;\n    border-style: hidden;\n    font-size: 16px;\n    padding: 0 10px; }\n\n.geo-selector {\n  width: 100%;\n  height: auto;\n  background: #bbbbbb;\n  text-align: left;\n  padding: 5px 15px; }\n  .geo-selector .geo-header {\n    display: inline-block;\n    color: white;\n    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);\n    font-size: 16px;\n    vertical-align: middle;\n    width: 20%;\n    text-align: center; }\n  .geo-selector .geo-list {\n    margin: 0;\n    padding: 10px;\n    display: inline-block;\n    width: 80%;\n    vertical-align: middle; }\n    .geo-selector .geo-list .geo-location {\n      list-style-type: none;\n      display: inline-block;\n      margin: 0 10px;\n      background: #1c688e;\n      color: white;\n      padding: 2px 15px;\n      border-radius: 15px;\n      font-size: 20px;\n      vertical-align: middle;\n      box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3); }\n      .geo-selector .geo-list .geo-location:hover {\n        background: #3793c1;\n        cursor: pointer; }\n      .geo-selector .geo-list .geo-location:active {\n        transform: translate(2px, 2px);\n        box-shadow: none; }\n\n.lower-area {\n  display: flex;\n  height: 60vh;\n  min-height: 60vh; }\n  .lower-area .filters {\n    width: 25%;\n    height: auto;\n    display: inline-block;\n    border-right: 1px solid #e6e6e6;\n    padding: 15px;\n    flex-direction: column;\n    font-size: 14px;\n    text-align: left;\n    position: relative;\n    z-index: 10;\n    overflow: overlay; }\n    .lower-area .filters .mobile-header {\n      display: none; }\n    .lower-area .filters h4 {\n      font-size: 16px;\n      font-weight: normal;\n      margin: 10px;\n      padding: 0; }\n    .lower-area .filters ul {\n      list-style-type: none;\n      margin: 0 5px;\n      padding: 0; }\n    .lower-area .filters .cuisine {\n      display: flex;\n      flex-direction: column;\n      align-items: center; }\n      .lower-area .filters .cuisine li {\n        display: flex;\n        justify-content: space-between;\n        padding: 3px 5px;\n        border-radius: 5px;\n        width: 90%;\n        font-weight: 300; }\n        .lower-area .filters .cuisine li .food-type,\n        .lower-area .filters .cuisine li .food-type-amount {\n          display: inline-flex;\n          padding: 0 15px; }\n        .lower-area .filters .cuisine li .food-type-amount {\n          color: #a9a9a9; }\n        .lower-area .filters .cuisine li:hover,\n        .lower-area .filters .cuisine li .active {\n          background: #2897c5;\n          color: white;\n          cursor: pointer; }\n          .lower-area .filters .cuisine li:hover .food-type-amount,\n          .lower-area .filters .cuisine li .active .food-type-amount {\n            color: white; }\n    .lower-area .filters .ratings {\n      display: flex;\n      flex-direction: column; }\n      .lower-area .filters .ratings li {\n        margin: 2px 15px;\n        cursor: pointer; }\n        .lower-area .filters .ratings li:hover {\n          border: 2px solid orange; }\n        .lower-area .filters .ratings li.active {\n          border-left: 10px solid orange; }\n    .lower-area .filters .payment-options li {\n      margin: 5px 10px; }\n    .lower-area .filters .payment-options input {\n      margin-right: 5px; }\n    .lower-area .filters .payment-options .card {\n      width: 32px;\n      height: 20px;\n      display: inline-block;\n      background: url(\"./resources/graphics/cc-icons.png\");\n      background-size: 122px;\n      vertical-align: middle;\n      margin-left: 5px; }\n    .lower-area .filters .payment-options .cc-ae {\n      background-position: 0 20px; }\n    .lower-area .filters .payment-options .cc-visa {\n      background-position: 32px 0; }\n    .lower-area .filters .payment-options .cc-discover {\n      background-position: 32px 20px; }\n    .lower-area .filters .payment-options .cc-mc {\n      background-position: 77px 0; }\n  .lower-area .results {\n    width: 75%;\n    height: 100%;\n    display: inline-block;\n    padding: 20px 30px;\n    flex-direction: column;\n    align-items: center;\n    position: relative; }\n    .lower-area .results a {\n      text-decoration: none; }\n    .lower-area .results h4 {\n      margin: 0; }\n    .lower-area .results .search-stats {\n      border-bottom: 1px solid #e6e6e6;\n      text-align: left;\n      font-size: 16px;\n      margin: 10px 30px; }\n      .lower-area .results .search-stats .search-stats-text {\n        background: white;\n        border-bottom: 1px solid white;\n        margin-right: 10px;\n        padding-right: 30px; }\n        .lower-area .results .search-stats .search-stats-text .results-count {\n          font-weight: bold; }\n        .lower-area .results .search-stats .search-stats-text .results-speed {\n          font-size: 12px; }\n    .lower-area .results .result {\n      margin: 20px;\n      display: flex;\n      width: 100%;\n      height: 105px;\n      border-radius: 10px;\n      padding: 10px; }\n      .lower-area .results .result:hover {\n        background-color: #ececec; }\n        .lower-area .results .result:hover .result-text {\n          color: #1c688e; }\n      .lower-area .results .result em {\n        background: rgba(255, 200, 0, 0.6);\n        font-style: normal; }\n      .lower-area .results .result .result-image {\n        display: flex;\n        border-radius: 5px;\n        width: 85px;\n        border: 1px solid #a9a9a9; }\n      .lower-area .results .result .result-text {\n        font-size: 16px;\n        color: #a9a9a9;\n        display: flex;\n        flex-direction: column;\n        align-items: baseline;\n        margin-left: 20px;\n        justify-content: space-between;\n        font-weight: 300; }\n        .lower-area .results .result .result-text h4 {\n          font-size: 16px;\n          color: black;\n          font-weight: 600; }\n        .lower-area .results .result .result-text img {\n          background-size: 100px;\n          width: 100px;\n          height: 19px; }\n        .lower-area .results .result .result-text .stars {\n          display: inline-block; }\n        .lower-area .results .result .result-text .result-rating {\n          background: url(\"./resources/graphics/all-stars.png\");\n          background-size: 100px;\n          width: 100px;\n          height: 18px;\n          vertical-align: middle;\n          display: inline-block;\n          margin: 0 5px; }\n        .lower-area .results .result .result-text .rating-number {\n          color: #ffab66;\n          display: inline-block; }\n        .lower-area .results .result .result-text .review-count {\n          display: inline-block; }\n        .lower-area .results .result .result-text .result-city {\n          display: none; }\n        .lower-area .results .result .result-text .result-price {\n          display: none; }\n    .lower-area .results .show-more {\n      width: 180px;\n      background: none;\n      padding: 10px;\n      border-radius: 5px;\n      border-style: solid;\n      font-size: 16px;\n      border: 1px solid #a9a9a9;\n      color: #a9a9a9;\n      margin-top: 20px; }\n    .lower-area .results .show-more:hover {\n      background: #a9a9a9;\n      color: white; }\n    .lower-area .results .pagination {\n      display: flex;\n      justify-content: center;\n      align-items: center;\n      margin: 20px;\n      left: 0;\n      right: 0;\n      position: absolute;\n      bottom: 20px; }\n      .lower-area .results .pagination .page-button, .lower-area .results .pagination .prev-page, .lower-area .results .pagination .next-page {\n        display: flex;\n        align-items: center;\n        justify-content: center;\n        margin: 0 10px;\n        background: #1c688e;\n        border: 2px solid #e6e6e6;\n        border-radius: 10px;\n        color: white;\n        width: 100px;\n        height: 40px; }\n        .lower-area .results .pagination .page-button:hover, .lower-area .results .pagination .prev-page:hover, .lower-area .results .pagination .next-page:hover {\n          background: #3793c1; }\n        .lower-area .results .pagination .page-button:active, .lower-area .results .pagination .prev-page:active, .lower-area .results .pagination .next-page:active {\n          transform: translate(1px, 1px); }\n        .lower-area .results .pagination .page-button:focus, .lower-area .results .pagination .prev-page:focus, .lower-area .results .pagination .next-page:focus {\n          outline: none; }\n        .lower-area .results .pagination .page-button:disabled, .lower-area .results .pagination .prev-page:disabled, .lower-area .results .pagination .next-page:disabled {\n          background: #e6e6e6; }\n\n.stars {\n  background: url(\"./resources/graphics/all-stars.png\");\n  background-size: 100px;\n  width: 100px;\n  height: 19px;\n  vertical-align: middle;\n  display: inline-block;\n  margin: 0 5px; }\n\n.half-star {\n  background-position-y: -19px; }\n\n.one-star {\n  background-position-y: -38px; }\n\n.one-half-star {\n  background-position-y: -57px; }\n\n.two-star {\n  background-position-y: -76px; }\n\n.two-half-star {\n  background-position-y: -95px; }\n\n.three-star {\n  background-position-y: -114px; }\n\n.three-half-star {\n  background-position-y: -133px; }\n\n.four-star {\n  background-position-y: -152px; }\n\n.four-half-star {\n  background-position-y: -171px; }\n\n.five-star {\n  background-position-y: 19px; }\n\n@media only screen and (max-width: 768px) {\n  .panel {\n    margin: 0;\n    width: 100vw;\n    height: 100vh; }\n    .panel .lower-area {\n      height: 80%; }\n      .panel .lower-area .filters {\n        position: fixed;\n        top: 0;\n        left: 0;\n        background: white;\n        height: 100vh;\n        width: 50vw;\n        transform: translate(-50vw);\n        transition: 0.5s;\n        padding: 0;\n        overflow: scroll; }\n        .panel .lower-area .filters .mobile-header {\n          display: block;\n          width: 100%;\n          height: 35px;\n          background: #1c688e;\n          margin: 0;\n          text-align: right; }\n          .panel .lower-area .filters .mobile-header .mobile-menu-close {\n            font-size: 20px;\n            height: 100%;\n            color: white;\n            font-weight: bold;\n            cursor: pointer;\n            border-left: 1px solid #e6e6e6;\n            display: flex;\n            width: 35px;\n            align-items: center;\n            justify-content: center;\n            margin-left: auto; }\n      .panel .lower-area .results {\n        width: 100%;\n        display: flex; }\n        .panel .lower-area .results .result {\n          margin: 10px 20px; }\n          .panel .lower-area .results .result .result-image {\n            width: 70px; }\n          .panel .lower-area .results .result .result-text {\n            font-size: 12px;\n            text-align: left;\n            align-items: baseline;\n            justify-content: initial; }\n            .panel .lower-area .results .result .result-text a h4 {\n              font-size: 14px; }\n            .panel .lower-area .results .result .result-text .stars {\n              margin: 0; }\n            .panel .lower-area .results .result .result-text .rating-number {\n              display: none; }\n            .panel .lower-area .results .result .result-text .result-area {\n              display: none; }\n            .panel .lower-area .results .result .result-text .review-count {\n              display: none; }\n            .panel .lower-area .results .result .result-text .result-city {\n              display: inline-block; }\n            .panel .lower-area .results .result .result-text .result-price {\n              display: inline-block; }\n            .panel .lower-area .results .result .result-text .result-price-range {\n              display: none; }\n        .panel .lower-area .results .pagination {\n          font-size: 16px;\n          bottom: 0;\n          margin: 0; }\n    .panel .search {\n      height: 75px; }\n      .panel .search .mobile-menu {\n        display: flex; }\n      .panel .search input {\n        width: 75%;\n        height: 35px;\n        font-size: 12px; } }\n", ""]);
 
 // exports
 
@@ -44664,6 +44728,314 @@ var haversine = (function () {
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = haversine
 }
+
+
+/***/ }),
+/* 527 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/**
+ * A higher-order-component for handling onClickOutside for React components.
+ */
+(function(root) {
+
+  // administrative
+  var registeredComponents = [];
+  var handlers = [];
+  var IGNORE_CLASS = 'ignore-react-onclickoutside';
+  var DEFAULT_EVENTS = ['mousedown', 'touchstart'];
+
+  /**
+   * Check whether some DOM node is our Component's node.
+   */
+  var isNodeFound = function(current, componentNode, ignoreClass) {
+    if (current === componentNode) {
+      return true;
+    }
+    // SVG <use/> elements do not technically reside in the rendered DOM, so
+    // they do not have classList directly, but they offer a link to their
+    // corresponding element, which can have classList. This extra check is for
+    // that case.
+    // See: http://www.w3.org/TR/SVG11/struct.html#InterfaceSVGUseElement
+    // Discussion: https://github.com/Pomax/react-onclickoutside/pull/17
+    if (current.correspondingElement) {
+      return current.correspondingElement.classList.contains(ignoreClass);
+    }
+    return current.classList.contains(ignoreClass);
+  };
+
+  /**
+   * Try to find our node in a hierarchy of nodes, returning the document
+   * node as highest noode if our node is not found in the path up.
+   */
+  var findHighest = function(current, componentNode, ignoreClass) {
+    if (current === componentNode) {
+      return true;
+    }
+
+    // If source=local then this event came from 'somewhere'
+    // inside and should be ignored. We could handle this with
+    // a layered approach, too, but that requires going back to
+    // thinking in terms of Dom node nesting, running counter
+    // to React's 'you shouldn't care about the DOM' philosophy.
+    while(current.parentNode) {
+      if (isNodeFound(current, componentNode, ignoreClass)) {
+        return true;
+      }
+      current = current.parentNode;
+    }
+    return current;
+  };
+
+  /**
+   * Check if the browser scrollbar was clicked
+   */
+  var clickedScrollbar = function(evt) {
+    return document.documentElement.clientWidth <= evt.clientX;
+  };
+
+  /**
+   * Generate the event handler that checks whether a clicked DOM node
+   * is inside of, or lives outside of, our Component's node tree.
+   */
+  var generateOutsideCheck = function(componentNode, componentInstance, eventHandler, ignoreClass, excludeScrollbar, preventDefault, stopPropagation) {
+    return function(evt) {
+      if (preventDefault) {
+        evt.preventDefault();
+      }
+      if (stopPropagation) {
+        evt.stopPropagation();
+      }
+      var current = evt.target;
+      if((excludeScrollbar && clickedScrollbar(evt)) || (findHighest(current, componentNode, ignoreClass) !== document)) {
+        return;
+      }
+      eventHandler(evt);
+    };
+  };
+
+  /**
+   * This function generates the HOC function that you'll use
+   * in order to impart onOutsideClick listening to an
+   * arbitrary component. It gets called at the end of the
+   * bootstrapping code to yield an instance of the
+   * onClickOutsideHOC function defined inside setupHOC().
+   */
+  function setupHOC(root, React, ReactDOM) {
+
+    // The actual Component-wrapping HOC:
+    return function onClickOutsideHOC(Component, config) {
+      var wrapComponentWithOnClickOutsideHandling = React.createClass({
+        statics: {
+          /**
+           * Access the wrapped Component's class.
+           */
+          getClass: function() {
+            if (Component.getClass) {
+              return Component.getClass();
+            }
+            return Component;
+          }
+        },
+
+        /**
+         * Access the wrapped Component's instance.
+         */
+        getInstance: function() {
+          return Component.prototype.isReactComponent ? this.refs.instance : this;
+        },
+
+        // this is given meaning in componentDidMount
+        __outsideClickHandler: function() {},
+
+        /**
+         * Add click listeners to the current document,
+         * linked to this component's state.
+         */
+        componentDidMount: function() {
+          // If we are in an environment without a DOM such
+          // as shallow rendering or snapshots then we exit
+          // early to prevent any unhandled errors being thrown.
+          if (typeof document === 'undefined' || !document.createElement){
+            return;
+          }
+
+          var instance = this.getInstance();
+          var clickOutsideHandler;
+
+          if(config && typeof config.handleClickOutside === 'function') {
+            clickOutsideHandler = config.handleClickOutside(instance);
+            if(typeof clickOutsideHandler !== 'function') {
+              throw new Error('Component lacks a function for processing outside click events specified by the handleClickOutside config option.');
+            }
+          } else if(typeof instance.handleClickOutside === 'function') {
+            if (React.Component.prototype.isPrototypeOf(instance)) {
+              clickOutsideHandler = instance.handleClickOutside.bind(instance);
+            } else {
+              clickOutsideHandler = instance.handleClickOutside;
+            }
+          } else if(typeof instance.props.handleClickOutside === 'function') {
+            clickOutsideHandler = instance.props.handleClickOutside;
+          } else {
+            throw new Error('Component lacks a handleClickOutside(event) function for processing outside click events.');
+          }
+
+          var componentNode = ReactDOM.findDOMNode(instance);
+          if (componentNode === null) {
+            console.warn('Antipattern warning: there was no DOM node associated with the component that is being wrapped by outsideClick.');
+            console.warn([
+              'This is typically caused by having a component that starts life with a render function that',
+              'returns `null` (due to a state or props value), so that the component \'exist\' in the React',
+              'chain of components, but not in the DOM.\n\nInstead, you need to refactor your code so that the',
+              'decision of whether or not to show your component is handled by the parent, in their render()',
+              'function.\n\nIn code, rather than:\n\n  A{render(){return check? <.../> : null;}\n  B{render(){<A check=... />}\n\nmake sure that you',
+              'use:\n\n  A{render(){return <.../>}\n  B{render(){return <...>{ check ? <A/> : null }<...>}}\n\nThat is:',
+              'the parent is always responsible for deciding whether or not to render any of its children.',
+              'It is not the child\'s responsibility to decide whether a render instruction from above should',
+              'get ignored or not by returning `null`.\n\nWhen any component gets its render() function called,',
+              'that is the signal that it should be rendering its part of the UI. It may in turn decide not to',
+              'render all of *its* children, but it should never return `null` for itself. It is not responsible',
+              'for that decision.'
+            ].join(' '));
+          }
+
+          var fn = this.__outsideClickHandler = generateOutsideCheck(
+            componentNode,
+            instance,
+            clickOutsideHandler,
+            this.props.outsideClickIgnoreClass || IGNORE_CLASS,
+            this.props.excludeScrollbar || false,
+            this.props.preventDefault || false,
+            this.props.stopPropagation || false
+          );
+
+          var pos = registeredComponents.length;
+          registeredComponents.push(this);
+          handlers[pos] = fn;
+
+          // If there is a truthy disableOnClickOutside property for this
+          // component, don't immediately start listening for outside events.
+          if (!this.props.disableOnClickOutside) {
+            this.enableOnClickOutside();
+          }
+        },
+
+        /**
+        * Track for disableOnClickOutside props changes and enable/disable click outside
+        */
+        componentWillReceiveProps: function(nextProps) {
+          if (this.props.disableOnClickOutside && !nextProps.disableOnClickOutside) {
+            this.enableOnClickOutside();
+          } else if (!this.props.disableOnClickOutside && nextProps.disableOnClickOutside) {
+            this.disableOnClickOutside();
+          }
+        },
+
+        /**
+         * Remove the document's event listeners
+         */
+        componentWillUnmount: function() {
+          this.disableOnClickOutside();
+          this.__outsideClickHandler = false;
+          var pos = registeredComponents.indexOf(this);
+          if( pos>-1) {
+            // clean up so we don't leak memory
+            if (handlers[pos]) { handlers.splice(pos, 1); }
+            registeredComponents.splice(pos, 1);
+          }
+        },
+
+        /**
+         * Can be called to explicitly enable event listening
+         * for clicks and touches outside of this element.
+         */
+        enableOnClickOutside: function() {
+          var fn = this.__outsideClickHandler;
+          if (typeof document !== 'undefined') {
+            var events = this.props.eventTypes || DEFAULT_EVENTS;
+            if (!events.forEach) {
+              events = [events];
+            }
+            events.forEach(function (eventName) {
+              document.addEventListener(eventName, fn);
+            });
+          }
+        },
+
+        /**
+         * Can be called to explicitly disable event listening
+         * for clicks and touches outside of this element.
+         */
+        disableOnClickOutside: function() {
+          var fn = this.__outsideClickHandler;
+          if (typeof document !== 'undefined') {
+            var events = this.props.eventTypes || DEFAULT_EVENTS;
+            if (!events.forEach) {
+              events = [events];
+            }
+            events.forEach(function (eventName) {
+              document.removeEventListener(eventName, fn);
+            });
+          }
+        },
+
+        /**
+         * Pass-through render
+         */
+        render: function() {
+          var passedProps = this.props;
+          var props = {};
+          Object.keys(this.props).forEach(function(key) {
+            if (key !== 'excludeScrollbar') {
+              props[key] = passedProps[key];
+            }
+          });
+          if (Component.prototype.isReactComponent) {
+            props.ref = 'instance';
+          }
+          props.disableOnClickOutside = this.disableOnClickOutside;
+          props.enableOnClickOutside = this.enableOnClickOutside;
+          return React.createElement(Component, props);
+        }
+      });
+
+      // Add display name for React devtools
+      (function bindWrappedComponentName(c, wrapper) {
+        var componentName = c.displayName || c.name || 'Component';
+        wrapper.displayName = 'OnClickOutside(' + componentName + ')';
+      }(Component, wrapComponentWithOnClickOutsideHandling));
+
+      return wrapComponentWithOnClickOutsideHandling;
+    };
+  }
+
+  /**
+   * This function sets up the library in ways that
+   * work with the various modulde loading solutions
+   * used in JavaScript land today.
+   */
+  function setupBinding(root, factory) {
+    if (true) {
+      // AMD. Register as an anonymous module.
+      !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(19),__webpack_require__(96)], __WEBPACK_AMD_DEFINE_RESULT__ = function(React, ReactDom) {
+        return factory(root, React, ReactDom);
+      }.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+    } else if (typeof exports === 'object') {
+      // Node. Note that this does not work with strict
+      // CommonJS, but only CommonJS-like environments
+      // that support module.exports
+      module.exports = factory(root, require('react'), require('react-dom'));
+    } else {
+      // Browser globals (root is window)
+      root.onClickOutside = factory(root, React, ReactDOM);
+    }
+  }
+
+  // Make it all happen
+  setupBinding(root, setupHOC);
+
+}(this));
 
 
 /***/ })
