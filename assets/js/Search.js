@@ -15,7 +15,7 @@ const Search = React.createClass({
   render() {
     return (
       <div className="search">
-      <div onClick={this.openMobileMenu} className="mobile-menu"><span className="menu-bars">|||</span></div>
+      <div onClick={this.openMobileMenu} className="mobile-menu"><span className="filter-button">Filter</span></div>
         <input type="text" onChange={this.handleSearchTermChange} placeholder="Search for Restaurants by Name, Cuisine, Location" />
       </div>
     )

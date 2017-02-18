@@ -48,9 +48,9 @@ body {
     display:none;
     height:35px;
     width:50px;
-    border:1px solid $border-grey;
+    border:2px solid $border-grey;
     cursor:pointer;
-    border-radius:10px;
+    border-radius:5px;
     margin-right:10px;
     align-items:center;
     justify-content:center;
@@ -59,10 +59,10 @@ body {
       background:$lighter-search-blue;
     }
 
-    .menu-bars {
+    .filter-button {
       color:white;
-      font-size:30px;
-      transform:rotate(90deg);
+      font-size:18px;
+
     }
   }
 
@@ -189,7 +189,7 @@ body {
         }
 
          &:hover,
-         .active {
+         &.active {
         background:#2897c5;
         color:white;
         cursor:pointer;
@@ -412,6 +412,7 @@ body {
       right:0;
       position:absolute;
       bottom:20px;
+      font-size:18px;
 
       .page-button {
         display: flex;
@@ -423,7 +424,7 @@ body {
         border-radius: 10px;
         color:white;
         width:100px;
-        height:40px;
+        height:35px;
 
         &:hover {
           background: $lighter-search-blue;
@@ -511,6 +512,19 @@ body {
         transition:0.5s;
         padding:0;
         overflow:scroll;
+
+        .cuisine {
+
+          li {
+
+            .food-type,
+            .food-type-amount{
+              padding: 0;
+            }
+
+          }
+
+        }
 
         .mobile-header {
           display:block;

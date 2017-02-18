@@ -97,7 +97,7 @@ const Filters = onClickOutside(React.createClass({
         <ul className="payment-options">
           <li className="payment-type">
             <input onClick={this.handlePaymentToggle.bind(null, 'AMEX')} type="checkbox"/>
-            American Express
+            {this.props.mobileMenu ? 'AMEX' : 'American Express'}
             <span className="card cc-ae"></span>
           </li>
           <li className="payment-type">

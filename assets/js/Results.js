@@ -34,7 +34,7 @@ const Results = React.createClass({
     return (
       <div className="pagination">
         <button disabled={page <= 0} onClick={this.props.prevPage} className="prev-page">Prev</button>
-        <span className="page-number">{page + 1} / {pageTotal}</span>
+        <span className="page-number">Page {page + 1} / {pageTotal}</span>
         <button disabled={(page >= pageTotal - 1)} onClick={this.props.nextPage} className="next-page">Next</button>
       </div>
     )
