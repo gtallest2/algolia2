@@ -7,13 +7,13 @@ import Results from './Results'
 
 const Panel = React.createClass({
   getInitialState(){
-
     return {
       searchQuery: '',
-      results: [],
+      results: {},
       hitsPerPage: 3,
       location: 'start',
       mobileMenu:false,
+      searchesMade: 0,
     }
   },
   componentWillMount() {
@@ -22,7 +22,6 @@ const Panel = React.createClass({
      this.updateResults(content);
      this.geo()
     });
-
   },
   componentDidMount(){
 
@@ -36,21 +35,11 @@ const Panel = React.createClass({
       } else {
         this.setState({ location: '' })
       }
-
     }
-
   },
   handleSearch(query){
     helper.setQuery(query).search();
-
-
-    // let updateResults = this.updateResults;
-    // let result;
-    // index.search(query, function searchDone(err, content) {
-    // result = content;
     this.updateQuery(query);
-    // updateResults(result);
-    // });
   },
   showMore(){
     let query = this.state.searchQuery;
@@ -59,23 +48,16 @@ const Panel = React.createClass({
     let updateQuery = this.updateQuery;
     let updateHitsPerPage = this.updateHitsPerPage;
     let result;
-    // index.search(query, {
-    //   hitsPerPage: hitsPerPage
-    // }, function searchDone(err, content) {
-    // result = content;
-    // updateResults(result);
-    // });
     helper.setQuery(query).setQueryParameter('hitsPerPage', hitsPerPage).search();
     updateHitsPerPage(hitsPerPage);
     updateQuery(query);
-
-
   },
   updateResults(results){
+    const searchesMade = this.state.searchesMade
     this.setState({
-      results: results
+      results: results,
+      searchesMade: searchesMade + 1
     });
-    // console.log(this.state.results);
   },
   updateQuery(query) {
     this.setState({
@@ -125,6 +107,13 @@ const Panel = React.createClass({
     const upperBound = value + 1;
     helper.removeNumericRefinement('stars_count', '<', upperBound).removeNumericRefinement('stars_count', '>=', lowerBound).search()
   },
+  combineAddAndRemove(add, remove){
+    const lowerBoundAdd = add;
+    const upperBoundAdd = add + 1;
+    const lowerBoundRemove = remove;
+    const upperBoundRemove = remove + 1;
+    helper.addNumericRefinement('stars_count', '<', upperBoundAdd).addNumericRefinement('stars_count', '>=', lowerBoundAdd).removeNumericRefinement('stars_count', '<', upperBoundRemove).removeNumericRefinement('stars_count', '>=', lowerBoundRemove).search()
+  },
   setLocation(coordinates){
     this.setState({ location: coordinates })
     helper.setQueryParameter('aroundLatLng', coordinates).search()
@@ -153,7 +142,6 @@ const Panel = React.createClass({
     } else {
       console.log('Max page reached');
     }
-
   },
   closeMobileMenu(e){
     console.log('close?');
@@ -196,6 +184,7 @@ const Panel = React.createClass({
             removePayment={this.removePaymentDisjunctive}
             addRating={this.addRatingFilter}
             removeRating={this.removeRatingFilter}
+            combineAddAndRemove={this.combineAddAndRemove}
             blurMenu={this.closeMobileMenu}
           />
           <Results
@@ -207,6 +196,8 @@ const Panel = React.createClass({
             mobileMenu={this.state.mobileMenu}
             hitsPerPage={this.state.hitsPerPage}
             updateResultsPerPage={this.updateResultsPerPage}
+            searchesMade={this.state.searchesMade}
+            searchQuery={this.state.searchQuery}
           />
         </div>
       </div>

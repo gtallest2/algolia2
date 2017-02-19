@@ -38,7 +38,7 @@ index.addObjects(combinedList, function(err, content) {
 index.setSettings({
   'hitsPerPage': 3,
   'attributesForFaceting': ['food_type', 'stars_count', 'payment_options'],
-  'maxValuesPerFacet': 10
+  'maxValuesPerFacet': 7
   }, function(err) {
       if (!err) {
         console.log('success');

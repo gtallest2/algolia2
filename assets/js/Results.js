@@ -1,15 +1,31 @@
 import React from 'react'
 import { index } from './algolia'
+import CSSTransitionGroup from 'react-addons-css-transition-group'
 
 import Result from './Result'
 
+import { ResultsPlaceholder } from './placeholders'
+
+const { func, bool, string, number, object, array } = React.PropTypes
+
 const Results = React.createClass({
+  propTypes: {
+    searchResults: object,
+    onShowMore: func,
+    userLocation: string,
+    prevPage: func,
+    nextPage: func,
+    mobileMenu: bool,
+    hitsPerPage: number,
+    updateResultsPerPage: func,
+  },
   getInitialState(){
     return {
       resultsPerPage: this.props.hitsPerPage
     }
   },
   renderResults() {
+    if(!Object.keys(this.props.searchResults).length) { return }
     return this.props.searchResults.hits.map((result, i) => {
           return (
             <Result key={i} {...result} userLocation={this.props.userLocation} />
@@ -71,19 +87,47 @@ const Results = React.createClass({
     this.setState({ resultsPerPage: e.target.value })
     this.props.updateResultsPerPage(parseInt(e.target.value))
   },
+  renderResultsNavigationTop(){
+    return (
+      <div className="navigate-results-top">
+        {this.renderResultsRange()}
+        {this.renderResultsPerPage()}
+      </div>
+    )
+  },
   render() {
-    const searchIsEmpty = this.props.searchResults.length === 0 || this.props.searchResults.nbHits === 5000
+    let facetsRefinements = false
+    let disjunctiveRefinements = false
+    let numericRefinements = false
+
+    if(Object.keys(this.props.searchResults).length !== 0) {
+      facetsRefinements = Object.keys(this.props.searchResults._state.facetsRefinements).length
+      disjunctiveRefinements = Object.keys(this.props.searchResults._state.disjunctiveFacetsRefinements).length
+      numericRefinements = Object.keys(this.props.searchResults._state.numericRefinements).length
+    }
+
+    const searchIsEmpty = this.props.searchesMade < 1 || (!this.props.searchQuery && !facetsRefinements && !disjunctiveRefinements && !numericRefinements)
+    console.log('search is empty: ' + searchIsEmpty);
+    console.log('searches made: ' + this.props.searchesMade);
+    console.log(Object.keys(this.props.searchResults).length, facetsRefinements, disjunctiveRefinements, numericRefinements);
     return (
       <div className="results">
-          {searchIsEmpty ? (<h4>Where are you eating tonight? 🍴</h4>) : this.millisecondsMatter()}
+        {searchIsEmpty ? ResultsPlaceholder() : this.millisecondsMatter()}
+        <CSSTransitionGroup
+         className="results-ctg"
+         component="div"
+         transitionName="results-ctg"
+         transitionEnterTimeout={500}
+         transitionLeaveTimeout={500}
+         >
         {searchIsEmpty ? '' : this.renderResults()}
+        </CSSTransitionGroup>
         {/*<button onClick={this.handleShowMore} className="show-more" value="Show More">
           Show More
         </button>*/}
         <div className="navigate-results">
-        {(!searchIsEmpty) && this.renderResultsRange()}
-        {(!searchIsEmpty) && this.renderPagination()}
-        {(!searchIsEmpty) && this.renderResultsPerPage()}
+        {(!searchIsEmpty && !!this.props.searchResults.nbHits) && this.renderResultsNavigationTop()}
+        {(!searchIsEmpty && !!this.props.searchResults.nbHits) && this.renderPagination()}
         </div>
       </div>
     )

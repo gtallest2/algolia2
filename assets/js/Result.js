@@ -1,5 +1,6 @@
 import React from 'react'
 import haversine from 'haversine'
+import CSSTransitionGroup from 'react-addons-css-transition-group'
 
 const Result = React.createClass({
   renderName() {
@@ -107,6 +108,23 @@ const Result = React.createClass({
       </span>
     )
   },
+  renderPaymentOptions(){
+    const amex = <span className="card cc-ae"></span>
+    const discover = (<span className="card cc-discover"></span>)
+    const masterCard = (<span className="card cc-mc"></span>)
+    const visa = (<span className="card cc-visa"></span>)
+
+    const paymentOptions = this.props.payment_options
+
+    return (
+      <span>
+        {paymentOptions.includes('AMEX') && amex}
+        {paymentOptions.includes('Discover') && discover}
+        {paymentOptions.includes('MasterCard') && masterCard}
+        {paymentOptions.includes('Visa') && visa}
+      </span>
+    )
+  },
   render() {
     const highlightedFoodAndArea = `${this.props._highlightResult.food_type.value} | ${this.props._highlightResult.area.value} | ${this.props.price_range}`
     const highlightedFood = `${this.props._highlightResult.food_type.value} | `
@@ -114,7 +132,9 @@ const Result = React.createClass({
     const highlightedCity = `${this.props._highlightResult.city.value} |&nbsp;`
     return(
       <div className="result">
-        <a href={this.props.reserve_url}><img className="result-image" src={this.props.image_url} alt="Result Image"/></a>
+        <div className="result-image-link">
+          <a href={this.props.reserve_url}><img className="result-image" src={this.props.image_url} alt="Result Image"/></a>
+        </div>
           <div className="result-text">
           <a href={this.props.reserve_url}><h4 dangerouslySetInnerHTML={{ __html: this.props._highlightResult.name.value }}></h4></a>
           <span>
@@ -129,7 +149,11 @@ const Result = React.createClass({
             <span className="result-price-range">{this.props.price_range}</span>
             <span className="result-price">{this.renderTyDollarSign(this.props.price)}</span>
           </span>
-          <span className="result-distance">{!this.props.userLocation ? '' : this.renderDistance(this.props.userLocation, this.props._geoloc)}</span>
+          <span className="result-fourth-line">
+            <span className="result-distance">{!this.props.userLocation ? '' : this.renderDistance(this.props.userLocation, this.props._geoloc)} | </span>
+            <span className="result-payment-options">{this.renderPaymentOptions()}</span>
+          </span>
+
         </div>
       </div>
     )

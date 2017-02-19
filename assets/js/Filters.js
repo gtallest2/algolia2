@@ -1,7 +1,22 @@
 import React from 'react'
 import onClickOutside from 'react-onclickoutside'
 
+import { CuisinePlaceholder } from './placeholders'
+
+const { string, bool, object, func, number, array } = React.PropTypes
+
 const Filters = onClickOutside(React.createClass({
+  propTypes: {
+    toggleMobile: func,
+    mobileMenu: bool,
+    searchResults: object,
+    foodFacet: func,
+    addPayment: func,
+    removePayment: func,
+    addRating: func,
+    removeRating: func,
+    blurMenu: func,
+  },
   getInitialState() {
     return {
       currentRatingFilter:'',
@@ -24,6 +39,7 @@ const Filters = onClickOutside(React.createClass({
 
   },
   renderFoodTypes(){
+    if(!Object.keys(this.props.searchResults).length) { return }
     const foodTypes = this.props.searchResults.getFacetValues('food_type')
     return foodTypes.map((type, i) => {
       return (
@@ -54,6 +70,9 @@ const Filters = onClickOutside(React.createClass({
   removeRatingFilter(value){
     this.props.removeRating(value)
   },
+  combineAddAndRemove(add, remove){
+    this.props.combineAddAndRemove(add, remove)
+  },
   handleRatingFilter(value){
     if(this.state.currentRatingFilter === '') {
       this.addRatingFilter(value)
@@ -63,8 +82,9 @@ const Filters = onClickOutside(React.createClass({
         this.removeRatingFilter(value)
         this.setState({ currentRatingFilter: '' })
        } else {
-        this.addRatingFilter(value)
-        this.removeRatingFilter(this.state.currentRatingFilter)
+        this.combineAddAndRemove(value, this.state.currentRatingFilter)
+        // this.removeRatingFilter(this.state.currentRatingFilter)
+        // this.addRatingFilter(value)
         this.setState({ currentRatingFilter: value })
        }
     }
@@ -77,13 +97,19 @@ const Filters = onClickOutside(React.createClass({
     this.props.blurMenu()
   },
   render() {
+    const foodTypes = (
+      <ul className="cuisine">
+        {this.renderFoodTypes()}
+      </ul>
+    )
     return (
       <div style={this.props.mobileMenu ? {transform:'translateX(0)'} : {} } className="filters" >
-        <div className="mobile-header"><div onClick={this.closeMenu} className="mobile-menu-close">x</div></div>
+        <div className="mobile-header">
+         <div className="mobile-menu-title">Sort by:</div>
+         <div onClick={this.closeMenu} className="mobile-menu-close">x</div>
+        </div>
         <h4>Cuisine/Food Type</h4>
-        <ul className="cuisine">
-          {this.props.searchResults.length === 0 ? 'What are you feeling?' : this.renderFoodTypes()}
-        </ul>
+          {!Object.keys(this.props.searchResults).length /*|| !this.props.searchResults.facets.length*/ ? CuisinePlaceholder() : foodTypes}
         <h4>Rating</h4>
         <ul className="ratings">
           <li onClick={this.handleRatingFilter.bind(null, 0)} className={this.state.currentRatingFilter === 0 ? 'active stars no-star' : 'stars no-star'}></li>
@@ -97,13 +123,13 @@ const Filters = onClickOutside(React.createClass({
         <ul className="payment-options">
           <li className="payment-type">
             <input onClick={this.handlePaymentToggle.bind(null, 'AMEX')} type="checkbox"/>
+            <span className="card cc-ae"></span>&nbsp;
             {this.props.mobileMenu ? 'AMEX' : 'American Express'}
-            <span className="card cc-ae"></span>
           </li>
           <li className="payment-type">
            <input onClick={this.handlePaymentToggle.bind(null, 'Discover')} type="checkbox"/>
+           <span className="card cc-discover"></span>&nbsp;
            Discover
-           <span className="card cc-discover"></span>
             {/*<ul className="nested-payment">
                           <li className="payment-type">
                             <input type="checkbox"/>
@@ -117,13 +143,13 @@ const Filters = onClickOutside(React.createClass({
           </li>
           <li className="payment-type">
             <input onClick={this.handlePaymentToggle.bind(null, 'MasterCard')} type="checkbox"/>
+            <span className="card cc-mc"></span>&nbsp;
             MasterCard
-            <span className="card cc-mc"></span>
           </li>
           <li className="payment-type">
             <input onClick={this.handlePaymentToggle.bind(null, 'Visa')} type="checkbox"/>
+            <span className="card cc-visa"></span>&nbsp;
             Visa
-            <span className="card cc-visa"></span>
           </li>
         </ul>
       </div>

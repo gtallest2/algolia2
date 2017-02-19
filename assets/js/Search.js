@@ -1,6 +1,13 @@
 import React from 'react'
 
+const { func } = React.PropTypes
+
 const Search = React.createClass({
+  propTypes: {
+    onSearch: func,
+    toggleMobile: func,
+    clearSearch: func,
+  },
   getInitialState(){
     return {
       searchTerm: ''
@@ -17,7 +24,6 @@ const Search = React.createClass({
     this.props.clearSearch();
     this.refs.searchInput.value = ''
     this.setState({ searchTerm: '' })
-    console.log(test)
   },
   render() {
     return (

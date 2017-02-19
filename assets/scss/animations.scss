@@ -1,0 +1,33 @@
+.results-ctg-enter {
+  transition: all 0.5s;
+  opacity:0;
+  height:0;
+  max-height:0;
+  // transform: translateX(-120%);
+  // max-height: 0;
+  // padding: 0 !important;
+  &.results-ctg-enter-active {
+    opacity:1;
+    height:auto;
+    max-height:1060px;
+    // padding: 2rem 0 !important;
+    // transform: translateX(0);
+  }
+}
+
+.results-ctg-leave {
+  // max-height:1060px;
+  // height:auto;
+  opacity:1;
+  transition: all 0.5s;
+  // transform: translateX(0);
+  &.results-ctg-leave-active {
+    // max-height:0;
+    // height:0;
+    opacity:0;
+    // transform: translateX(120%);
+    // max-height:0;
+    // padding:0;
+  }
+}
+

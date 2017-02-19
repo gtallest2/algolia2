@@ -2,6 +2,8 @@ $FontPathOpenSans: "./assets/fonts";
 @import './open-sans.scss';
 // @import url(http://fonts.googleapis.com/css?family=Roboto+Slab|Open+Sans:400italic,700italic,400,700);
 
+@import './animations';
+
 $search-blue: #1c688e;
 $lighter-search-blue: #3793c1;
 $border-grey: #e6e6e6;
@@ -9,6 +11,7 @@ $grey-text: #a9a9a9;
 
 html {
   box-sizing: border-box;
+  height:100vh;
 }
 *, *:before, *:after {
   box-sizing: inherit;
@@ -177,7 +180,7 @@ body {
     }
 
     .cuisine {
-
+      min-height:195px;
       display:flex;
       flex-direction:column;
       align-items:center;
@@ -194,7 +197,7 @@ body {
         .food-type,
         .food-type-amount {
           display:inline-flex;
-          padding:0 15px;
+          padding:0 5px;
         }
         .food-type-amount {
           color:$grey-text;
@@ -213,6 +216,20 @@ body {
         }
       }
 
+      .placeholder-food {
+        width:70%;
+        height:19px;
+        background:$border-grey;
+      }
+
+      .placeholder-number {
+        width:20%;
+        height:19px;
+        background:$border-grey;
+      }
+
+
+
       }
 
 
@@ -226,13 +243,14 @@ body {
 
 
         li {
-          margin:2px 15px;
+          margin:3px 15px;
           cursor:pointer;
+          border-radius:5px;
           &:hover {
-            border:2px solid orange;
+            background-color:$search-blue;
           }
           &.active {
-            border-left:10px solid orange;
+            background-color:$lighter-search-blue;
           }
 
         }
@@ -369,10 +387,11 @@ body {
         }
         .stars {
           display:inline-block;
+          vertical-align: top;
         }
 
         .result-rating {
-          background:url('./resources/graphics/all-stars.png');
+          background:url('./resources/graphics/all-stars-even-spacing-transparent.png');
           background-size:100px;
           width: 100px;
           height: 18px;
@@ -394,6 +413,33 @@ body {
         }
         .result-price {
           display:none;
+        }
+        .result-payment-options {
+          display:inline-block;
+
+          .card {
+            width:32px;
+            height:20px;
+            display:inline-block;
+            background:url('./resources/graphics/cc-icons.png');
+            background-size:122px;
+            vertical-align:middle;
+            margin-left:5px;
+          }
+
+          .cc-ae{
+            background-position:0 20px;
+          }
+          .cc-visa{
+            background-position:32px 0;
+          }
+          .cc-discover{
+            background-position:32px 20px;
+          }
+          .cc-mc{
+            background-position:77px 0;
+          }
+
         }
       }
 
@@ -421,20 +467,43 @@ body {
       left:0;
       right:0;
       bottom:20px;
-      font-size:18px;
+      font-size:16px;
 
-      .results-range {
-        font-size:12px;
-        font-style:italic;
-        padding-top:5px;
+      .navigate-results-top {
         border-top:1px solid $border-grey;
+        margin-left:30px;
+        margin-right:25px;
+        display: flex;
+        justify-content: space-between;
+
+        .results-range {
+          display: inline-block;
+          font-size:12px;
+          font-style:italic;
+          padding-top:5px;
+          text-align: left;
+        }
+
+        .results-per-page {
+          font-size:12px;
+          display: inline-block;
+          justify-content:flex-end;
+          padding-top: 5px;
+
+          select {
+            margin-left:5px;
+          }
+        }
+
       }
+
+
 
       .pagination {
         display: flex;
         justify-content:center;
         align-items:center;
-        margin:20px;
+        margin:10px;
 
         .page-button {
           display: flex;
@@ -445,8 +514,8 @@ body {
           border: 2px solid $border-grey;
           border-radius: 10px;
           color:white;
-          width:100px;
-          height:35px;
+          width:75px;
+          height:30px;
 
           &:hover {
             background: $lighter-search-blue;
@@ -470,30 +539,23 @@ body {
           }
         }
 
-        .results-per-page {
-          display: flex;
-          justify-content:flex-end;
-          padding:0 10px;
-
-          select {
-            margin-left:5px;
-          }
-        }
       }
   }
 }
     .stars {
-          background: url('./resources/graphics/all-stars.png');
+          background: url('./resources/graphics/all-stars-even-spacing-transparent.png');
           background-size:100px;
-          width: 100px;
-          height: 19px;
+          width: 110px;
+          height: 20px;
+          background-position-x:5px;
+          background-repeat: no-repeat;
           vertical-align:middle;
           display:inline-block;
           margin:0 5px;
         }
 
       .no-star {
-
+        background-position-y: 1px
       }
       .half-star {
         background-position-y:-19px;
@@ -505,32 +567,44 @@ body {
         background-position-y:-57px;
       }
       .two-star {
-        background-position-y:-76px;
+        background-position-y:-77px;
       }
       .two-half-star {
-        background-position-y:-95px;
+        background-position-y:-97px;
       }
       .three-star {
-        background-position-y:-114px;
+        background-position-y:-116px;
       }
       .three-half-star {
-        background-position-y:-133px;
+        background-position-y:-136px;
       }
       .four-star {
-        background-position-y:-152px;
+        background-position-y:-155px;
       }
       .four-half-star {
-        background-position-y:-171px;
+        background-position-y:-175px;
       }
       .five-star {
-        background-position-y:19px;
+        background-position-y:-194px;
       }
 
+// Responsive / Mobile Styling
 @media only screen and (max-width:768px){
+  body {
+    background:white;
+  }
   .panel {
     margin:0;
     width:100vw;
-    height:100vh;
+
+    .search {
+
+      .search-clear {
+        background:none;
+      }
+
+    }
+
     .lower-area {
       height: 80%;
 
@@ -549,7 +623,6 @@ body {
         .cuisine {
 
           li {
-
             .food-type,
             .food-type-amount{
               padding: 0;
@@ -560,12 +633,20 @@ body {
         }
 
         .mobile-header {
-          display:block;
+          display:flex;
           width:100%;
           height:35px;
           background:$search-blue;
           margin:0;
-          text-align: right;
+
+          .mobile-menu-title {
+            display: flex;
+            align-items:center;
+            color: white;
+            font-size: 16px;
+            padding-left: 10px;
+            font-weight: normal;
+          }
 
           .mobile-menu-close {
             font-size:20px;
@@ -573,7 +654,6 @@ body {
             color:white;
             font-weight:bold;
             cursor:pointer;
-            border-left:1px solid $border-grey;
             display: flex;
             width:35px;
             align-items:center;
@@ -586,8 +666,29 @@ body {
         width:100%;
         display:flex;
 
-        .result {
+
+        .search-stats {
           margin:10px 20px;
+
+          .search-stats-text {
+            border-bottom:none;
+            margin-right:0;
+            padding-right:0;
+          }
+        }
+
+        .results-ctg {
+          width:100%;
+        }
+
+        .result {
+          margin:10px 0 20px;
+          padding:5px;
+          align-items:center;
+
+          .result-image-link {
+            margin-left:15px;
+          }
 
           .result-image {
             width:70px;
@@ -605,6 +706,7 @@ body {
 
             .stars {
               margin:0;
+              background-position-x:0px;
             }
             .rating-number {
               display:none;
@@ -626,19 +728,43 @@ body {
               display:none;
            }
 
+          .result-payment-options {
+            display:block;
 
+            .card {
+              margin-left:0;
+              margin-right:5px;
+            }
+          }
 
+        }
+
+      }
+        .navigate-results {
+          margin-top:10px;
+
+          .navigate-results-top {
+            margin:0;
+            align-items:flex-end;
+
+            .results-range {
+              padding-bottom:1px;
             }
 
+            .results-per-page {
+              select {
+                background:white;
+              }
+            }
           }
 
         .pagination {
             font-size:16px;
             bottom:0;
-            margin:0;
-
-
+            margin-top:20px;
            }
+
+         }
 
       }
   }
