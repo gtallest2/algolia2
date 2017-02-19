@@ -15446,8 +15446,7 @@ const index = client.initIndex('merged');
 
 const helper = __WEBPACK_IMPORTED_MODULE_1_algoliasearch_helper___default()(client, 'merged', {
   facets: ['food_type', 'stars_count'],
-  disjunctiveFacets: ['payment_options'],
-  aroundLatLngViaIP: true
+  disjunctiveFacets: ['payment_options']
 });
 /* harmony export (immutable) */ __webpack_exports__["a"] = helper;
 
@@ -18911,6 +18910,14 @@ const Panel = __WEBPACK_IMPORTED_MODULE_0_react___default.a.createClass({
     console.log('close?');
     this.state.mobileMenu && this.toggleMobile();
   },
+  clearSearch() {
+    this.setState({ searchQuery: '' });
+    __WEBPACK_IMPORTED_MODULE_1__algolia__["a" /* helper */].setQuery('').search();
+  },
+  updateResultsPerPage(value) {
+    this.updateHitsPerPage(value);
+    __WEBPACK_IMPORTED_MODULE_1__algolia__["a" /* helper */].setQueryParameter('hitsPerPage', value).search();
+  },
   render() {
     const geo = __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
       'div',
@@ -18945,7 +18952,8 @@ const Panel = __WEBPACK_IMPORTED_MODULE_0_react___default.a.createClass({
       { className: 'panel' },
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_2__Search__["a" /* default */], {
         onSearch: this.handleSearch,
-        toggleMobile: this.toggleMobile
+        toggleMobile: this.toggleMobile,
+        clearSearch: this.clearSearch
       }),
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         'div',
@@ -18971,7 +18979,10 @@ const Panel = __WEBPACK_IMPORTED_MODULE_0_react___default.a.createClass({
           onShowMore: this.showMore,
           userLocation: this.state.location,
           prevPage: this.previousPage,
-          nextPage: this.nextPage
+          nextPage: this.nextPage,
+          mobileMenu: this.state.mobileMenu,
+          hitsPerPage: this.state.hitsPerPage,
+          updateResultsPerPage: this.updateResultsPerPage
         })
       )
     );
@@ -30152,7 +30163,11 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 const Results = __WEBPACK_IMPORTED_MODULE_0_react___default.a.createClass({
   displayName: 'Results',
 
-
+  getInitialState() {
+    return {
+      resultsPerPage: this.props.hitsPerPage
+    };
+  },
   renderResults() {
     return this.props.searchResults.hits.map((result, i) => {
       return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_2__Result__["a" /* default */], _extends({ key: i }, result, { userLocation: this.props.userLocation }));
@@ -30184,6 +30199,24 @@ const Results = __WEBPACK_IMPORTED_MODULE_0_react___default.a.createClass({
   handleShowMore() {
     this.props.onShowMore();
   },
+  renderResultsRange() {
+    const { hitsPerPage, nbHits: totalHits, nbPages: totalPages, page } = this.props.searchResults;
+    const lowerBound = page * hitsPerPage + 1;
+    const upperBound = (page + 1) * hitsPerPage;
+
+    return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+      'div',
+      { className: 'results-range' },
+      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+        'span',
+        null,
+        'Showing results ',
+        lowerBound,
+        ' - ',
+        upperBound > totalHits ? totalHits : upperBound
+      )
+    );
+  },
   renderPagination() {
     const { page, nbPages: pageTotal } = this.props.searchResults;
     return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -30209,17 +30242,63 @@ const Results = __WEBPACK_IMPORTED_MODULE_0_react___default.a.createClass({
       )
     );
   },
+  renderResultsPerPage() {
+    return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+      'div',
+      { className: 'results-per-page' },
+      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+        'span',
+        null,
+        'Results per page:'
+      ),
+      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+        'select',
+        { ref: 'resultsPerPage', onChange: this.updateResultsPerPage, name: 'results-per-page', value: this.state.resultsPerPage },
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+          'option',
+          { value: '3' },
+          '3'
+        ),
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+          'option',
+          { value: '5' },
+          '5'
+        ),
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+          'option',
+          { value: '10' },
+          '10'
+        ),
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+          'option',
+          { value: '20' },
+          '20'
+        )
+      )
+    );
+  },
+  updateResultsPerPage(e) {
+    this.setState({ resultsPerPage: e.target.value });
+    this.props.updateResultsPerPage(parseInt(e.target.value));
+  },
   render() {
+    const searchIsEmpty = this.props.searchResults.length === 0 || this.props.searchResults.nbHits === 5000;
     return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
       'div',
       { className: 'results' },
-      this.props.searchResults.length === 0 || this.props.searchResults.nbHits === 5000 ? __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+      searchIsEmpty ? __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         'h4',
         null,
         'Where are you eating tonight? \uD83C\uDF74'
       ) : this.millisecondsMatter(),
-      this.props.searchResults.length === 0 || this.props.searchResults.nbHits === 5000 ? '' : this.renderResults(),
-      this.props.searchResults.length !== 0 && this.props.searchResults.nbHits !== 5000 && this.renderPagination()
+      searchIsEmpty ? '' : this.renderResults(),
+      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+        'div',
+        { className: 'navigate-results' },
+        !searchIsEmpty && this.renderResultsRange(),
+        !searchIsEmpty && this.renderPagination(),
+        !searchIsEmpty && this.renderResultsPerPage()
+      )
     );
   }
 });
@@ -30245,9 +30324,16 @@ const Search = __WEBPACK_IMPORTED_MODULE_0_react___default.a.createClass({
   },
   handleSearchTermChange(event) {
     this.props.onSearch(event.target.value);
+    this.setState({ searchTerm: event.target.value });
   },
   openMobileMenu() {
     this.props.toggleMobile();
+  },
+  clearSearchQuery() {
+    this.props.clearSearch();
+    this.refs.searchInput.value = '';
+    this.setState({ searchTerm: '' });
+    console.log(test);
   },
   render() {
     return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -30262,7 +30348,12 @@ const Search = __WEBPACK_IMPORTED_MODULE_0_react___default.a.createClass({
           'Filter'
         )
       ),
-      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('input', { type: 'text', onChange: this.handleSearchTermChange, placeholder: 'Search for Restaurants by Name, Cuisine, Location' })
+      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('input', { ref: 'searchInput', type: 'text', onChange: this.handleSearchTermChange, placeholder: 'Search for Restaurants by Name, Cuisine, Location' }),
+      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+        'div',
+        { onClick: this.clearSearchQuery, className: (!this.state.searchTerm && 'invisible') + ' search-clear' },
+        'X'
+      )
     );
   }
 });
@@ -30278,7 +30369,7 @@ exports = module.exports = __webpack_require__(412)();
 
 
 // module
-exports.push([module.i, "@font-face {\n  font-family: 'Open Sans';\n  font-weight: 300;\n  font-style: normal;\n  src: url(\"./node_modules/npm-font-open-sans/fonts/Light/OpenSans-Light.eot\");\n  src: url(\"./node_modules/npm-font-open-sans/fonts/Light/OpenSans-Light.eot?#iefix\") format(\"embedded-opentype\"), url(\"./node_modules/npm-font-open-sans/fonts/Light/OpenSans-Light.woff\") format(\"woff\"), url(\"./node_modules/npm-font-open-sans/fonts/Light/OpenSans-Light.woff2\") format(\"woff2\"), url(\"./node_modules/npm-font-open-sans/fonts/Light/OpenSans-Light.ttf\") format(\"truetype\"), url(\"./node_modules/npm-font-open-sans/fonts/Light/OpenSans-Light.svg#OpenSansLight\") format(\"svg\"); }\n\n@font-face {\n  font-family: 'Open Sans';\n  font-weight: 300;\n  font-style: italic;\n  src: url(\"./node_modules/npm-font-open-sans/fonts/LightItalic/OpenSans-LightItalic.eot\");\n  src: url(\"./node_modules/npm-font-open-sans/fonts/LightItalic/OpenSans-LightItalic.eot?#iefix\") format(\"embedded-opentype\"), url(\"./node_modules/npm-font-open-sans/fonts/LightItalic/OpenSans-LightItalic.woff\") format(\"woff\"), url(\"./node_modules/npm-font-open-sans/fonts/LightItalic/OpenSans-LightItalic.woff2\") format(\"woff2\"), url(\"./node_modules/npm-font-open-sans/fonts/LightItalic/OpenSans-LightItalic.ttf\") format(\"truetype\"), url(\"./node_modules/npm-font-open-sans/fonts/LightItalic/OpenSans-LightItalic.svg#OpenSansLightItalic\") format(\"svg\"); }\n\n@font-face {\n  font-family: 'Open Sans';\n  font-weight: normal;\n  font-style: normal;\n  src: url(\"./node_modules/npm-font-open-sans/fonts/Regular/OpenSans-Regular.eot\");\n  src: url(\"./node_modules/npm-font-open-sans/fonts/Regular/OpenSans-Regular.eot?#iefix\") format(\"embedded-opentype\"), url(\"./node_modules/npm-font-open-sans/fonts/Regular/OpenSans-Regular.woff\") format(\"woff\"), url(\"./node_modules/npm-font-open-sans/fonts/Regular/OpenSans-Regular.woff2\") format(\"woff2\"), url(\"./node_modules/npm-font-open-sans/fonts/Regular/OpenSans-Regular.ttf\") format(\"truetype\"), url(\"./node_modules/npm-font-open-sans/fonts/Regular/OpenSans-Regular.svg#OpenSansRegular\") format(\"svg\"); }\n\n@font-face {\n  font-family: 'Open Sans';\n  font-weight: normal;\n  font-style: italic;\n  src: url(\"./node_modules/npm-font-open-sans/fonts/Italic/OpenSans-Italic.eot\");\n  src: url(\"./node_modules/npm-font-open-sans/fonts/Italic/OpenSans-Italic.eot?#iefix\") format(\"embedded-opentype\"), url(\"./node_modules/npm-font-open-sans/fonts/Italic/OpenSans-Italic.woff\") format(\"woff\"), url(\"./node_modules/npm-font-open-sans/fonts/Italic/OpenSans-Italic.woff2\") format(\"woff2\"), url(\"./node_modules/npm-font-open-sans/fonts/Italic/OpenSans-Italic.ttf\") format(\"truetype\"), url(\"./node_modules/npm-font-open-sans/fonts/Italic/OpenSans-Italic.svg#OpenSansItalic\") format(\"svg\"); }\n\n@font-face {\n  font-family: 'Open Sans';\n  font-weight: 600;\n  font-style: normal;\n  src: url(\"./node_modules/npm-font-open-sans/fonts/Semibold/OpenSans-Semibold.eot\");\n  src: url(\"./node_modules/npm-font-open-sans/fonts/Semibold/OpenSans-Semibold.eot?#iefix\") format(\"embedded-opentype\"), url(\"./node_modules/npm-font-open-sans/fonts/Semibold/OpenSans-Semibold.woff\") format(\"woff\"), url(\"./node_modules/npm-font-open-sans/fonts/Semibold/OpenSans-Semibold.woff2\") format(\"woff2\"), url(\"./node_modules/npm-font-open-sans/fonts/Semibold/OpenSans-Semibold.ttf\") format(\"truetype\"), url(\"./node_modules/npm-font-open-sans/fonts/Semibold/OpenSans-Semibold.svg#OpenSansSemibold\") format(\"svg\"); }\n\n@font-face {\n  font-family: 'Open Sans';\n  font-weight: 600;\n  font-style: italic;\n  src: url(\"./node_modules/npm-font-open-sans/fonts/SemiboldItalic/OpenSans-SemiboldItalic.eot\");\n  src: url(\"./node_modules/npm-font-open-sans/fonts/SemiboldItalic/OpenSans-SemiboldItalic.eot?#iefix\") format(\"embedded-opentype\"), url(\"./node_modules/npm-font-open-sans/fonts/SemiboldItalic/OpenSans-SemiboldItalic.woff\") format(\"woff\"), url(\"./node_modules/npm-font-open-sans/fonts/SemiboldItalic/OpenSans-SemiboldItalic.woff2\") format(\"woff2\"), url(\"./node_modules/npm-font-open-sans/fonts/SemiboldItalic/OpenSans-SemiboldItalic.ttf\") format(\"truetype\"), url(\"./node_modules/npm-font-open-sans/fonts/SemiboldItalic/OpenSans-SemiboldItalic.svg#OpenSansSemiboldItalic\") format(\"svg\"); }\n\n@font-face {\n  font-family: 'Open Sans';\n  font-weight: bold;\n  font-style: normal;\n  src: url(\"./node_modules/npm-font-open-sans/fonts/Bold/OpenSans-Bold.eot\");\n  src: url(\"./node_modules/npm-font-open-sans/fonts/Bold/OpenSans-Bold.eot?#iefix\") format(\"embedded-opentype\"), url(\"./node_modules/npm-font-open-sans/fonts/Bold/OpenSans-Bold.woff\") format(\"woff\"), url(\"./node_modules/npm-font-open-sans/fonts/Bold/OpenSans-Bold.woff2\") format(\"woff2\"), url(\"./node_modules/npm-font-open-sans/fonts/Bold/OpenSans-Bold.ttf\") format(\"truetype\"), url(\"./node_modules/npm-font-open-sans/fonts/Bold/OpenSans-Bold.svg#OpenSansBold\") format(\"svg\"); }\n\n@font-face {\n  font-family: 'Open Sans';\n  font-weight: bold;\n  font-style: italic;\n  src: url(\"./node_modules/npm-font-open-sans/fonts/BoldItalic/OpenSans-BoldItalic.eot\");\n  src: url(\"./node_modules/npm-font-open-sans/fonts/BoldItalic/OpenSans-BoldItalic.eot?#iefix\") format(\"embedded-opentype\"), url(\"./node_modules/npm-font-open-sans/fonts/BoldItalic/OpenSans-BoldItalic.woff\") format(\"woff\"), url(\"./node_modules/npm-font-open-sans/fonts/BoldItalic/OpenSans-BoldItalic.woff2\") format(\"woff2\"), url(\"./node_modules/npm-font-open-sans/fonts/BoldItalic/OpenSans-BoldItalic.ttf\") format(\"truetype\"), url(\"./node_modules/npm-font-open-sans/fonts/BoldItalic/OpenSans-BoldItalic.svg#OpenSansBoldItalic\") format(\"svg\"); }\n\n@font-face {\n  font-family: 'Open Sans';\n  font-weight: 800;\n  font-style: normal;\n  src: url(\"./node_modules/npm-font-open-sans/fonts/ExtraBold/OpenSans-ExtraBold.eot\");\n  src: url(\"./node_modules/npm-font-open-sans/fonts/ExtraBold/OpenSans-ExtraBold.eot?#iefix\") format(\"embedded-opentype\"), url(\"./node_modules/npm-font-open-sans/fonts/ExtraBold/OpenSans-ExtraBold.woff\") format(\"woff\"), url(\"./node_modules/npm-font-open-sans/fonts/ExtraBold/OpenSans-ExtraBold.woff2\") format(\"woff2\"), url(\"./node_modules/npm-font-open-sans/fonts/ExtraBold/OpenSans-ExtraBold.ttf\") format(\"truetype\"), url(\"./node_modules/npm-font-open-sans/fonts/ExtraBold/OpenSans-ExtraBold.svg#OpenSansExtrabold\") format(\"svg\"); }\n\n@font-face {\n  font-family: 'Open Sans';\n  font-weight: 800;\n  font-style: italic;\n  src: url(\"./node_modules/npm-font-open-sans/fonts/ExtraBoldItalic/OpenSans-ExtraBoldItalic.eot\");\n  src: url(\"./node_modules/npm-font-open-sans/fonts/ExtraBoldItalic/OpenSans-ExtraBoldItalic.eot?#iefix\") format(\"embedded-opentype\"), url(\"./node_modules/npm-font-open-sans/fonts/ExtraBoldItalic/OpenSans-ExtraBoldItalic.woff\") format(\"woff\"), url(\"./node_modules/npm-font-open-sans/fonts/ExtraBoldItalic/OpenSans-ExtraBoldItalic.woff2\") format(\"woff2\"), url(\"./node_modules/npm-font-open-sans/fonts/ExtraBoldItalic/OpenSans-ExtraBoldItalic.ttf\") format(\"truetype\"), url(\"./node_modules/npm-font-open-sans/fonts/ExtraBoldItalic/OpenSans-ExtraBoldItalic.svg#OpenSansExtraboldItalic\") format(\"svg\"); }\n\nhtml {\n  box-sizing: border-box; }\n\n*, *:before, *:after {\n  box-sizing: inherit; }\n\nbody {\n  font-family: 'Open Sans', sans-serif;\n  font-size: 13px;\n  font-weight: 300;\n  background-image: url(\"./resources/graphics/background.png\"); }\n\n.panel {\n  margin: 50px auto 50px;\n  text-align: center;\n  font-size: 2em;\n  background: white;\n  padding: 0px;\n  width: 80vw;\n  height: auto; }\n  .panel p {\n    margin: 5px; }\n\n.search {\n  width: 100%;\n  background: #1c688e;\n  height: 100px;\n  display: flex;\n  justify-content: center;\n  align-items: center; }\n  .search .mobile-menu {\n    display: none;\n    height: 35px;\n    width: 50px;\n    border: 2px solid #e6e6e6;\n    cursor: pointer;\n    border-radius: 5px;\n    margin-right: 10px;\n    align-items: center;\n    justify-content: center; }\n    .search .mobile-menu:hover {\n      background: #3793c1; }\n    .search .mobile-menu .filter-button {\n      color: white;\n      font-size: 18px; }\n  .search input {\n    display: inline-block;\n    width: 90%;\n    height: 45px;\n    border-radius: 3px;\n    border-style: hidden;\n    font-size: 16px;\n    padding: 0 10px; }\n\n.geo-selector {\n  width: 100%;\n  height: auto;\n  background: #bbbbbb;\n  text-align: left;\n  padding: 5px 15px; }\n  .geo-selector .geo-header {\n    display: inline-block;\n    color: white;\n    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);\n    font-size: 16px;\n    vertical-align: middle;\n    width: 20%;\n    text-align: center; }\n  .geo-selector .geo-list {\n    margin: 0;\n    padding: 10px;\n    display: inline-block;\n    width: 80%;\n    vertical-align: middle; }\n    .geo-selector .geo-list .geo-location {\n      list-style-type: none;\n      display: inline-block;\n      margin: 0 10px;\n      background: #1c688e;\n      color: white;\n      padding: 2px 15px;\n      border-radius: 15px;\n      font-size: 20px;\n      vertical-align: middle;\n      box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3); }\n      .geo-selector .geo-list .geo-location:hover {\n        background: #3793c1;\n        cursor: pointer; }\n      .geo-selector .geo-list .geo-location:active {\n        transform: translate(2px, 2px);\n        box-shadow: none; }\n\n.lower-area {\n  display: flex;\n  height: 60vh;\n  min-height: 60vh; }\n  .lower-area .filters {\n    width: 25%;\n    height: auto;\n    display: inline-block;\n    border-right: 1px solid #e6e6e6;\n    padding: 15px;\n    flex-direction: column;\n    font-size: 14px;\n    text-align: left;\n    position: relative;\n    z-index: 10;\n    overflow: overlay; }\n    .lower-area .filters .mobile-header {\n      display: none; }\n    .lower-area .filters h4 {\n      font-size: 16px;\n      font-weight: normal;\n      margin: 10px;\n      padding: 0; }\n    .lower-area .filters ul {\n      list-style-type: none;\n      margin: 0 5px;\n      padding: 0; }\n    .lower-area .filters .cuisine {\n      display: flex;\n      flex-direction: column;\n      align-items: center; }\n      .lower-area .filters .cuisine li {\n        display: flex;\n        justify-content: space-between;\n        padding: 3px 5px;\n        border-radius: 5px;\n        width: 90%;\n        font-weight: 300; }\n        .lower-area .filters .cuisine li .food-type,\n        .lower-area .filters .cuisine li .food-type-amount {\n          display: inline-flex;\n          padding: 0 15px; }\n        .lower-area .filters .cuisine li .food-type-amount {\n          color: #a9a9a9; }\n        .lower-area .filters .cuisine li:hover, .lower-area .filters .cuisine li.active {\n          background: #2897c5;\n          color: white;\n          cursor: pointer; }\n          .lower-area .filters .cuisine li:hover .food-type-amount, .lower-area .filters .cuisine li.active .food-type-amount {\n            color: white; }\n    .lower-area .filters .ratings {\n      display: flex;\n      flex-direction: column; }\n      .lower-area .filters .ratings li {\n        margin: 2px 15px;\n        cursor: pointer; }\n        .lower-area .filters .ratings li:hover {\n          border: 2px solid orange; }\n        .lower-area .filters .ratings li.active {\n          border-left: 10px solid orange; }\n    .lower-area .filters .payment-options li {\n      margin: 5px 10px; }\n    .lower-area .filters .payment-options input {\n      margin-right: 5px; }\n    .lower-area .filters .payment-options .card {\n      width: 32px;\n      height: 20px;\n      display: inline-block;\n      background: url(\"./resources/graphics/cc-icons.png\");\n      background-size: 122px;\n      vertical-align: middle;\n      margin-left: 5px; }\n    .lower-area .filters .payment-options .cc-ae {\n      background-position: 0 20px; }\n    .lower-area .filters .payment-options .cc-visa {\n      background-position: 32px 0; }\n    .lower-area .filters .payment-options .cc-discover {\n      background-position: 32px 20px; }\n    .lower-area .filters .payment-options .cc-mc {\n      background-position: 77px 0; }\n  .lower-area .results {\n    width: 75%;\n    height: 100%;\n    display: inline-block;\n    padding: 20px 30px;\n    flex-direction: column;\n    align-items: center;\n    position: relative; }\n    .lower-area .results a {\n      text-decoration: none; }\n    .lower-area .results h4 {\n      margin: 0; }\n    .lower-area .results .search-stats {\n      border-bottom: 1px solid #e6e6e6;\n      text-align: left;\n      font-size: 16px;\n      margin: 10px 30px; }\n      .lower-area .results .search-stats .search-stats-text {\n        background: white;\n        border-bottom: 1px solid white;\n        margin-right: 10px;\n        padding-right: 30px; }\n        .lower-area .results .search-stats .search-stats-text .results-count {\n          font-weight: bold; }\n        .lower-area .results .search-stats .search-stats-text .results-speed {\n          font-size: 12px; }\n    .lower-area .results .result {\n      margin: 20px;\n      display: flex;\n      width: 100%;\n      height: 105px;\n      border-radius: 10px;\n      padding: 10px; }\n      .lower-area .results .result:hover {\n        background-color: #ececec; }\n        .lower-area .results .result:hover .result-text {\n          color: #1c688e; }\n      .lower-area .results .result em {\n        background: rgba(255, 200, 0, 0.6);\n        font-style: normal; }\n      .lower-area .results .result .result-image {\n        display: flex;\n        border-radius: 5px;\n        width: 85px;\n        border: 1px solid #a9a9a9; }\n      .lower-area .results .result .result-text {\n        font-size: 16px;\n        color: #a9a9a9;\n        display: flex;\n        flex-direction: column;\n        align-items: baseline;\n        margin-left: 20px;\n        justify-content: space-between;\n        font-weight: 300; }\n        .lower-area .results .result .result-text h4 {\n          font-size: 16px;\n          color: black;\n          font-weight: 600; }\n        .lower-area .results .result .result-text img {\n          background-size: 100px;\n          width: 100px;\n          height: 19px; }\n        .lower-area .results .result .result-text .stars {\n          display: inline-block; }\n        .lower-area .results .result .result-text .result-rating {\n          background: url(\"./resources/graphics/all-stars.png\");\n          background-size: 100px;\n          width: 100px;\n          height: 18px;\n          vertical-align: middle;\n          display: inline-block;\n          margin: 0 5px; }\n        .lower-area .results .result .result-text .rating-number {\n          color: #ffab66;\n          display: inline-block; }\n        .lower-area .results .result .result-text .review-count {\n          display: inline-block; }\n        .lower-area .results .result .result-text .result-city {\n          display: none; }\n        .lower-area .results .result .result-text .result-price {\n          display: none; }\n    .lower-area .results .show-more {\n      width: 180px;\n      background: none;\n      padding: 10px;\n      border-radius: 5px;\n      border-style: solid;\n      font-size: 16px;\n      border: 1px solid #a9a9a9;\n      color: #a9a9a9;\n      margin-top: 20px; }\n    .lower-area .results .show-more:hover {\n      background: #a9a9a9;\n      color: white; }\n    .lower-area .results .pagination {\n      display: flex;\n      justify-content: center;\n      align-items: center;\n      margin: 20px;\n      left: 0;\n      right: 0;\n      position: absolute;\n      bottom: 20px;\n      font-size: 18px; }\n      .lower-area .results .pagination .page-button, .lower-area .results .pagination .prev-page, .lower-area .results .pagination .next-page {\n        display: flex;\n        align-items: center;\n        justify-content: center;\n        margin: 0 10px;\n        background: #1c688e;\n        border: 2px solid #e6e6e6;\n        border-radius: 10px;\n        color: white;\n        width: 100px;\n        height: 35px; }\n        .lower-area .results .pagination .page-button:hover, .lower-area .results .pagination .prev-page:hover, .lower-area .results .pagination .next-page:hover {\n          background: #3793c1; }\n        .lower-area .results .pagination .page-button:active, .lower-area .results .pagination .prev-page:active, .lower-area .results .pagination .next-page:active {\n          transform: translate(1px, 1px); }\n        .lower-area .results .pagination .page-button:focus, .lower-area .results .pagination .prev-page:focus, .lower-area .results .pagination .next-page:focus {\n          outline: none; }\n        .lower-area .results .pagination .page-button:disabled, .lower-area .results .pagination .prev-page:disabled, .lower-area .results .pagination .next-page:disabled {\n          background: #e6e6e6; }\n\n.stars {\n  background: url(\"./resources/graphics/all-stars.png\");\n  background-size: 100px;\n  width: 100px;\n  height: 19px;\n  vertical-align: middle;\n  display: inline-block;\n  margin: 0 5px; }\n\n.half-star {\n  background-position-y: -19px; }\n\n.one-star {\n  background-position-y: -38px; }\n\n.one-half-star {\n  background-position-y: -57px; }\n\n.two-star {\n  background-position-y: -76px; }\n\n.two-half-star {\n  background-position-y: -95px; }\n\n.three-star {\n  background-position-y: -114px; }\n\n.three-half-star {\n  background-position-y: -133px; }\n\n.four-star {\n  background-position-y: -152px; }\n\n.four-half-star {\n  background-position-y: -171px; }\n\n.five-star {\n  background-position-y: 19px; }\n\n@media only screen and (max-width: 768px) {\n  .panel {\n    margin: 0;\n    width: 100vw;\n    height: 100vh; }\n    .panel .lower-area {\n      height: 80%; }\n      .panel .lower-area .filters {\n        position: fixed;\n        top: 0;\n        left: 0;\n        background: white;\n        height: 100vh;\n        width: 50vw;\n        transform: translate(-50vw);\n        transition: 0.5s;\n        padding: 0;\n        overflow: scroll; }\n        .panel .lower-area .filters .cuisine li .food-type,\n        .panel .lower-area .filters .cuisine li .food-type-amount {\n          padding: 0; }\n        .panel .lower-area .filters .mobile-header {\n          display: block;\n          width: 100%;\n          height: 35px;\n          background: #1c688e;\n          margin: 0;\n          text-align: right; }\n          .panel .lower-area .filters .mobile-header .mobile-menu-close {\n            font-size: 20px;\n            height: 100%;\n            color: white;\n            font-weight: bold;\n            cursor: pointer;\n            border-left: 1px solid #e6e6e6;\n            display: flex;\n            width: 35px;\n            align-items: center;\n            justify-content: center;\n            margin-left: auto; }\n      .panel .lower-area .results {\n        width: 100%;\n        display: flex; }\n        .panel .lower-area .results .result {\n          margin: 10px 20px; }\n          .panel .lower-area .results .result .result-image {\n            width: 70px; }\n          .panel .lower-area .results .result .result-text {\n            font-size: 12px;\n            text-align: left;\n            align-items: baseline;\n            justify-content: initial; }\n            .panel .lower-area .results .result .result-text a h4 {\n              font-size: 14px; }\n            .panel .lower-area .results .result .result-text .stars {\n              margin: 0; }\n            .panel .lower-area .results .result .result-text .rating-number {\n              display: none; }\n            .panel .lower-area .results .result .result-text .result-area {\n              display: none; }\n            .panel .lower-area .results .result .result-text .review-count {\n              display: none; }\n            .panel .lower-area .results .result .result-text .result-city {\n              display: inline-block; }\n            .panel .lower-area .results .result .result-text .result-price {\n              display: inline-block; }\n            .panel .lower-area .results .result .result-text .result-price-range {\n              display: none; }\n        .panel .lower-area .results .pagination {\n          font-size: 16px;\n          bottom: 0;\n          margin: 0; }\n    .panel .search {\n      height: 75px; }\n      .panel .search .mobile-menu {\n        display: flex; }\n      .panel .search input {\n        width: 75%;\n        height: 35px;\n        font-size: 12px; } }\n", ""]);
+exports.push([module.i, "@font-face {\n  font-family: 'Open Sans';\n  font-weight: 300;\n  font-style: normal;\n  src: url(\"./assets/fonts/Light/OpenSans-Light.eot\");\n  src: url(\"./assets/fonts/Light/OpenSans-Light.eot?#iefix\") format(\"embedded-opentype\"), url(\"./assets/fonts/Light/OpenSans-Light.woff\") format(\"woff\"), url(\"./assets/fonts/Light/OpenSans-Light.woff2\") format(\"woff2\"), url(\"./assets/fonts/Light/OpenSans-Light.ttf\") format(\"truetype\"), url(\"./assets/fonts/Light/OpenSans-Light.svg#OpenSansLight\") format(\"svg\"); }\n\n@font-face {\n  font-family: 'Open Sans';\n  font-weight: 300;\n  font-style: italic;\n  src: url(\"./assets/fonts/LightItalic/OpenSans-LightItalic.eot\");\n  src: url(\"./assets/fonts/LightItalic/OpenSans-LightItalic.eot?#iefix\") format(\"embedded-opentype\"), url(\"./assets/fonts/LightItalic/OpenSans-LightItalic.woff\") format(\"woff\"), url(\"./assets/fonts/LightItalic/OpenSans-LightItalic.woff2\") format(\"woff2\"), url(\"./assets/fonts/LightItalic/OpenSans-LightItalic.ttf\") format(\"truetype\"), url(\"./assets/fonts/LightItalic/OpenSans-LightItalic.svg#OpenSansLightItalic\") format(\"svg\"); }\n\n@font-face {\n  font-family: 'Open Sans';\n  font-weight: normal;\n  font-style: normal;\n  src: url(\"./assets/fonts/Regular/OpenSans-Regular.eot\");\n  src: url(\"./assets/fonts/Regular/OpenSans-Regular.eot?#iefix\") format(\"embedded-opentype\"), url(\"./assets/fonts/Regular/OpenSans-Regular.woff\") format(\"woff\"), url(\"./assets/fonts/Regular/OpenSans-Regular.woff2\") format(\"woff2\"), url(\"./assets/fonts/Regular/OpenSans-Regular.ttf\") format(\"truetype\"), url(\"./assets/fonts/Regular/OpenSans-Regular.svg#OpenSansRegular\") format(\"svg\"); }\n\n@font-face {\n  font-family: 'Open Sans';\n  font-weight: normal;\n  font-style: italic;\n  src: url(\"./assets/fonts/Italic/OpenSans-Italic.eot\");\n  src: url(\"./assets/fonts/Italic/OpenSans-Italic.eot?#iefix\") format(\"embedded-opentype\"), url(\"./assets/fonts/Italic/OpenSans-Italic.woff\") format(\"woff\"), url(\"./assets/fonts/Italic/OpenSans-Italic.woff2\") format(\"woff2\"), url(\"./assets/fonts/Italic/OpenSans-Italic.ttf\") format(\"truetype\"), url(\"./assets/fonts/Italic/OpenSans-Italic.svg#OpenSansItalic\") format(\"svg\"); }\n\n@font-face {\n  font-family: 'Open Sans';\n  font-weight: 600;\n  font-style: normal;\n  src: url(\"./assets/fonts/Semibold/OpenSans-Semibold.eot\");\n  src: url(\"./assets/fonts/Semibold/OpenSans-Semibold.eot?#iefix\") format(\"embedded-opentype\"), url(\"./assets/fonts/Semibold/OpenSans-Semibold.woff\") format(\"woff\"), url(\"./assets/fonts/Semibold/OpenSans-Semibold.woff2\") format(\"woff2\"), url(\"./assets/fonts/Semibold/OpenSans-Semibold.ttf\") format(\"truetype\"), url(\"./assets/fonts/Semibold/OpenSans-Semibold.svg#OpenSansSemibold\") format(\"svg\"); }\n\n@font-face {\n  font-family: 'Open Sans';\n  font-weight: 600;\n  font-style: italic;\n  src: url(\"./assets/fonts/SemiboldItalic/OpenSans-SemiboldItalic.eot\");\n  src: url(\"./assets/fonts/SemiboldItalic/OpenSans-SemiboldItalic.eot?#iefix\") format(\"embedded-opentype\"), url(\"./assets/fonts/SemiboldItalic/OpenSans-SemiboldItalic.woff\") format(\"woff\"), url(\"./assets/fonts/SemiboldItalic/OpenSans-SemiboldItalic.woff2\") format(\"woff2\"), url(\"./assets/fonts/SemiboldItalic/OpenSans-SemiboldItalic.ttf\") format(\"truetype\"), url(\"./assets/fonts/SemiboldItalic/OpenSans-SemiboldItalic.svg#OpenSansSemiboldItalic\") format(\"svg\"); }\n\n@font-face {\n  font-family: 'Open Sans';\n  font-weight: bold;\n  font-style: normal;\n  src: url(\"./assets/fonts/Bold/OpenSans-Bold.eot\");\n  src: url(\"./assets/fonts/Bold/OpenSans-Bold.eot?#iefix\") format(\"embedded-opentype\"), url(\"./assets/fonts/Bold/OpenSans-Bold.woff\") format(\"woff\"), url(\"./assets/fonts/Bold/OpenSans-Bold.woff2\") format(\"woff2\"), url(\"./assets/fonts/Bold/OpenSans-Bold.ttf\") format(\"truetype\"), url(\"./assets/fonts/Bold/OpenSans-Bold.svg#OpenSansBold\") format(\"svg\"); }\n\n@font-face {\n  font-family: 'Open Sans';\n  font-weight: bold;\n  font-style: italic;\n  src: url(\"./assets/fonts/BoldItalic/OpenSans-BoldItalic.eot\");\n  src: url(\"./assets/fonts/BoldItalic/OpenSans-BoldItalic.eot?#iefix\") format(\"embedded-opentype\"), url(\"./assets/fonts/BoldItalic/OpenSans-BoldItalic.woff\") format(\"woff\"), url(\"./assets/fonts/BoldItalic/OpenSans-BoldItalic.woff2\") format(\"woff2\"), url(\"./assets/fonts/BoldItalic/OpenSans-BoldItalic.ttf\") format(\"truetype\"), url(\"./assets/fonts/BoldItalic/OpenSans-BoldItalic.svg#OpenSansBoldItalic\") format(\"svg\"); }\n\n@font-face {\n  font-family: 'Open Sans';\n  font-weight: 800;\n  font-style: normal;\n  src: url(\"./assets/fonts/ExtraBold/OpenSans-ExtraBold.eot\");\n  src: url(\"./assets/fonts/ExtraBold/OpenSans-ExtraBold.eot?#iefix\") format(\"embedded-opentype\"), url(\"./assets/fonts/ExtraBold/OpenSans-ExtraBold.woff\") format(\"woff\"), url(\"./assets/fonts/ExtraBold/OpenSans-ExtraBold.woff2\") format(\"woff2\"), url(\"./assets/fonts/ExtraBold/OpenSans-ExtraBold.ttf\") format(\"truetype\"), url(\"./assets/fonts/ExtraBold/OpenSans-ExtraBold.svg#OpenSansExtrabold\") format(\"svg\"); }\n\n@font-face {\n  font-family: 'Open Sans';\n  font-weight: 800;\n  font-style: italic;\n  src: url(\"./assets/fonts/ExtraBoldItalic/OpenSans-ExtraBoldItalic.eot\");\n  src: url(\"./assets/fonts/ExtraBoldItalic/OpenSans-ExtraBoldItalic.eot?#iefix\") format(\"embedded-opentype\"), url(\"./assets/fonts/ExtraBoldItalic/OpenSans-ExtraBoldItalic.woff\") format(\"woff\"), url(\"./assets/fonts/ExtraBoldItalic/OpenSans-ExtraBoldItalic.woff2\") format(\"woff2\"), url(\"./assets/fonts/ExtraBoldItalic/OpenSans-ExtraBoldItalic.ttf\") format(\"truetype\"), url(\"./assets/fonts/ExtraBoldItalic/OpenSans-ExtraBoldItalic.svg#OpenSansExtraboldItalic\") format(\"svg\"); }\n\nhtml {\n  box-sizing: border-box; }\n\n*, *:before, *:after {\n  box-sizing: inherit; }\n\nbody {\n  font-family: 'Open Sans', sans-serif;\n  font-size: 13px;\n  font-weight: 300;\n  background-image: url(\"./resources/graphics/background.png\"); }\n\n.panel {\n  margin: 50px auto 50px;\n  text-align: center;\n  font-size: 2em;\n  background: white;\n  padding: 0px;\n  width: 80vw;\n  height: auto; }\n  .panel p {\n    margin: 5px; }\n\n.search {\n  width: 100%;\n  background: #1c688e;\n  height: 100px;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  position: relative; }\n  .search .mobile-menu {\n    display: none;\n    height: 35px;\n    width: 50px;\n    border: 2px solid #e6e6e6;\n    cursor: pointer;\n    border-radius: 5px;\n    margin-right: 10px;\n    align-items: center;\n    justify-content: center; }\n    .search .mobile-menu:hover {\n      background: #3793c1; }\n    .search .mobile-menu .filter-button {\n      color: white;\n      font-size: 18px; }\n  .search input {\n    display: inline-block;\n    width: 90%;\n    height: 45px;\n    border-radius: 3px;\n    border-style: hidden;\n    font-size: 16px;\n    padding: 0 10px; }\n  .search .search-clear {\n    position: absolute;\n    color: black;\n    padding: 5px;\n    right: 7%;\n    cursor: pointer;\n    background: white;\n    font-size: 18px; }\n  .search .invisible {\n    display: none; }\n\n.geo-selector {\n  width: 100%;\n  height: auto;\n  background: #bbbbbb;\n  text-align: left;\n  padding: 5px 15px; }\n  .geo-selector .geo-header {\n    display: inline-block;\n    color: white;\n    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);\n    font-size: 16px;\n    vertical-align: middle;\n    width: 20%;\n    text-align: center; }\n  .geo-selector .geo-list {\n    margin: 0;\n    padding: 10px;\n    display: inline-block;\n    width: 80%;\n    vertical-align: middle; }\n    .geo-selector .geo-list .geo-location {\n      list-style-type: none;\n      display: inline-block;\n      margin: 0 10px;\n      background: #1c688e;\n      color: white;\n      padding: 2px 15px;\n      border-radius: 15px;\n      font-size: 20px;\n      vertical-align: middle;\n      box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3); }\n      .geo-selector .geo-list .geo-location:hover {\n        background: #3793c1;\n        cursor: pointer; }\n      .geo-selector .geo-list .geo-location:active {\n        transform: translate(2px, 2px);\n        box-shadow: none; }\n\n.lower-area {\n  display: flex;\n  min-height: 60vh; }\n  .lower-area .filters {\n    width: 25%;\n    height: auto;\n    display: inline-block;\n    border-right: 1px solid #e6e6e6;\n    padding: 15px;\n    flex-direction: column;\n    font-size: 14px;\n    text-align: left;\n    position: relative;\n    z-index: 10;\n    overflow: overlay; }\n    .lower-area .filters .mobile-header {\n      display: none; }\n    .lower-area .filters h4 {\n      font-size: 16px;\n      font-weight: normal;\n      margin: 10px;\n      padding: 0; }\n    .lower-area .filters ul {\n      list-style-type: none;\n      margin: 0 5px;\n      padding: 0; }\n    .lower-area .filters .cuisine {\n      display: flex;\n      flex-direction: column;\n      align-items: center; }\n      .lower-area .filters .cuisine li {\n        display: flex;\n        justify-content: space-between;\n        padding: 3px 5px;\n        border-radius: 5px;\n        width: 90%;\n        font-weight: 300; }\n        .lower-area .filters .cuisine li .food-type,\n        .lower-area .filters .cuisine li .food-type-amount {\n          display: inline-flex;\n          padding: 0 15px; }\n        .lower-area .filters .cuisine li .food-type-amount {\n          color: #a9a9a9; }\n        .lower-area .filters .cuisine li:hover, .lower-area .filters .cuisine li.active {\n          background: #2897c5;\n          color: white;\n          cursor: pointer; }\n          .lower-area .filters .cuisine li:hover .food-type-amount, .lower-area .filters .cuisine li.active .food-type-amount {\n            color: white; }\n    .lower-area .filters .ratings {\n      display: flex;\n      flex-direction: column; }\n      .lower-area .filters .ratings li {\n        margin: 2px 15px;\n        cursor: pointer; }\n        .lower-area .filters .ratings li:hover {\n          border: 2px solid orange; }\n        .lower-area .filters .ratings li.active {\n          border-left: 10px solid orange; }\n    .lower-area .filters .payment-options li {\n      margin: 5px 10px; }\n    .lower-area .filters .payment-options input {\n      margin-right: 5px; }\n    .lower-area .filters .payment-options .card {\n      width: 32px;\n      height: 20px;\n      display: inline-block;\n      background: url(\"./resources/graphics/cc-icons.png\");\n      background-size: 122px;\n      vertical-align: middle;\n      margin-left: 5px; }\n    .lower-area .filters .payment-options .cc-ae {\n      background-position: 0 20px; }\n    .lower-area .filters .payment-options .cc-visa {\n      background-position: 32px 0; }\n    .lower-area .filters .payment-options .cc-discover {\n      background-position: 32px 20px; }\n    .lower-area .filters .payment-options .cc-mc {\n      background-position: 77px 0; }\n  .lower-area .results {\n    width: 75%;\n    height: 100%;\n    display: inline-block;\n    padding: 20px 30px;\n    flex-direction: column;\n    align-items: center;\n    position: relative; }\n    .lower-area .results a {\n      text-decoration: none; }\n    .lower-area .results h4 {\n      margin: 0; }\n    .lower-area .results .search-stats {\n      border-bottom: 1px solid #e6e6e6;\n      text-align: left;\n      font-size: 16px;\n      margin: 10px 30px; }\n      .lower-area .results .search-stats .search-stats-text {\n        background: white;\n        border-bottom: 1px solid white;\n        margin-right: 10px;\n        padding-right: 30px; }\n        .lower-area .results .search-stats .search-stats-text .results-count {\n          font-weight: bold; }\n        .lower-area .results .search-stats .search-stats-text .results-speed {\n          font-size: 12px; }\n    .lower-area .results .result {\n      margin: 20px;\n      display: flex;\n      width: 100%;\n      height: 105px;\n      border-radius: 10px;\n      padding: 10px; }\n      .lower-area .results .result:hover {\n        background-color: #ececec; }\n        .lower-area .results .result:hover .result-text {\n          color: #1c688e; }\n      .lower-area .results .result em {\n        background: rgba(255, 200, 0, 0.6);\n        font-style: normal; }\n      .lower-area .results .result .result-image {\n        display: flex;\n        border-radius: 5px;\n        width: 85px;\n        border: 1px solid #a9a9a9; }\n      .lower-area .results .result .result-text {\n        font-size: 16px;\n        color: #a9a9a9;\n        display: flex;\n        flex-direction: column;\n        align-items: baseline;\n        margin-left: 20px;\n        justify-content: space-between;\n        font-weight: 300; }\n        .lower-area .results .result .result-text h4 {\n          font-size: 16px;\n          color: black;\n          font-weight: 600; }\n        .lower-area .results .result .result-text img {\n          background-size: 100px;\n          width: 100px;\n          height: 19px; }\n        .lower-area .results .result .result-text .stars {\n          display: inline-block; }\n        .lower-area .results .result .result-text .result-rating {\n          background: url(\"./resources/graphics/all-stars.png\");\n          background-size: 100px;\n          width: 100px;\n          height: 18px;\n          vertical-align: middle;\n          display: inline-block;\n          margin: 0 5px; }\n        .lower-area .results .result .result-text .rating-number {\n          color: #ffab66;\n          display: inline-block; }\n        .lower-area .results .result .result-text .review-count {\n          display: inline-block; }\n        .lower-area .results .result .result-text .result-city {\n          display: none; }\n        .lower-area .results .result .result-text .result-price {\n          display: none; }\n    .lower-area .results .show-more {\n      width: 180px;\n      background: none;\n      padding: 10px;\n      border-radius: 5px;\n      border-style: solid;\n      font-size: 16px;\n      border: 1px solid #a9a9a9;\n      color: #a9a9a9;\n      margin-top: 20px; }\n    .lower-area .results .show-more:hover {\n      background: #a9a9a9;\n      color: white; }\n    .lower-area .results .navigate-results {\n      left: 0;\n      right: 0;\n      bottom: 20px;\n      font-size: 18px; }\n      .lower-area .results .navigate-results .results-range {\n        font-size: 12px;\n        font-style: italic;\n        padding-top: 5px;\n        border-top: 1px solid #e6e6e6; }\n      .lower-area .results .navigate-results .pagination {\n        display: flex;\n        justify-content: center;\n        align-items: center;\n        margin: 20px; }\n        .lower-area .results .navigate-results .pagination .page-button, .lower-area .results .navigate-results .pagination .prev-page, .lower-area .results .navigate-results .pagination .next-page {\n          display: flex;\n          align-items: center;\n          justify-content: center;\n          margin: 0 10px;\n          background: #1c688e;\n          border: 2px solid #e6e6e6;\n          border-radius: 10px;\n          color: white;\n          width: 100px;\n          height: 35px; }\n          .lower-area .results .navigate-results .pagination .page-button:hover, .lower-area .results .navigate-results .pagination .prev-page:hover, .lower-area .results .navigate-results .pagination .next-page:hover {\n            background: #3793c1; }\n          .lower-area .results .navigate-results .pagination .page-button:active, .lower-area .results .navigate-results .pagination .prev-page:active, .lower-area .results .navigate-results .pagination .next-page:active {\n            transform: translate(1px, 1px); }\n          .lower-area .results .navigate-results .pagination .page-button:focus, .lower-area .results .navigate-results .pagination .prev-page:focus, .lower-area .results .navigate-results .pagination .next-page:focus {\n            outline: none; }\n          .lower-area .results .navigate-results .pagination .page-button:disabled, .lower-area .results .navigate-results .pagination .prev-page:disabled, .lower-area .results .navigate-results .pagination .next-page:disabled {\n            background: #e6e6e6; }\n      .lower-area .results .navigate-results .results-per-page {\n        display: flex;\n        justify-content: flex-end;\n        padding: 0 10px; }\n        .lower-area .results .navigate-results .results-per-page select {\n          margin-left: 5px; }\n\n.stars {\n  background: url(\"./resources/graphics/all-stars.png\");\n  background-size: 100px;\n  width: 100px;\n  height: 19px;\n  vertical-align: middle;\n  display: inline-block;\n  margin: 0 5px; }\n\n.half-star {\n  background-position-y: -19px; }\n\n.one-star {\n  background-position-y: -38px; }\n\n.one-half-star {\n  background-position-y: -57px; }\n\n.two-star {\n  background-position-y: -76px; }\n\n.two-half-star {\n  background-position-y: -95px; }\n\n.three-star {\n  background-position-y: -114px; }\n\n.three-half-star {\n  background-position-y: -133px; }\n\n.four-star {\n  background-position-y: -152px; }\n\n.four-half-star {\n  background-position-y: -171px; }\n\n.five-star {\n  background-position-y: 19px; }\n\n@media only screen and (max-width: 768px) {\n  .panel {\n    margin: 0;\n    width: 100vw;\n    height: 100vh; }\n    .panel .lower-area {\n      height: 80%; }\n      .panel .lower-area .filters {\n        position: fixed;\n        top: 0;\n        left: 0;\n        background: white;\n        height: 100vh;\n        width: 50vw;\n        transform: translate(-50vw);\n        transition: 0.5s;\n        padding: 0;\n        overflow: scroll; }\n        .panel .lower-area .filters .cuisine li .food-type,\n        .panel .lower-area .filters .cuisine li .food-type-amount {\n          padding: 0; }\n        .panel .lower-area .filters .mobile-header {\n          display: block;\n          width: 100%;\n          height: 35px;\n          background: #1c688e;\n          margin: 0;\n          text-align: right; }\n          .panel .lower-area .filters .mobile-header .mobile-menu-close {\n            font-size: 20px;\n            height: 100%;\n            color: white;\n            font-weight: bold;\n            cursor: pointer;\n            border-left: 1px solid #e6e6e6;\n            display: flex;\n            width: 35px;\n            align-items: center;\n            justify-content: center;\n            margin-left: auto; }\n      .panel .lower-area .results {\n        width: 100%;\n        display: flex; }\n        .panel .lower-area .results .result {\n          margin: 10px 20px; }\n          .panel .lower-area .results .result .result-image {\n            width: 70px; }\n          .panel .lower-area .results .result .result-text {\n            font-size: 12px;\n            text-align: left;\n            align-items: baseline;\n            justify-content: initial; }\n            .panel .lower-area .results .result .result-text a h4 {\n              font-size: 14px; }\n            .panel .lower-area .results .result .result-text .stars {\n              margin: 0; }\n            .panel .lower-area .results .result .result-text .rating-number {\n              display: none; }\n            .panel .lower-area .results .result .result-text .result-area {\n              display: none; }\n            .panel .lower-area .results .result .result-text .review-count {\n              display: none; }\n            .panel .lower-area .results .result .result-text .result-city {\n              display: inline-block; }\n            .panel .lower-area .results .result .result-text .result-price {\n              display: inline-block; }\n            .panel .lower-area .results .result .result-text .result-price-range {\n              display: none; }\n        .panel .lower-area .results .pagination {\n          font-size: 16px;\n          bottom: 0;\n          margin: 0; }\n    .panel .search {\n      height: 75px; }\n      .panel .search .mobile-menu {\n        display: flex; }\n      .panel .search input {\n        width: 75%;\n        height: 35px;\n        font-size: 12px; } }\n", ""]);
 
 // exports
 
@@ -45013,6 +45104,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Panel__ = __webpack_require__(238);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__scss_main_scss__ = __webpack_require__(239);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__scss_main_scss___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4__scss_main_scss__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_raven_js__ = __webpack_require__(524);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_raven_js___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5_raven_js__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__data_config__ = __webpack_require__(530);
 
 
 
@@ -45020,6 +45114,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 
+
+
+
+
+__WEBPACK_IMPORTED_MODULE_5_raven_js___default.a.config(__WEBPACK_IMPORTED_MODULE_6__data_config__["a" /* sentry_url */]).install();
 
 const App = __WEBPACK_IMPORTED_MODULE_0_react___default.a.createClass({
   displayName: 'App',
@@ -45034,6 +45133,2658 @@ const App = __WEBPACK_IMPORTED_MODULE_0_react___default.a.createClass({
 });
 
 __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1_react_dom__["render"])(__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(App, null), document.getElementById('app'));
+
+/***/ }),
+/* 524 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(global) {/**
+ * Enforces a single instance of the Raven client, and the
+ * main entry point for Raven. If you are a consumer of the
+ * Raven library, you SHOULD load this file (vs raven.js).
+ **/
+
+
+
+var RavenConstructor = __webpack_require__(528);
+
+// This is to be defensive in environments where window does not exist (see https://github.com/getsentry/raven-js/pull/785)
+var _window = typeof window !== 'undefined' ? window
+            : typeof global !== 'undefined' ? global
+            : typeof self !== 'undefined' ? self
+            : {};
+var _Raven = _window.Raven;
+
+var Raven = new RavenConstructor();
+
+/*
+ * Allow multiple versions of Raven to be installed.
+ * Strip Raven from the global context and returns the instance.
+ *
+ * @return {Raven}
+ */
+Raven.noConflict = function () {
+	_window.Raven = _Raven;
+	return Raven;
+};
+
+Raven.afterLoad();
+
+module.exports = Raven;
+
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(66)))
+
+/***/ }),
+/* 525 */
+/***/ (function(module, exports) {
+
+exports = module.exports = stringify
+exports.getSerialize = serializer
+
+function stringify(obj, replacer, spaces, cycleReplacer) {
+  return JSON.stringify(obj, serializer(replacer, cycleReplacer), spaces)
+}
+
+function serializer(replacer, cycleReplacer) {
+  var stack = [], keys = []
+
+  if (cycleReplacer == null) cycleReplacer = function(key, value) {
+    if (stack[0] === value) return "[Circular ~]"
+    return "[Circular ~." + keys.slice(0, stack.indexOf(value)).join(".") + "]"
+  }
+
+  return function(key, value) {
+    if (stack.length > 0) {
+      var thisPos = stack.indexOf(this)
+      ~thisPos ? stack.splice(thisPos + 1) : stack.push(this)
+      ~thisPos ? keys.splice(thisPos, Infinity, key) : keys.push(key)
+      if (~stack.indexOf(value)) value = cycleReplacer.call(this, key, value)
+    }
+    else stack.push(value)
+
+    return replacer == null ? value : replacer.call(this, key, value)
+  }
+}
+
+
+/***/ }),
+/* 526 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+function RavenConfigError(message) {
+    this.name = 'RavenConfigError';
+    this.message = message;
+}
+RavenConfigError.prototype = new Error();
+RavenConfigError.prototype.constructor = RavenConfigError;
+
+module.exports = RavenConfigError;
+
+
+/***/ }),
+/* 527 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var wrapMethod = function(console, level, callback) {
+    var originalConsoleLevel = console[level];
+    var originalConsole = console;
+
+    if (!(level in console)) {
+        return;
+    }
+
+    var sentryLevel = level === 'warn'
+        ? 'warning'
+        : level;
+
+    console[level] = function () {
+        var args = [].slice.call(arguments);
+
+        var msg = '' + args.join(' ');
+        var data = {level: sentryLevel, logger: 'console', extra: {'arguments': args}};
+        callback && callback(msg, data);
+
+        // this fails for some browsers. :(
+        if (originalConsoleLevel) {
+            // IE9 doesn't allow calling apply on console functions directly
+            // See: https://stackoverflow.com/questions/5472938/does-ie9-support-console-log-and-is-it-a-real-function#answer-5473193
+            Function.prototype.apply.call(
+                originalConsoleLevel,
+                originalConsole,
+                args
+            );
+        }
+    };
+};
+
+module.exports = {
+    wrapMethod: wrapMethod
+};
+
+
+/***/ }),
+/* 528 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(global) {/*global XDomainRequest:false, __DEV__:false*/
+
+
+var TraceKit = __webpack_require__(529);
+var RavenConfigError = __webpack_require__(526);
+var stringify = __webpack_require__(525);
+
+var wrapConsoleMethod = __webpack_require__(527).wrapMethod;
+
+var dsnKeys = 'source protocol user pass host port path'.split(' '),
+    dsnPattern = /^(?:(\w+):)?\/\/(?:(\w+)(:\w+)?@)?([\w\.-]+)(?::(\d+))?(\/.*)/;
+
+function now() {
+    return +new Date();
+}
+
+// This is to be defensive in environments where window does not exist (see https://github.com/getsentry/raven-js/pull/785)
+var _window = typeof window !== 'undefined' ? window
+            : typeof global !== 'undefined' ? global
+            : typeof self !== 'undefined' ? self
+            : {};
+var _document = _window.document;
+var _navigator = _window.navigator;
+
+// First, check for JSON support
+// If there is no JSON, we no-op the core features of Raven
+// since JSON is required to encode the payload
+function Raven() {
+    this._hasJSON = !!(typeof JSON === 'object' && JSON.stringify);
+    // Raven can run in contexts where there's no document (react-native)
+    this._hasDocument = !isUndefined(_document);
+    this._hasNavigator = !isUndefined(_navigator);
+    this._lastCapturedException = null;
+    this._lastEventId = null;
+    this._globalServer = null;
+    this._globalKey = null;
+    this._globalProject = null;
+    this._globalContext = {};
+    this._globalOptions = {
+        logger: 'javascript',
+        ignoreErrors: [],
+        ignoreUrls: [],
+        whitelistUrls: [],
+        includePaths: [],
+        crossOrigin: 'anonymous',
+        collectWindowErrors: true,
+        maxMessageLength: 0,
+        stackTraceLimit: 50,
+        autoBreadcrumbs: true
+    };
+    this._ignoreOnError = 0;
+    this._isRavenInstalled = false;
+    this._originalErrorStackTraceLimit = Error.stackTraceLimit;
+    // capture references to window.console *and* all its methods first
+    // before the console plugin has a chance to monkey patch
+    this._originalConsole = _window.console || {};
+    this._originalConsoleMethods = {};
+    this._plugins = [];
+    this._startTime = now();
+    this._wrappedBuiltIns = [];
+    this._breadcrumbs = [];
+    this._lastCapturedEvent = null;
+    this._keypressTimeout;
+    this._location = _window.location;
+    this._lastHref = this._location && this._location.href;
+    this._resetBackoff();
+
+    for (var method in this._originalConsole) {  // eslint-disable-line guard-for-in
+      this._originalConsoleMethods[method] = this._originalConsole[method];
+    }
+}
+
+/*
+ * The core Raven singleton
+ *
+ * @this {Raven}
+ */
+
+Raven.prototype = {
+    // Hardcode version string so that raven source can be loaded directly via
+    // webpack (using a build step causes webpack #1617). Grunt verifies that
+    // this value matches package.json during build.
+    //   See: https://github.com/getsentry/raven-js/issues/465
+    VERSION: '3.11.0',
+
+    debug: false,
+
+    TraceKit: TraceKit, // alias to TraceKit
+
+    /*
+     * Configure Raven with a DSN and extra options
+     *
+     * @param {string} dsn The public Sentry DSN
+     * @param {object} options Optional set of of global options [optional]
+     * @return {Raven}
+     */
+    config: function(dsn, options) {
+        var self = this;
+
+        if (self._globalServer) {
+                this._logDebug('error', 'Error: Raven has already been configured');
+            return self;
+        }
+        if (!dsn) return self;
+
+        var globalOptions = self._globalOptions;
+
+        // merge in options
+        if (options) {
+            each(options, function(key, value){
+                // tags and extra are special and need to be put into context
+                if (key === 'tags' || key === 'extra' || key === 'user') {
+                    self._globalContext[key] = value;
+                } else {
+                    globalOptions[key] = value;
+                }
+            });
+        }
+
+        self.setDSN(dsn);
+
+        // "Script error." is hard coded into browsers for errors that it can't read.
+        // this is the result of a script being pulled in from an external domain and CORS.
+        globalOptions.ignoreErrors.push(/^Script error\.?$/);
+        globalOptions.ignoreErrors.push(/^Javascript error: Script error\.? on line 0$/);
+
+        // join regexp rules into one big rule
+        globalOptions.ignoreErrors = joinRegExp(globalOptions.ignoreErrors);
+        globalOptions.ignoreUrls = globalOptions.ignoreUrls.length ? joinRegExp(globalOptions.ignoreUrls) : false;
+        globalOptions.whitelistUrls = globalOptions.whitelistUrls.length ? joinRegExp(globalOptions.whitelistUrls) : false;
+        globalOptions.includePaths = joinRegExp(globalOptions.includePaths);
+        globalOptions.maxBreadcrumbs = Math.max(0, Math.min(globalOptions.maxBreadcrumbs || 100, 100)); // default and hard limit is 100
+
+        var autoBreadcrumbDefaults = {
+            xhr: true,
+            console: true,
+            dom: true,
+            location: true
+        };
+
+        var autoBreadcrumbs = globalOptions.autoBreadcrumbs;
+        if ({}.toString.call(autoBreadcrumbs) === '[object Object]') {
+            autoBreadcrumbs = objectMerge(autoBreadcrumbDefaults, autoBreadcrumbs);
+        } else if (autoBreadcrumbs !== false) {
+            autoBreadcrumbs = autoBreadcrumbDefaults;
+        }
+        globalOptions.autoBreadcrumbs = autoBreadcrumbs;
+
+        TraceKit.collectWindowErrors = !!globalOptions.collectWindowErrors;
+
+        // return for chaining
+        return self;
+    },
+
+    /*
+     * Installs a global window.onerror error handler
+     * to capture and report uncaught exceptions.
+     * At this point, install() is required to be called due
+     * to the way TraceKit is set up.
+     *
+     * @return {Raven}
+     */
+    install: function() {
+        var self = this;
+        if (self.isSetup() && !self._isRavenInstalled) {
+            TraceKit.report.subscribe(function () {
+                self._handleOnErrorStackInfo.apply(self, arguments);
+            });
+            self._instrumentTryCatch();
+            if (self._globalOptions.autoBreadcrumbs)
+                self._instrumentBreadcrumbs();
+
+            // Install all of the plugins
+            self._drainPlugins();
+
+            self._isRavenInstalled = true;
+        }
+
+        Error.stackTraceLimit = self._globalOptions.stackTraceLimit;
+        return this;
+    },
+
+    /*
+     * Set the DSN (can be called multiple time unlike config)
+     *
+     * @param {string} dsn The public Sentry DSN
+     */
+    setDSN: function(dsn) {
+        var self = this,
+            uri = self._parseDSN(dsn),
+          lastSlash = uri.path.lastIndexOf('/'),
+          path = uri.path.substr(1, lastSlash);
+
+        self._dsn = dsn;
+        self._globalKey = uri.user;
+        self._globalSecret = uri.pass && uri.pass.substr(1);
+        self._globalProject = uri.path.substr(lastSlash + 1);
+
+        self._globalServer = self._getGlobalServer(uri);
+
+        self._globalEndpoint = self._globalServer +
+            '/' + path + 'api/' + self._globalProject + '/store/';
+
+        // Reset backoff state since we may be pointing at a
+        // new project/server
+        this._resetBackoff();
+    },
+
+    /*
+     * Wrap code within a context so Raven can capture errors
+     * reliably across domains that is executed immediately.
+     *
+     * @param {object} options A specific set of options for this context [optional]
+     * @param {function} func The callback to be immediately executed within the context
+     * @param {array} args An array of arguments to be called with the callback [optional]
+     */
+    context: function(options, func, args) {
+        if (isFunction(options)) {
+            args = func || [];
+            func = options;
+            options = undefined;
+        }
+
+        return this.wrap(options, func).apply(this, args);
+    },
+
+    /*
+     * Wrap code within a context and returns back a new function to be executed
+     *
+     * @param {object} options A specific set of options for this context [optional]
+     * @param {function} func The function to be wrapped in a new context
+     * @param {function} func A function to call before the try/catch wrapper [optional, private]
+     * @return {function} The newly wrapped functions with a context
+     */
+    wrap: function(options, func, _before) {
+        var self = this;
+        // 1 argument has been passed, and it's not a function
+        // so just return it
+        if (isUndefined(func) && !isFunction(options)) {
+            return options;
+        }
+
+        // options is optional
+        if (isFunction(options)) {
+            func = options;
+            options = undefined;
+        }
+
+        // At this point, we've passed along 2 arguments, and the second one
+        // is not a function either, so we'll just return the second argument.
+        if (!isFunction(func)) {
+            return func;
+        }
+
+        // We don't wanna wrap it twice!
+        try {
+            if (func.__raven__) {
+                return func;
+            }
+
+            // If this has already been wrapped in the past, return that
+            if (func.__raven_wrapper__ ){
+                return func.__raven_wrapper__ ;
+            }
+        } catch (e) {
+            // Just accessing custom props in some Selenium environments
+            // can cause a "Permission denied" exception (see raven-js#495).
+            // Bail on wrapping and return the function as-is (defers to window.onerror).
+            return func;
+        }
+
+        function wrapped() {
+            var args = [], i = arguments.length,
+                deep = !options || options && options.deep !== false;
+
+            if (_before && isFunction(_before)) {
+                _before.apply(this, arguments);
+            }
+
+            // Recursively wrap all of a function's arguments that are
+            // functions themselves.
+            while(i--) args[i] = deep ? self.wrap(options, arguments[i]) : arguments[i];
+
+            try {
+                // Attempt to invoke user-land function
+                // NOTE: If you are a Sentry user, and you are seeing this stack frame, it
+                //       means Raven caught an error invoking your application code. This is
+                //       expected behavior and NOT indicative of a bug with Raven.js.
+                return func.apply(this, args);
+            } catch(e) {
+                self._ignoreNextOnError();
+                self.captureException(e, options);
+                throw e;
+            }
+        }
+
+        // copy over properties of the old function
+        for (var property in func) {
+            if (hasKey(func, property)) {
+                wrapped[property] = func[property];
+            }
+        }
+        wrapped.prototype = func.prototype;
+
+        func.__raven_wrapper__ = wrapped;
+        // Signal that this function has been wrapped already
+        // for both debugging and to prevent it to being wrapped twice
+        wrapped.__raven__ = true;
+        wrapped.__inner__ = func;
+
+        return wrapped;
+    },
+
+    /*
+     * Uninstalls the global error handler.
+     *
+     * @return {Raven}
+     */
+    uninstall: function() {
+        TraceKit.report.uninstall();
+
+        this._restoreBuiltIns();
+
+        Error.stackTraceLimit = this._originalErrorStackTraceLimit;
+        this._isRavenInstalled = false;
+
+        return this;
+    },
+
+    /*
+     * Manually capture an exception and send it over to Sentry
+     *
+     * @param {error} ex An exception to be logged
+     * @param {object} options A specific set of options for this error [optional]
+     * @return {Raven}
+     */
+    captureException: function(ex, options) {
+        // If not an Error is passed through, recall as a message instead
+        if (!isError(ex)) {
+            return this.captureMessage(ex, objectMerge({
+                trimHeadFrames: 1,
+                stacktrace: true // if we fall back to captureMessage, default to attempting a new trace
+            }, options));
+        }
+
+        // Store the raw exception object for potential debugging and introspection
+        this._lastCapturedException = ex;
+
+        // TraceKit.report will re-raise any exception passed to it,
+        // which means you have to wrap it in try/catch. Instead, we
+        // can wrap it here and only re-raise if TraceKit.report
+        // raises an exception different from the one we asked to
+        // report on.
+        try {
+            var stack = TraceKit.computeStackTrace(ex);
+            this._handleStackInfo(stack, options);
+        } catch(ex1) {
+            if(ex !== ex1) {
+                throw ex1;
+            }
+        }
+
+        return this;
+    },
+
+    /*
+     * Manually send a message to Sentry
+     *
+     * @param {string} msg A plain message to be captured in Sentry
+     * @param {object} options A specific set of options for this message [optional]
+     * @return {Raven}
+     */
+    captureMessage: function(msg, options) {
+        // config() automagically converts ignoreErrors from a list to a RegExp so we need to test for an
+        // early call; we'll error on the side of logging anything called before configuration since it's
+        // probably something you should see:
+        if (!!this._globalOptions.ignoreErrors.test && this._globalOptions.ignoreErrors.test(msg)) {
+            return;
+        }
+
+        options = options || {};
+
+        var data = objectMerge({
+            message: msg + ''  // Make sure it's actually a string
+        }, options);
+
+        if (this._globalOptions.stacktrace || (options && options.stacktrace)) {
+            var ex;
+            // create a stack trace from this point; just trim
+            // off extra frames so they don't include this function call (or
+            // earlier Raven.js library fn calls)
+            try {
+                throw new Error(msg);
+            } catch (ex1) {
+                ex = ex1;
+            }
+
+            // null exception name so `Error` isn't prefixed to msg
+            ex.name = null;
+
+            options = objectMerge({
+                // fingerprint on msg, not stack trace (legacy behavior, could be
+                // revisited)
+                fingerprint: msg,
+                trimHeadFrames: (options.trimHeadFrames || 0) + 1
+            }, options);
+
+            var stack = TraceKit.computeStackTrace(ex);
+            var frames = this._prepareFrames(stack, options);
+            data.stacktrace = {
+                // Sentry expects frames oldest to newest
+                frames: frames.reverse()
+            }
+        }
+
+        // Fire away!
+        this._send(data);
+
+        return this;
+    },
+
+    captureBreadcrumb: function (obj) {
+        var crumb = objectMerge({
+            timestamp: now() / 1000
+        }, obj);
+
+        if (isFunction(this._globalOptions.breadcrumbCallback)) {
+            var result = this._globalOptions.breadcrumbCallback(crumb);
+
+            if (isObject(result) && !isEmptyObject(result)) {
+                crumb = result;
+            } else if (result === false) {
+                return this;
+            }
+        }
+
+        this._breadcrumbs.push(crumb);
+        if (this._breadcrumbs.length > this._globalOptions.maxBreadcrumbs) {
+            this._breadcrumbs.shift();
+        }
+        return this;
+    },
+
+    addPlugin: function(plugin /*arg1, arg2, ... argN*/) {
+        var pluginArgs = [].slice.call(arguments, 1);
+
+        this._plugins.push([plugin, pluginArgs]);
+        if (this._isRavenInstalled) {
+            this._drainPlugins();
+        }
+
+        return this;
+    },
+
+    /*
+     * Set/clear a user to be sent along with the payload.
+     *
+     * @param {object} user An object representing user data [optional]
+     * @return {Raven}
+     */
+    setUserContext: function(user) {
+        // Intentionally do not merge here since that's an unexpected behavior.
+        this._globalContext.user = user;
+
+        return this;
+    },
+
+    /*
+     * Merge extra attributes to be sent along with the payload.
+     *
+     * @param {object} extra An object representing extra data [optional]
+     * @return {Raven}
+     */
+    setExtraContext: function(extra) {
+        this._mergeContext('extra', extra);
+
+        return this;
+    },
+
+    /*
+     * Merge tags to be sent along with the payload.
+     *
+     * @param {object} tags An object representing tags [optional]
+     * @return {Raven}
+     */
+    setTagsContext: function(tags) {
+        this._mergeContext('tags', tags);
+
+        return this;
+    },
+
+    /*
+     * Clear all of the context.
+     *
+     * @return {Raven}
+     */
+    clearContext: function() {
+        this._globalContext = {};
+
+        return this;
+    },
+
+    /*
+     * Get a copy of the current context. This cannot be mutated.
+     *
+     * @return {object} copy of context
+     */
+    getContext: function() {
+        // lol javascript
+        return JSON.parse(stringify(this._globalContext));
+    },
+
+
+    /*
+     * Set environment of application
+     *
+     * @param {string} environment Typically something like 'production'.
+     * @return {Raven}
+     */
+    setEnvironment: function(environment) {
+        this._globalOptions.environment = environment;
+
+        return this;
+    },
+
+    /*
+     * Set release version of application
+     *
+     * @param {string} release Typically something like a git SHA to identify version
+     * @return {Raven}
+     */
+    setRelease: function(release) {
+        this._globalOptions.release = release;
+
+        return this;
+    },
+
+    /*
+     * Set the dataCallback option
+     *
+     * @param {function} callback The callback to run which allows the
+     *                            data blob to be mutated before sending
+     * @return {Raven}
+     */
+    setDataCallback: function(callback) {
+        var original = this._globalOptions.dataCallback;
+        this._globalOptions.dataCallback = isFunction(callback)
+          ? function (data) { return callback(data, original); }
+          : callback;
+
+        return this;
+    },
+
+    /*
+     * Set the breadcrumbCallback option
+     *
+     * @param {function} callback The callback to run which allows filtering
+     *                            or mutating breadcrumbs
+     * @return {Raven}
+     */
+    setBreadcrumbCallback: function(callback) {
+        var original = this._globalOptions.breadcrumbCallback;
+        this._globalOptions.breadcrumbCallback = isFunction(callback)
+          ? function (data) { return callback(data, original); }
+          : callback;
+
+        return this;
+    },
+
+    /*
+     * Set the shouldSendCallback option
+     *
+     * @param {function} callback The callback to run which allows
+     *                            introspecting the blob before sending
+     * @return {Raven}
+     */
+    setShouldSendCallback: function(callback) {
+        var original = this._globalOptions.shouldSendCallback;
+        this._globalOptions.shouldSendCallback = isFunction(callback)
+            ? function (data) { return callback(data, original); }
+            : callback;
+
+        return this;
+    },
+
+    /**
+     * Override the default HTTP transport mechanism that transmits data
+     * to the Sentry server.
+     *
+     * @param {function} transport Function invoked instead of the default
+     *                             `makeRequest` handler.
+     *
+     * @return {Raven}
+     */
+    setTransport: function(transport) {
+        this._globalOptions.transport = transport;
+
+        return this;
+    },
+
+    /*
+     * Get the latest raw exception that was captured by Raven.
+     *
+     * @return {error}
+     */
+    lastException: function() {
+        return this._lastCapturedException;
+    },
+
+    /*
+     * Get the last event id
+     *
+     * @return {string}
+     */
+    lastEventId: function() {
+        return this._lastEventId;
+    },
+
+    /*
+     * Determine if Raven is setup and ready to go.
+     *
+     * @return {boolean}
+     */
+    isSetup: function() {
+        if (!this._hasJSON) return false;  // needs JSON support
+        if (!this._globalServer) {
+            if (!this.ravenNotConfiguredError) {
+              this.ravenNotConfiguredError = true;
+              this._logDebug('error', 'Error: Raven has not been configured.');
+            }
+            return false;
+        }
+        return true;
+    },
+
+    afterLoad: function () {
+        // TODO: remove window dependence?
+
+        // Attempt to initialize Raven on load
+        var RavenConfig = _window.RavenConfig;
+        if (RavenConfig) {
+            this.config(RavenConfig.dsn, RavenConfig.config).install();
+        }
+    },
+
+    showReportDialog: function (options) {
+        if (!_document) // doesn't work without a document (React native)
+            return;
+
+        options = options || {};
+
+        var lastEventId = options.eventId || this.lastEventId();
+        if (!lastEventId) {
+            throw new RavenConfigError('Missing eventId');
+        }
+
+        var dsn = options.dsn || this._dsn;
+        if (!dsn) {
+            throw new RavenConfigError('Missing DSN');
+        }
+
+        var encode = encodeURIComponent;
+        var qs = '';
+        qs += '?eventId=' + encode(lastEventId);
+        qs += '&dsn=' + encode(dsn);
+
+        var user = options.user || this._globalContext.user;
+        if (user) {
+            if (user.name)  qs += '&name=' + encode(user.name);
+            if (user.email) qs += '&email=' + encode(user.email);
+        }
+
+        var globalServer = this._getGlobalServer(this._parseDSN(dsn));
+
+        var script = _document.createElement('script');
+        script.async = true;
+        script.src = globalServer + '/api/embed/error-page/' + qs;
+        (_document.head || _document.body).appendChild(script);
+    },
+
+    /**** Private functions ****/
+    _ignoreNextOnError: function () {
+        var self = this;
+        this._ignoreOnError += 1;
+        setTimeout(function () {
+            // onerror should trigger before setTimeout
+            self._ignoreOnError -= 1;
+        });
+    },
+
+    _triggerEvent: function(eventType, options) {
+        // NOTE: `event` is a native browser thing, so let's avoid conflicting wiht it
+        var evt, key;
+
+        if (!this._hasDocument)
+            return;
+
+        options = options || {};
+
+        eventType = 'raven' + eventType.substr(0,1).toUpperCase() + eventType.substr(1);
+
+        if (_document.createEvent) {
+            evt = _document.createEvent('HTMLEvents');
+            evt.initEvent(eventType, true, true);
+        } else {
+            evt = _document.createEventObject();
+            evt.eventType = eventType;
+        }
+
+        for (key in options) if (hasKey(options, key)) {
+            evt[key] = options[key];
+        }
+
+        if (_document.createEvent) {
+            // IE9 if standards
+            _document.dispatchEvent(evt);
+        } else {
+            // IE8 regardless of Quirks or Standards
+            // IE9 if quirks
+            try {
+                _document.fireEvent('on' + evt.eventType.toLowerCase(), evt);
+            } catch(e) {
+                // Do nothing
+            }
+        }
+    },
+
+    /**
+     * Wraps addEventListener to capture UI breadcrumbs
+     * @param evtName the event name (e.g. "click")
+     * @returns {Function}
+     * @private
+     */
+    _breadcrumbEventHandler: function(evtName) {
+        var self = this;
+        return function (evt) {
+            // reset keypress timeout; e.g. triggering a 'click' after
+            // a 'keypress' will reset the keypress debounce so that a new
+            // set of keypresses can be recorded
+            self._keypressTimeout = null;
+
+            // It's possible this handler might trigger multiple times for the same
+            // event (e.g. event propagation through node ancestors). Ignore if we've
+            // already captured the event.
+            if (self._lastCapturedEvent === evt)
+                return;
+
+            self._lastCapturedEvent = evt;
+            var elem = evt.target;
+
+            var target;
+
+            // try/catch htmlTreeAsString because it's particularly complicated, and
+            // just accessing the DOM incorrectly can throw an exception in some circumstances.
+            try {
+                target = htmlTreeAsString(elem);
+            } catch (e) {
+                target = '<unknown>';
+            }
+
+            self.captureBreadcrumb({
+                category: 'ui.' + evtName, // e.g. ui.click, ui.input
+                message: target
+            });
+        };
+    },
+
+    /**
+     * Wraps addEventListener to capture keypress UI events
+     * @returns {Function}
+     * @private
+     */
+    _keypressEventHandler: function() {
+        var self = this,
+            debounceDuration = 1000; // milliseconds
+
+        // TODO: if somehow user switches keypress target before
+        //       debounce timeout is triggered, we will only capture
+        //       a single breadcrumb from the FIRST target (acceptable?)
+        return function (evt) {
+            var target = evt.target,
+                tagName = target && target.tagName;
+
+            // only consider keypress events on actual input elements
+            // this will disregard keypresses targeting body (e.g. tabbing
+            // through elements, hotkeys, etc)
+            if (!tagName || tagName !== 'INPUT' && tagName !== 'TEXTAREA' && !target.isContentEditable)
+                return;
+
+            // record first keypress in a series, but ignore subsequent
+            // keypresses until debounce clears
+            var timeout = self._keypressTimeout;
+            if (!timeout) {
+                self._breadcrumbEventHandler('input')(evt);
+            }
+            clearTimeout(timeout);
+            self._keypressTimeout = setTimeout(function () {
+                self._keypressTimeout = null;
+            }, debounceDuration);
+        };
+    },
+
+    /**
+     * Captures a breadcrumb of type "navigation", normalizing input URLs
+     * @param to the originating URL
+     * @param from the target URL
+     * @private
+     */
+    _captureUrlChange: function(from, to) {
+        var parsedLoc = parseUrl(this._location.href);
+        var parsedTo = parseUrl(to);
+        var parsedFrom = parseUrl(from);
+
+        // because onpopstate only tells you the "new" (to) value of location.href, and
+        // not the previous (from) value, we need to track the value of the current URL
+        // state ourselves
+        this._lastHref = to;
+
+        // Use only the path component of the URL if the URL matches the current
+        // document (almost all the time when using pushState)
+        if (parsedLoc.protocol === parsedTo.protocol && parsedLoc.host === parsedTo.host)
+            to = parsedTo.relative;
+        if (parsedLoc.protocol === parsedFrom.protocol && parsedLoc.host === parsedFrom.host)
+            from = parsedFrom.relative;
+
+        this.captureBreadcrumb({
+            category: 'navigation',
+            data: {
+                to: to,
+                from: from
+            }
+        });
+    },
+
+    /**
+     * Install any queued plugins
+     */
+    _instrumentTryCatch: function() {
+        var self = this;
+
+        var wrappedBuiltIns = self._wrappedBuiltIns;
+
+        function wrapTimeFn(orig) {
+            return function (fn, t) { // preserve arity
+                // Make a copy of the arguments to prevent deoptimization
+                // https://github.com/petkaantonov/bluebird/wiki/Optimization-killers#32-leaking-arguments
+                var args = new Array(arguments.length);
+                for(var i = 0; i < args.length; ++i) {
+                    args[i] = arguments[i];
+                }
+                var originalCallback = args[0];
+                if (isFunction(originalCallback)) {
+                    args[0] = self.wrap(originalCallback);
+                }
+
+                // IE < 9 doesn't support .call/.apply on setInterval/setTimeout, but it
+                // also supports only two arguments and doesn't care what this is, so we
+                // can just call the original function directly.
+                if (orig.apply) {
+                    return orig.apply(this, args);
+                } else {
+                    return orig(args[0], args[1]);
+                }
+            };
+        }
+
+        var autoBreadcrumbs = this._globalOptions.autoBreadcrumbs;
+
+        function wrapEventTarget(global) {
+            var proto = _window[global] && _window[global].prototype;
+            if (proto && proto.hasOwnProperty && proto.hasOwnProperty('addEventListener')) {
+                fill(proto, 'addEventListener', function(orig) {
+                    return function (evtName, fn, capture, secure) { // preserve arity
+                        try {
+                            if (fn && fn.handleEvent) {
+                                fn.handleEvent = self.wrap(fn.handleEvent);
+                            }
+                        } catch (err) {
+                            // can sometimes get 'Permission denied to access property "handle Event'
+                        }
+
+                        // More breadcrumb DOM capture ... done here and not in `_instrumentBreadcrumbs`
+                        // so that we don't have more than one wrapper function
+                        var before,
+                            clickHandler,
+                            keypressHandler;
+
+                        if (autoBreadcrumbs && autoBreadcrumbs.dom && (global === 'EventTarget' || global === 'Node')) {
+                            // NOTE: generating multiple handlers per addEventListener invocation, should
+                            //       revisit and verify we can just use one (almost certainly)
+                            clickHandler = self._breadcrumbEventHandler('click');
+                            keypressHandler = self._keypressEventHandler();
+                            before = function (evt) {
+                                // need to intercept every DOM event in `before` argument, in case that
+                                // same wrapped method is re-used for different events (e.g. mousemove THEN click)
+                                // see #724
+                                if (!evt) return;
+
+                                if (evt.type === 'click')
+                                    return clickHandler(evt);
+                                else if (evt.type === 'keypress')
+                                    return keypressHandler(evt);
+                            };
+                        }
+                        return orig.call(this, evtName, self.wrap(fn, undefined, before), capture, secure);
+                    };
+                }, wrappedBuiltIns);
+                fill(proto, 'removeEventListener', function (orig) {
+                    return function (evt, fn, capture, secure) {
+                        try {
+                            fn = fn && (fn.__raven_wrapper__ ? fn.__raven_wrapper__  : fn);
+                        } catch (e) {
+                            // ignore, accessing __raven_wrapper__ will throw in some Selenium environments
+                        }
+                        return orig.call(this, evt, fn, capture, secure);
+                    };
+                }, wrappedBuiltIns);
+            }
+        }
+
+        fill(_window, 'setTimeout', wrapTimeFn, wrappedBuiltIns);
+        fill(_window, 'setInterval', wrapTimeFn, wrappedBuiltIns);
+        if (_window.requestAnimationFrame) {
+            fill(_window, 'requestAnimationFrame', function (orig) {
+                return function (cb) {
+                    return orig(self.wrap(cb));
+                };
+            }, wrappedBuiltIns);
+        }
+
+        // event targets borrowed from bugsnag-js:
+        // https://github.com/bugsnag/bugsnag-js/blob/master/src/bugsnag.js#L666
+        var eventTargets = ['EventTarget', 'Window', 'Node', 'ApplicationCache', 'AudioTrackList', 'ChannelMergerNode', 'CryptoOperation', 'EventSource', 'FileReader', 'HTMLUnknownElement', 'IDBDatabase', 'IDBRequest', 'IDBTransaction', 'KeyOperation', 'MediaController', 'MessagePort', 'ModalWindow', 'Notification', 'SVGElementInstance', 'Screen', 'TextTrack', 'TextTrackCue', 'TextTrackList', 'WebSocket', 'WebSocketWorker', 'Worker', 'XMLHttpRequest', 'XMLHttpRequestEventTarget', 'XMLHttpRequestUpload'];
+        for (var i = 0; i < eventTargets.length; i++) {
+            wrapEventTarget(eventTargets[i]);
+        }
+    },
+
+
+    /**
+     * Instrument browser built-ins w/ breadcrumb capturing
+     *  - XMLHttpRequests
+     *  - DOM interactions (click/typing)
+     *  - window.location changes
+     *  - console
+     *
+     * Can be disabled or individually configured via the `autoBreadcrumbs` config option
+     */
+    _instrumentBreadcrumbs: function () {
+        var self = this;
+        var autoBreadcrumbs = this._globalOptions.autoBreadcrumbs;
+
+        var wrappedBuiltIns = self._wrappedBuiltIns;
+
+        function wrapProp(prop, xhr) {
+            if (prop in xhr && isFunction(xhr[prop])) {
+                fill(xhr, prop, function (orig) {
+                    return self.wrap(orig);
+                }); // intentionally don't track filled methods on XHR instances
+            }
+        }
+
+        if (autoBreadcrumbs.xhr && 'XMLHttpRequest' in _window) {
+            var xhrproto = XMLHttpRequest.prototype;
+            fill(xhrproto, 'open', function(origOpen) {
+                return function (method, url) { // preserve arity
+
+                    // if Sentry key appears in URL, don't capture
+                    if (isString(url) && url.indexOf(self._globalKey) === -1) {
+                        this.__raven_xhr = {
+                            method: method,
+                            url: url,
+                            status_code: null
+                        };
+                    }
+
+                    return origOpen.apply(this, arguments);
+                };
+            }, wrappedBuiltIns);
+
+            fill(xhrproto, 'send', function(origSend) {
+                return function (data) { // preserve arity
+                    var xhr = this;
+
+                    function onreadystatechangeHandler() {
+                        if (xhr.__raven_xhr && (xhr.readyState === 1 || xhr.readyState === 4)) {
+                            try {
+                                // touching statusCode in some platforms throws
+                                // an exception
+                                xhr.__raven_xhr.status_code = xhr.status;
+                            } catch (e) { /* do nothing */ }
+                            self.captureBreadcrumb({
+                                type: 'http',
+                                category: 'xhr',
+                                data: xhr.__raven_xhr
+                            });
+                        }
+                    }
+
+                    var props = ['onload', 'onerror', 'onprogress'];
+                    for (var j = 0; j < props.length; j++) {
+                        wrapProp(props[j], xhr);
+                    }
+
+                    if ('onreadystatechange' in xhr && isFunction(xhr.onreadystatechange)) {
+                        fill(xhr, 'onreadystatechange', function (orig) {
+                            return self.wrap(orig, undefined, onreadystatechangeHandler);
+                        } /* intentionally don't track this instrumentation */);
+                    } else {
+                        // if onreadystatechange wasn't actually set by the page on this xhr, we
+                        // are free to set our own and capture the breadcrumb
+                        xhr.onreadystatechange = onreadystatechangeHandler;
+                    }
+
+                    return origSend.apply(this, arguments);
+                };
+            }, wrappedBuiltIns);
+        }
+
+        if (autoBreadcrumbs.xhr && 'fetch' in _window) {
+            fill(_window, 'fetch', function(origFetch) {
+                return function (fn, t) { // preserve arity
+                    // Make a copy of the arguments to prevent deoptimization
+                    // https://github.com/petkaantonov/bluebird/wiki/Optimization-killers#32-leaking-arguments
+                    var args = new Array(arguments.length);
+                    for(var i = 0; i < args.length; ++i) {
+                        args[i] = arguments[i];
+                    }
+
+                    var method = 'GET';
+
+                    if (args[1] && args[1].method) {
+                        method = args[1].method;
+                    }
+
+                    var fetchData = {
+                        method: method,
+                        url: args[0],
+                        status_code: null
+                    };
+
+                    self.captureBreadcrumb({
+                        type: 'http',
+                        category: 'fetch',
+                        data: fetchData
+                    });
+
+                    return origFetch.apply(this, args).then(function (response) {
+                        fetchData.status_code = response.status;
+
+                        return response;
+                    });
+                };
+            }, wrappedBuiltIns);
+        }
+
+        // Capture breadcrumbs from any click that is unhandled / bubbled up all the way
+        // to the document. Do this before we instrument addEventListener.
+        if (autoBreadcrumbs.dom && this._hasDocument) {
+            if (_document.addEventListener) {
+                _document.addEventListener('click', self._breadcrumbEventHandler('click'), false);
+                _document.addEventListener('keypress', self._keypressEventHandler(), false);
+            }
+            else {
+                // IE8 Compatibility
+                _document.attachEvent('onclick', self._breadcrumbEventHandler('click'));
+                _document.attachEvent('onkeypress', self._keypressEventHandler());
+            }
+        }
+
+        // record navigation (URL) changes
+        // NOTE: in Chrome App environment, touching history.pushState, *even inside
+        //       a try/catch block*, will cause Chrome to output an error to console.error
+        // borrowed from: https://github.com/angular/angular.js/pull/13945/files
+        var chrome = _window.chrome;
+        var isChromePackagedApp = chrome && chrome.app && chrome.app.runtime;
+        var hasPushState = !isChromePackagedApp && _window.history && history.pushState;
+        if (autoBreadcrumbs.location && hasPushState) {
+            // TODO: remove onpopstate handler on uninstall()
+            var oldOnPopState = _window.onpopstate;
+            _window.onpopstate = function () {
+                var currentHref = self._location.href;
+                self._captureUrlChange(self._lastHref, currentHref);
+
+                if (oldOnPopState) {
+                    return oldOnPopState.apply(this, arguments);
+                }
+            };
+
+            fill(history, 'pushState', function (origPushState) {
+                // note history.pushState.length is 0; intentionally not declaring
+                // params to preserve 0 arity
+                return function (/* state, title, url */) {
+                    var url = arguments.length > 2 ? arguments[2] : undefined;
+
+                    // url argument is optional
+                    if (url) {
+                        // coerce to string (this is what pushState does)
+                        self._captureUrlChange(self._lastHref, url + '');
+                    }
+
+                    return origPushState.apply(this, arguments);
+                };
+            }, wrappedBuiltIns);
+        }
+
+        if (autoBreadcrumbs.console && 'console' in _window && console.log) {
+            // console
+            var consoleMethodCallback = function (msg, data) {
+                self.captureBreadcrumb({
+                    message: msg,
+                    level: data.level,
+                    category: 'console'
+                });
+            };
+
+            each(['debug', 'info', 'warn', 'error', 'log'], function (_, level) {
+                wrapConsoleMethod(console, level, consoleMethodCallback);
+            });
+        }
+
+    },
+
+    _restoreBuiltIns: function () {
+        // restore any wrapped builtins
+        var builtin;
+        while (this._wrappedBuiltIns.length) {
+            builtin = this._wrappedBuiltIns.shift();
+
+            var obj = builtin[0],
+              name = builtin[1],
+              orig = builtin[2];
+
+            obj[name] = orig;
+        }
+    },
+
+    _drainPlugins: function() {
+        var self = this;
+
+        // FIX ME TODO
+        each(this._plugins, function(_, plugin) {
+            var installer = plugin[0];
+            var args = plugin[1];
+            installer.apply(self, [self].concat(args));
+        });
+    },
+
+    _parseDSN: function(str) {
+        var m = dsnPattern.exec(str),
+            dsn = {},
+            i = 7;
+
+        try {
+            while (i--) dsn[dsnKeys[i]] = m[i] || '';
+        } catch(e) {
+            throw new RavenConfigError('Invalid DSN: ' + str);
+        }
+
+        if (dsn.pass && !this._globalOptions.allowSecretKey) {
+            throw new RavenConfigError('Do not specify your secret key in the DSN. See: http://bit.ly/raven-secret-key');
+        }
+
+        return dsn;
+    },
+
+    _getGlobalServer: function(uri) {
+        // assemble the endpoint from the uri pieces
+        var globalServer = '//' + uri.host +
+            (uri.port ? ':' + uri.port : '');
+
+        if (uri.protocol) {
+            globalServer = uri.protocol + ':' + globalServer;
+        }
+        return globalServer;
+    },
+
+    _handleOnErrorStackInfo: function() {
+        // if we are intentionally ignoring errors via onerror, bail out
+        if (!this._ignoreOnError) {
+            this._handleStackInfo.apply(this, arguments);
+        }
+    },
+
+    _handleStackInfo: function(stackInfo, options) {
+        var frames = this._prepareFrames(stackInfo, options);
+
+        this._triggerEvent('handle', {
+            stackInfo: stackInfo,
+            options: options
+        });
+
+        this._processException(
+            stackInfo.name,
+            stackInfo.message,
+            stackInfo.url,
+            stackInfo.lineno,
+            frames,
+            options
+        );
+    },
+
+    _prepareFrames: function(stackInfo, options) {
+        var self = this;
+        var frames = [];
+        if (stackInfo.stack && stackInfo.stack.length) {
+            each(stackInfo.stack, function(i, stack) {
+                var frame = self._normalizeFrame(stack);
+                if (frame) {
+                    frames.push(frame);
+                }
+            });
+
+            // e.g. frames captured via captureMessage throw
+            if (options && options.trimHeadFrames) {
+                for (var j = 0; j < options.trimHeadFrames && j < frames.length; j++) {
+                    frames[j].in_app = false;
+                }
+            }
+        }
+        frames = frames.slice(0, this._globalOptions.stackTraceLimit);
+        return frames;
+    },
+
+
+    _normalizeFrame: function(frame) {
+        if (!frame.url) return;
+
+        // normalize the frames data
+        var normalized = {
+            filename:   frame.url,
+            lineno:     frame.line,
+            colno:      frame.column,
+            'function': frame.func || '?'
+        };
+
+        normalized.in_app = !( // determine if an exception came from outside of our app
+            // first we check the global includePaths list.
+            !!this._globalOptions.includePaths.test && !this._globalOptions.includePaths.test(normalized.filename) ||
+            // Now we check for fun, if the function name is Raven or TraceKit
+            /(Raven|TraceKit)\./.test(normalized['function']) ||
+            // finally, we do a last ditch effort and check for raven.min.js
+            /raven\.(min\.)?js$/.test(normalized.filename)
+        );
+
+        return normalized;
+    },
+
+    _processException: function(type, message, fileurl, lineno, frames, options) {
+        var stacktrace;
+        if (!!this._globalOptions.ignoreErrors.test && this._globalOptions.ignoreErrors.test(message)) return;
+
+        message += '';
+
+        if (frames && frames.length) {
+            fileurl = frames[0].filename || fileurl;
+            // Sentry expects frames oldest to newest
+            // and JS sends them as newest to oldest
+            frames.reverse();
+            stacktrace = {frames: frames};
+        } else if (fileurl) {
+            stacktrace = {
+                frames: [{
+                    filename: fileurl,
+                    lineno: lineno,
+                    in_app: true
+                }]
+            };
+        }
+
+        if (!!this._globalOptions.ignoreUrls.test && this._globalOptions.ignoreUrls.test(fileurl)) return;
+        if (!!this._globalOptions.whitelistUrls.test && !this._globalOptions.whitelistUrls.test(fileurl)) return;
+
+        var data = objectMerge({
+            // sentry.interfaces.Exception
+            exception: {
+                values: [{
+                    type: type,
+                    value: message,
+                    stacktrace: stacktrace
+                }]
+            },
+            culprit: fileurl
+        }, options);
+
+        // Fire away!
+        this._send(data);
+    },
+
+    _trimPacket: function(data) {
+        // For now, we only want to truncate the two different messages
+        // but this could/should be expanded to just trim everything
+        var max = this._globalOptions.maxMessageLength;
+        if (data.message) {
+            data.message = truncate(data.message, max);
+        }
+        if (data.exception) {
+            var exception = data.exception.values[0];
+            exception.value = truncate(exception.value, max);
+        }
+
+        return data;
+    },
+
+    _getHttpData: function() {
+        if (!this._hasNavigator && !this._hasDocument) return;
+        var httpData = {};
+
+        if (this._hasNavigator && _navigator.userAgent) {
+            httpData.headers = {
+              'User-Agent': navigator.userAgent
+            };
+        }
+
+        if (this._hasDocument) {
+            if (_document.location && _document.location.href) {
+                httpData.url = _document.location.href;
+            }
+            if (_document.referrer) {
+                if (!httpData.headers) httpData.headers = {};
+                httpData.headers.Referer = _document.referrer;
+            }
+        }
+
+        return httpData;
+    },
+
+    _resetBackoff: function() {
+        this._backoffDuration = 0;
+        this._backoffStart = null;
+    },
+
+    _shouldBackoff: function() {
+        return this._backoffDuration && now() - this._backoffStart < this._backoffDuration;
+    },
+
+    _setBackoffState: function(request) {
+        // If we are already in a backoff state, don't change anything
+        if (this._shouldBackoff()) {
+            return;
+        }
+
+        var status = request.status;
+
+        // 400 - project_id doesn't exist or some other fatal
+        // 401 - invalid/revoked dsn
+        // 429 - too many requests
+        if (!(status === 400 || status === 401 || status === 429))
+            return;
+
+        var retry;
+        try {
+            // If Retry-After is not in Access-Control-Expose-Headers, most
+            // browsers will throw an exception trying to access it
+            retry = request.getResponseHeader('Retry-After');
+            retry = parseInt(retry, 10);
+        } catch (e) {
+            /* eslint no-empty:0 */
+        }
+
+
+        this._backoffDuration = retry
+            // If Sentry server returned a Retry-After value, use it
+            ? retry
+            // Otherwise, double the last backoff duration (starts at 1 sec)
+            : this._backoffDuration * 2 || 1000;
+
+        this._backoffStart = now();
+    },
+
+    _send: function(data) {
+        var globalOptions = this._globalOptions;
+
+        var baseData = {
+            project: this._globalProject,
+            logger: globalOptions.logger,
+            platform: 'javascript'
+        }, httpData = this._getHttpData();
+
+        if (httpData) {
+            baseData.request = httpData;
+        }
+
+        // HACK: delete `trimHeadFrames` to prevent from appearing in outbound payload
+        if (data.trimHeadFrames) delete data.trimHeadFrames;
+
+        data = objectMerge(baseData, data);
+
+        // Merge in the tags and extra separately since objectMerge doesn't handle a deep merge
+        data.tags = objectMerge(objectMerge({}, this._globalContext.tags), data.tags);
+        data.extra = objectMerge(objectMerge({}, this._globalContext.extra), data.extra);
+
+        // Send along our own collected metadata with extra
+        data.extra['session:duration'] = now() - this._startTime;
+
+        if (this._breadcrumbs && this._breadcrumbs.length > 0) {
+            // intentionally make shallow copy so that additions
+            // to breadcrumbs aren't accidentally sent in this request
+            data.breadcrumbs = {
+                values: [].slice.call(this._breadcrumbs, 0)
+            };
+        }
+
+        // If there are no tags/extra, strip the key from the payload alltogther.
+        if (isEmptyObject(data.tags)) delete data.tags;
+
+        if (this._globalContext.user) {
+            // sentry.interfaces.User
+            data.user = this._globalContext.user;
+        }
+
+        // Include the environment if it's defined in globalOptions
+        if (globalOptions.environment) data.environment = globalOptions.environment;
+
+        // Include the release if it's defined in globalOptions
+        if (globalOptions.release) data.release = globalOptions.release;
+
+        // Include server_name if it's defined in globalOptions
+        if (globalOptions.serverName) data.server_name = globalOptions.serverName;
+
+        if (isFunction(globalOptions.dataCallback)) {
+            data = globalOptions.dataCallback(data) || data;
+        }
+
+        // Why??????????
+        if (!data || isEmptyObject(data)) {
+            return;
+        }
+
+        // Check if the request should be filtered or not
+        if (isFunction(globalOptions.shouldSendCallback) && !globalOptions.shouldSendCallback(data)) {
+            return;
+        }
+
+        // Backoff state: Sentry server previously responded w/ an error (e.g. 429 - too many requests),
+        // so drop requests until "cool-off" period has elapsed.
+        if (this._shouldBackoff()) {
+            this._logDebug('warn', 'Raven dropped error due to backoff: ', data);
+            return;
+        }
+
+        this._sendProcessedPayload(data);
+    },
+
+    _getUuid: function () {
+      return uuid4();
+    },
+
+    _sendProcessedPayload: function(data, callback) {
+        var self = this;
+        var globalOptions = this._globalOptions;
+
+        if (!this.isSetup()) return;
+
+        // Send along an event_id if not explicitly passed.
+        // This event_id can be used to reference the error within Sentry itself.
+        // Set lastEventId after we know the error should actually be sent
+        this._lastEventId = data.event_id || (data.event_id = this._getUuid());
+
+        // Try and clean up the packet before sending by truncating long values
+        data = this._trimPacket(data);
+
+        this._logDebug('debug', 'Raven about to send:', data);
+
+        var auth = {
+            sentry_version: '7',
+            sentry_client: 'raven-js/' + this.VERSION,
+            sentry_key: this._globalKey
+        };
+        if (this._globalSecret) {
+            auth.sentry_secret = this._globalSecret;
+        }
+
+        var exception = data.exception && data.exception.values[0];
+        this.captureBreadcrumb({
+            category: 'sentry',
+            message: exception
+                ? (exception.type ? exception.type + ': ' : '') + exception.value
+                : data.message,
+            event_id: data.event_id,
+            level: data.level || 'error' // presume error unless specified
+        });
+
+        var url = this._globalEndpoint;
+        (globalOptions.transport || this._makeRequest).call(this, {
+            url: url,
+            auth: auth,
+            data: data,
+            options: globalOptions,
+            onSuccess: function success() {
+                self._resetBackoff();
+
+                self._triggerEvent('success', {
+                    data: data,
+                    src: url
+                });
+                callback && callback();
+            },
+            onError: function failure(error) {
+                self._logDebug('error', 'Raven transport failed to send: ', error);
+
+                if (error.request) {
+                    self._setBackoffState(error.request);
+                }
+
+                self._triggerEvent('failure', {
+                    data: data,
+                    src: url
+                });
+                error = error || new Error('Raven send failed (no additional details provided)');
+                callback && callback(error);
+            }
+        });
+    },
+
+    _makeRequest: function(opts) {
+        var request = new XMLHttpRequest();
+
+        // if browser doesn't support CORS (e.g. IE7), we are out of luck
+        var hasCORS =
+            'withCredentials' in request ||
+            typeof XDomainRequest !== 'undefined';
+
+        if (!hasCORS) return;
+
+        var url = opts.url;
+        function handler() {
+            if (request.status === 200) {
+                if (opts.onSuccess) {
+                    opts.onSuccess();
+                }
+            } else if (opts.onError) {
+                var err = new Error('Sentry error code: ' + request.status);
+                err.request = request;
+                opts.onError(err);
+            }
+        }
+
+        if ('withCredentials' in request) {
+            request.onreadystatechange = function () {
+                if (request.readyState !== 4) {
+                    return;
+                }
+                handler();
+            };
+        } else {
+            request = new XDomainRequest();
+            // xdomainrequest cannot go http -> https (or vice versa),
+            // so always use protocol relative
+            url = url.replace(/^https?:/, '');
+
+            // onreadystatechange not supported by XDomainRequest
+            request.onload = handler;
+        }
+
+        // NOTE: auth is intentionally sent as part of query string (NOT as custom
+        //       HTTP header) so as to avoid preflight CORS requests
+        request.open('POST', url + '?' + urlencode(opts.auth));
+        request.send(stringify(opts.data));
+    },
+
+    _logDebug: function(level) {
+        if (this._originalConsoleMethods[level] && this.debug) {
+            // In IE<10 console methods do not have their own 'apply' method
+            Function.prototype.apply.call(
+                this._originalConsoleMethods[level],
+                this._originalConsole,
+                [].slice.call(arguments, 1)
+            );
+        }
+    },
+
+    _mergeContext: function(key, context) {
+        if (isUndefined(context)) {
+            delete this._globalContext[key];
+        } else {
+            this._globalContext[key] = objectMerge(this._globalContext[key] || {}, context);
+        }
+    }
+};
+
+/*------------------------------------------------
+ * utils
+ *
+ * conditionally exported for test via Raven.utils
+ =================================================
+ */
+var objectPrototype = Object.prototype;
+
+function isUndefined(what) {
+    return what === void 0;
+}
+
+function isFunction(what) {
+    return typeof what === 'function';
+}
+
+function isString(what) {
+    return objectPrototype.toString.call(what) === '[object String]';
+}
+
+function isObject(what) {
+    return typeof what === 'object' && what !== null;
+}
+
+function isEmptyObject(what) {
+    for (var _ in what) return false;  // eslint-disable-line guard-for-in, no-unused-vars
+    return true;
+}
+
+// Sorta yanked from https://github.com/joyent/node/blob/aa3b4b4/lib/util.js#L560
+// with some tiny modifications
+function isError(what) {
+    var toString = objectPrototype.toString.call(what);
+    return isObject(what) &&
+        toString === '[object Error]' ||
+        toString === '[object Exception]' || // Firefox NS_ERROR_FAILURE Exceptions
+        what instanceof Error;
+}
+
+function each(obj, callback) {
+    var i, j;
+
+    if (isUndefined(obj.length)) {
+        for (i in obj) {
+            if (hasKey(obj, i)) {
+                callback.call(null, i, obj[i]);
+            }
+        }
+    } else {
+        j = obj.length;
+        if (j) {
+            for (i = 0; i < j; i++) {
+                callback.call(null, i, obj[i]);
+            }
+        }
+    }
+}
+
+function objectMerge(obj1, obj2) {
+    if (!obj2) {
+        return obj1;
+    }
+    each(obj2, function(key, value){
+        obj1[key] = value;
+    });
+    return obj1;
+}
+
+function truncate(str, max) {
+    return !max || str.length <= max ? str : str.substr(0, max) + '\u2026';
+}
+
+/**
+ * hasKey, a better form of hasOwnProperty
+ * Example: hasKey(MainHostObject, property) === true/false
+ *
+ * @param {Object} host object to check property
+ * @param {string} key to check
+ */
+function hasKey(object, key) {
+    return objectPrototype.hasOwnProperty.call(object, key);
+}
+
+function joinRegExp(patterns) {
+    // Combine an array of regular expressions and strings into one large regexp
+    // Be mad.
+    var sources = [],
+        i = 0, len = patterns.length,
+        pattern;
+
+    for (; i < len; i++) {
+        pattern = patterns[i];
+        if (isString(pattern)) {
+            // If it's a string, we need to escape it
+            // Taken from: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions
+            sources.push(pattern.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, '\\$1'));
+        } else if (pattern && pattern.source) {
+            // If it's a regexp already, we want to extract the source
+            sources.push(pattern.source);
+        }
+        // Intentionally skip other cases
+    }
+    return new RegExp(sources.join('|'), 'i');
+}
+
+function urlencode(o) {
+    var pairs = [];
+    each(o, function(key, value) {
+        pairs.push(encodeURIComponent(key) + '=' + encodeURIComponent(value));
+    });
+    return pairs.join('&');
+}
+
+// borrowed from https://tools.ietf.org/html/rfc3986#appendix-B
+// intentionally using regex and not <a/> href parsing trick because React Native and other
+// environments where DOM might not be available
+function parseUrl(url) {
+    var match = url.match(/^(([^:\/?#]+):)?(\/\/([^\/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?$/);
+    if (!match) return {};
+
+    // coerce to undefined values to empty string so we don't get 'undefined'
+    var query = match[6] || '';
+    var fragment = match[8] || '';
+    return {
+        protocol: match[2],
+        host: match[4],
+        path: match[5],
+        relative: match[5] + query + fragment // everything minus origin
+    };
+}
+function uuid4() {
+    var crypto = _window.crypto || _window.msCrypto;
+
+    if (!isUndefined(crypto) && crypto.getRandomValues) {
+        // Use window.crypto API if available
+        var arr = new Uint16Array(8);
+        crypto.getRandomValues(arr);
+
+        // set 4 in byte 7
+        arr[3] = arr[3] & 0xFFF | 0x4000;
+        // set 2 most significant bits of byte 9 to '10'
+        arr[4] = arr[4] & 0x3FFF | 0x8000;
+
+        var pad = function(num) {
+            var v = num.toString(16);
+            while (v.length < 4) {
+                v = '0' + v;
+            }
+            return v;
+        };
+
+        return pad(arr[0]) + pad(arr[1]) + pad(arr[2]) + pad(arr[3]) + pad(arr[4]) +
+        pad(arr[5]) + pad(arr[6]) + pad(arr[7]);
+    } else {
+        // http://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid-in-javascript/2117523#2117523
+        return 'xxxxxxxxxxxx4xxxyxxxxxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+            var r = Math.random()*16|0,
+                v = c === 'x' ? r : r&0x3|0x8;
+            return v.toString(16);
+        });
+    }
+}
+
+/**
+ * Given a child DOM element, returns a query-selector statement describing that
+ * and its ancestors
+ * e.g. [HTMLElement] => body > div > input#foo.btn[name=baz]
+ * @param elem
+ * @returns {string}
+ */
+function htmlTreeAsString(elem) {
+    /* eslint no-extra-parens:0*/
+    var MAX_TRAVERSE_HEIGHT = 5,
+        MAX_OUTPUT_LEN = 80,
+        out = [],
+        height = 0,
+        len = 0,
+        separator = ' > ',
+        sepLength = separator.length,
+        nextStr;
+
+    while (elem && height++ < MAX_TRAVERSE_HEIGHT) {
+
+        nextStr = htmlElementAsString(elem);
+        // bail out if
+        // - nextStr is the 'html' element
+        // - the length of the string that would be created exceeds MAX_OUTPUT_LEN
+        //   (ignore this limit if we are on the first iteration)
+        if (nextStr === 'html' || height > 1 && len + (out.length * sepLength) + nextStr.length >= MAX_OUTPUT_LEN) {
+            break;
+        }
+
+        out.push(nextStr);
+
+        len += nextStr.length;
+        elem = elem.parentNode;
+    }
+
+    return out.reverse().join(separator);
+}
+
+/**
+ * Returns a simple, query-selector representation of a DOM element
+ * e.g. [HTMLElement] => input#foo.btn[name=baz]
+ * @param HTMLElement
+ * @returns {string}
+ */
+function htmlElementAsString(elem) {
+    var out = [],
+        className,
+        classes,
+        key,
+        attr,
+        i;
+
+    if (!elem || !elem.tagName) {
+        return '';
+    }
+
+    out.push(elem.tagName.toLowerCase());
+    if (elem.id) {
+        out.push('#' + elem.id);
+    }
+
+    className = elem.className;
+    if (className && isString(className)) {
+        classes = className.split(/\s+/);
+        for (i = 0; i < classes.length; i++) {
+            out.push('.' + classes[i]);
+        }
+    }
+    var attrWhitelist = ['type', 'name', 'title', 'alt'];
+    for (i = 0; i < attrWhitelist.length; i++) {
+        key = attrWhitelist[i];
+        attr = elem.getAttribute(key);
+        if (attr) {
+            out.push('[' + key + '="' + attr + '"]');
+        }
+    }
+    return out.join('');
+}
+
+/**
+ * Polyfill a method
+ * @param obj object e.g. `document`
+ * @param name method name present on object e.g. `addEventListener`
+ * @param replacement replacement function
+ * @param track {optional} record instrumentation to an array
+ */
+function fill(obj, name, replacement, track) {
+    var orig = obj[name];
+    obj[name] = replacement(orig);
+    if (track) {
+        track.push([obj, name, orig]);
+    }
+}
+
+if (typeof __DEV__ !== 'undefined' && __DEV__) {
+    Raven.utils = {
+        isUndefined: isUndefined,
+        isFunction: isFunction,
+        isString: isString,
+        isObject: isObject,
+        isEmptyObject: isEmptyObject,
+        isError: isError,
+        each: each,
+        objectMerge: objectMerge,
+        truncate: truncate,
+        hasKey: hasKey,
+        joinRegExp: joinRegExp,
+        urlencode: urlencode,
+        uuid4: uuid4,
+        htmlTreeAsString: htmlTreeAsString,
+        htmlElementAsString: htmlElementAsString,
+        parseUrl: parseUrl,
+        fill: fill
+    };
+};
+
+// Deprecations
+Raven.prototype.setUser = Raven.prototype.setUserContext;
+Raven.prototype.setReleaseContext = Raven.prototype.setRelease;
+
+module.exports = Raven;
+
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(66)))
+
+/***/ }),
+/* 529 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(global) {
+
+/*
+ TraceKit - Cross brower stack traces
+
+ This was originally forked from github.com/occ/TraceKit, but has since been
+ largely re-written and is now maintained as part of raven-js.  Tests for
+ this are in test/vendor.
+
+ MIT license
+*/
+
+var TraceKit = {
+    collectWindowErrors: true,
+    debug: false
+};
+
+// This is to be defensive in environments where window does not exist (see https://github.com/getsentry/raven-js/pull/785)
+var _window = typeof window !== 'undefined' ? window
+            : typeof global !== 'undefined' ? global
+            : typeof self !== 'undefined' ? self
+            : {};
+
+// global reference to slice
+var _slice = [].slice;
+var UNKNOWN_FUNCTION = '?';
+
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error#Error_types
+var ERROR_TYPES_RE = /^(?:Uncaught (?:exception: )?)?((?:Eval|Internal|Range|Reference|Syntax|Type|URI)Error): ?(.*)$/;
+
+function getLocationHref() {
+    if (typeof document === 'undefined' || typeof document.location === 'undefined')
+        return '';
+
+    return document.location.href;
+}
+
+/**
+ * TraceKit.report: cross-browser processing of unhandled exceptions
+ *
+ * Syntax:
+ *   TraceKit.report.subscribe(function(stackInfo) { ... })
+ *   TraceKit.report.unsubscribe(function(stackInfo) { ... })
+ *   TraceKit.report(exception)
+ *   try { ...code... } catch(ex) { TraceKit.report(ex); }
+ *
+ * Supports:
+ *   - Firefox: full stack trace with line numbers, plus column number
+ *              on top frame; column number is not guaranteed
+ *   - Opera:   full stack trace with line and column numbers
+ *   - Chrome:  full stack trace with line and column numbers
+ *   - Safari:  line and column number for the top frame only; some frames
+ *              may be missing, and column number is not guaranteed
+ *   - IE:      line and column number for the top frame only; some frames
+ *              may be missing, and column number is not guaranteed
+ *
+ * In theory, TraceKit should work on all of the following versions:
+ *   - IE5.5+ (only 8.0 tested)
+ *   - Firefox 0.9+ (only 3.5+ tested)
+ *   - Opera 7+ (only 10.50 tested; versions 9 and earlier may require
+ *     Exceptions Have Stacktrace to be enabled in opera:config)
+ *   - Safari 3+ (only 4+ tested)
+ *   - Chrome 1+ (only 5+ tested)
+ *   - Konqueror 3.5+ (untested)
+ *
+ * Requires TraceKit.computeStackTrace.
+ *
+ * Tries to catch all unhandled exceptions and report them to the
+ * subscribed handlers. Please note that TraceKit.report will rethrow the
+ * exception. This is REQUIRED in order to get a useful stack trace in IE.
+ * If the exception does not reach the top of the browser, you will only
+ * get a stack trace from the point where TraceKit.report was called.
+ *
+ * Handlers receive a stackInfo object as described in the
+ * TraceKit.computeStackTrace docs.
+ */
+TraceKit.report = (function reportModuleWrapper() {
+    var handlers = [],
+        lastArgs = null,
+        lastException = null,
+        lastExceptionStack = null;
+
+    /**
+     * Add a crash handler.
+     * @param {Function} handler
+     */
+    function subscribe(handler) {
+        installGlobalHandler();
+        handlers.push(handler);
+    }
+
+    /**
+     * Remove a crash handler.
+     * @param {Function} handler
+     */
+    function unsubscribe(handler) {
+        for (var i = handlers.length - 1; i >= 0; --i) {
+            if (handlers[i] === handler) {
+                handlers.splice(i, 1);
+            }
+        }
+    }
+
+    /**
+     * Remove all crash handlers.
+     */
+    function unsubscribeAll() {
+        uninstallGlobalHandler();
+        handlers = [];
+    }
+
+    /**
+     * Dispatch stack information to all handlers.
+     * @param {Object.<string, *>} stack
+     */
+    function notifyHandlers(stack, isWindowError) {
+        var exception = null;
+        if (isWindowError && !TraceKit.collectWindowErrors) {
+          return;
+        }
+        for (var i in handlers) {
+            if (handlers.hasOwnProperty(i)) {
+                try {
+                    handlers[i].apply(null, [stack].concat(_slice.call(arguments, 2)));
+                } catch (inner) {
+                    exception = inner;
+                }
+            }
+        }
+
+        if (exception) {
+            throw exception;
+        }
+    }
+
+    var _oldOnerrorHandler, _onErrorHandlerInstalled;
+
+    /**
+     * Ensures all global unhandled exceptions are recorded.
+     * Supported by Gecko and IE.
+     * @param {string} message Error message.
+     * @param {string} url URL of script that generated the exception.
+     * @param {(number|string)} lineNo The line number at which the error
+     * occurred.
+     * @param {?(number|string)} colNo The column number at which the error
+     * occurred.
+     * @param {?Error} ex The actual Error object.
+     */
+    function traceKitWindowOnError(message, url, lineNo, colNo, ex) {
+        var stack = null;
+
+        if (lastExceptionStack) {
+            TraceKit.computeStackTrace.augmentStackTraceWithInitialElement(lastExceptionStack, url, lineNo, message);
+            processLastException();
+        } else if (ex) {
+            // New chrome and blink send along a real error object
+            // Let's just report that like a normal error.
+            // See: https://mikewest.org/2013/08/debugging-runtime-errors-with-window-onerror
+            stack = TraceKit.computeStackTrace(ex);
+            notifyHandlers(stack, true);
+        } else {
+            var location = {
+                'url': url,
+                'line': lineNo,
+                'column': colNo
+            };
+
+            var name = undefined;
+            var msg = message; // must be new var or will modify original `arguments`
+            var groups;
+            if ({}.toString.call(message) === '[object String]') {
+                var groups = message.match(ERROR_TYPES_RE);
+                if (groups) {
+                    name = groups[1];
+                    msg = groups[2];
+                }
+            }
+
+            location.func = UNKNOWN_FUNCTION;
+
+            stack = {
+                'name': name,
+                'message': msg,
+                'url': getLocationHref(),
+                'stack': [location]
+            };
+            notifyHandlers(stack, true);
+        }
+
+        if (_oldOnerrorHandler) {
+            return _oldOnerrorHandler.apply(this, arguments);
+        }
+
+        return false;
+    }
+
+    function installGlobalHandler ()
+    {
+        if (_onErrorHandlerInstalled) {
+            return;
+        }
+        _oldOnerrorHandler = _window.onerror;
+        _window.onerror = traceKitWindowOnError;
+        _onErrorHandlerInstalled = true;
+    }
+
+    function uninstallGlobalHandler ()
+    {
+        if (!_onErrorHandlerInstalled) {
+            return;
+        }
+        _window.onerror = _oldOnerrorHandler;
+        _onErrorHandlerInstalled = false;
+        _oldOnerrorHandler = undefined;
+    }
+
+    function processLastException() {
+        var _lastExceptionStack = lastExceptionStack,
+            _lastArgs = lastArgs;
+        lastArgs = null;
+        lastExceptionStack = null;
+        lastException = null;
+        notifyHandlers.apply(null, [_lastExceptionStack, false].concat(_lastArgs));
+    }
+
+    /**
+     * Reports an unhandled Error to TraceKit.
+     * @param {Error} ex
+     * @param {?boolean} rethrow If false, do not re-throw the exception.
+     * Only used for window.onerror to not cause an infinite loop of
+     * rethrowing.
+     */
+    function report(ex, rethrow) {
+        var args = _slice.call(arguments, 1);
+        if (lastExceptionStack) {
+            if (lastException === ex) {
+                return; // already caught by an inner catch block, ignore
+            } else {
+              processLastException();
+            }
+        }
+
+        var stack = TraceKit.computeStackTrace(ex);
+        lastExceptionStack = stack;
+        lastException = ex;
+        lastArgs = args;
+
+        // If the stack trace is incomplete, wait for 2 seconds for
+        // slow slow IE to see if onerror occurs or not before reporting
+        // this exception; otherwise, we will end up with an incomplete
+        // stack trace
+        setTimeout(function () {
+            if (lastException === ex) {
+                processLastException();
+            }
+        }, (stack.incomplete ? 2000 : 0));
+
+        if (rethrow !== false) {
+            throw ex; // re-throw to propagate to the top level (and cause window.onerror)
+        }
+    }
+
+    report.subscribe = subscribe;
+    report.unsubscribe = unsubscribe;
+    report.uninstall = unsubscribeAll;
+    return report;
+}());
+
+/**
+ * TraceKit.computeStackTrace: cross-browser stack traces in JavaScript
+ *
+ * Syntax:
+ *   s = TraceKit.computeStackTrace(exception) // consider using TraceKit.report instead (see below)
+ * Returns:
+ *   s.name              - exception name
+ *   s.message           - exception message
+ *   s.stack[i].url      - JavaScript or HTML file URL
+ *   s.stack[i].func     - function name, or empty for anonymous functions (if guessing did not work)
+ *   s.stack[i].args     - arguments passed to the function, if known
+ *   s.stack[i].line     - line number, if known
+ *   s.stack[i].column   - column number, if known
+ *
+ * Supports:
+ *   - Firefox:  full stack trace with line numbers and unreliable column
+ *               number on top frame
+ *   - Opera 10: full stack trace with line and column numbers
+ *   - Opera 9-: full stack trace with line numbers
+ *   - Chrome:   full stack trace with line and column numbers
+ *   - Safari:   line and column number for the topmost stacktrace element
+ *               only
+ *   - IE:       no line numbers whatsoever
+ *
+ * Tries to guess names of anonymous functions by looking for assignments
+ * in the source code. In IE and Safari, we have to guess source file names
+ * by searching for function bodies inside all page scripts. This will not
+ * work for scripts that are loaded cross-domain.
+ * Here be dragons: some function names may be guessed incorrectly, and
+ * duplicate functions may be mismatched.
+ *
+ * TraceKit.computeStackTrace should only be used for tracing purposes.
+ * Logging of unhandled exceptions should be done with TraceKit.report,
+ * which builds on top of TraceKit.computeStackTrace and provides better
+ * IE support by utilizing the window.onerror event to retrieve information
+ * about the top of the stack.
+ *
+ * Note: In IE and Safari, no stack trace is recorded on the Error object,
+ * so computeStackTrace instead walks its *own* chain of callers.
+ * This means that:
+ *  * in Safari, some methods may be missing from the stack trace;
+ *  * in IE, the topmost function in the stack trace will always be the
+ *    caller of computeStackTrace.
+ *
+ * This is okay for tracing (because you are likely to be calling
+ * computeStackTrace from the function you want to be the topmost element
+ * of the stack trace anyway), but not okay for logging unhandled
+ * exceptions (because your catch block will likely be far away from the
+ * inner function that actually caused the exception).
+ *
+ */
+TraceKit.computeStackTrace = (function computeStackTraceWrapper() {
+    /**
+     * Escapes special characters, except for whitespace, in a string to be
+     * used inside a regular expression as a string literal.
+     * @param {string} text The string.
+     * @return {string} The escaped string literal.
+     */
+    function escapeRegExp(text) {
+        return text.replace(/[\-\[\]{}()*+?.,\\\^$|#]/g, '\\$&');
+    }
+
+    /**
+     * Escapes special characters in a string to be used inside a regular
+     * expression as a string literal. Also ensures that HTML entities will
+     * be matched the same as their literal friends.
+     * @param {string} body The string.
+     * @return {string} The escaped string.
+     */
+    function escapeCodeAsRegExpForMatchingInsideHTML(body) {
+        return escapeRegExp(body).replace('<', '(?:<|&lt;)').replace('>', '(?:>|&gt;)').replace('&', '(?:&|&amp;)').replace('"', '(?:"|&quot;)').replace(/\s+/g, '\\s+');
+    }
+
+    // Contents of Exception in various browsers.
+    //
+    // SAFARI:
+    // ex.message = Can't find variable: qq
+    // ex.line = 59
+    // ex.sourceId = 580238192
+    // ex.sourceURL = http://...
+    // ex.expressionBeginOffset = 96
+    // ex.expressionCaretOffset = 98
+    // ex.expressionEndOffset = 98
+    // ex.name = ReferenceError
+    //
+    // FIREFOX:
+    // ex.message = qq is not defined
+    // ex.fileName = http://...
+    // ex.lineNumber = 59
+    // ex.columnNumber = 69
+    // ex.stack = ...stack trace... (see the example below)
+    // ex.name = ReferenceError
+    //
+    // CHROME:
+    // ex.message = qq is not defined
+    // ex.name = ReferenceError
+    // ex.type = not_defined
+    // ex.arguments = ['aa']
+    // ex.stack = ...stack trace...
+    //
+    // INTERNET EXPLORER:
+    // ex.message = ...
+    // ex.name = ReferenceError
+    //
+    // OPERA:
+    // ex.message = ...message... (see the example below)
+    // ex.name = ReferenceError
+    // ex.opera#sourceloc = 11  (pretty much useless, duplicates the info in ex.message)
+    // ex.stacktrace = n/a; see 'opera:config#UserPrefs|Exceptions Have Stacktrace'
+
+    /**
+     * Computes stack trace information from the stack property.
+     * Chrome and Gecko use this property.
+     * @param {Error} ex
+     * @return {?Object.<string, *>} Stack trace information.
+     */
+    function computeStackTraceFromStackProp(ex) {
+        if (typeof ex.stack === 'undefined' || !ex.stack) return;
+
+        var chrome = /^\s*at (.*?) ?\(((?:file|https?|blob|chrome-extension|native|eval|<anonymous>).*?)(?::(\d+))?(?::(\d+))?\)?\s*$/i,
+            gecko = /^\s*(.*?)(?:\((.*?)\))?(?:^|@)((?:file|https?|blob|chrome|resource|\[native).*?)(?::(\d+))?(?::(\d+))?\s*$/i,
+            winjs = /^\s*at (?:((?:\[object object\])?.+) )?\(?((?:file|ms-appx|https?|blob):.*?):(\d+)(?::(\d+))?\)?\s*$/i,
+            lines = ex.stack.split('\n'),
+            stack = [],
+            parts,
+            element,
+            reference = /^(.*) is undefined$/.exec(ex.message);
+
+        for (var i = 0, j = lines.length; i < j; ++i) {
+            if ((parts = chrome.exec(lines[i]))) {
+                var isNative = parts[2] && parts[2].indexOf('native') !== -1;
+                element = {
+                    'url': !isNative ? parts[2] : null,
+                    'func': parts[1] || UNKNOWN_FUNCTION,
+                    'args': isNative ? [parts[2]] : [],
+                    'line': parts[3] ? +parts[3] : null,
+                    'column': parts[4] ? +parts[4] : null
+                };
+            } else if ( parts = winjs.exec(lines[i]) ) {
+                element = {
+                    'url': parts[2],
+                    'func': parts[1] || UNKNOWN_FUNCTION,
+                    'args': [],
+                    'line': +parts[3],
+                    'column': parts[4] ? +parts[4] : null
+                };
+            } else if ((parts = gecko.exec(lines[i]))) {
+                element = {
+                    'url': parts[3],
+                    'func': parts[1] || UNKNOWN_FUNCTION,
+                    'args': parts[2] ? parts[2].split(',') : [],
+                    'line': parts[4] ? +parts[4] : null,
+                    'column': parts[5] ? +parts[5] : null
+                };
+            } else {
+                continue;
+            }
+
+            if (!element.func && element.line) {
+                element.func = UNKNOWN_FUNCTION;
+            }
+
+            stack.push(element);
+        }
+
+        if (!stack.length) {
+            return null;
+        }
+
+        if (!stack[0].column && typeof ex.columnNumber !== 'undefined') {
+            // FireFox uses this awesome columnNumber property for its top frame
+            // Also note, Firefox's column number is 0-based and everything else expects 1-based,
+            // so adding 1
+            stack[0].column = ex.columnNumber + 1;
+        }
+
+        return {
+            'name': ex.name,
+            'message': ex.message,
+            'url': getLocationHref(),
+            'stack': stack
+        };
+    }
+
+    /**
+     * Adds information about the first frame to incomplete stack traces.
+     * Safari and IE require this to get complete data on the first frame.
+     * @param {Object.<string, *>} stackInfo Stack trace information from
+     * one of the compute* methods.
+     * @param {string} url The URL of the script that caused an error.
+     * @param {(number|string)} lineNo The line number of the script that
+     * caused an error.
+     * @param {string=} message The error generated by the browser, which
+     * hopefully contains the name of the object that caused the error.
+     * @return {boolean} Whether or not the stack information was
+     * augmented.
+     */
+    function augmentStackTraceWithInitialElement(stackInfo, url, lineNo, message) {
+        var initial = {
+            'url': url,
+            'line': lineNo
+        };
+
+        if (initial.url && initial.line) {
+            stackInfo.incomplete = false;
+
+            if (!initial.func) {
+                initial.func = UNKNOWN_FUNCTION;
+            }
+
+            if (stackInfo.stack.length > 0) {
+                if (stackInfo.stack[0].url === initial.url) {
+                    if (stackInfo.stack[0].line === initial.line) {
+                        return false; // already in stack trace
+                    } else if (!stackInfo.stack[0].line && stackInfo.stack[0].func === initial.func) {
+                        stackInfo.stack[0].line = initial.line;
+                        return false;
+                    }
+                }
+            }
+
+            stackInfo.stack.unshift(initial);
+            stackInfo.partial = true;
+            return true;
+        } else {
+            stackInfo.incomplete = true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Computes stack trace information by walking the arguments.caller
+     * chain at the time the exception occurred. This will cause earlier
+     * frames to be missed but is the only way to get any stack trace in
+     * Safari and IE. The top frame is restored by
+     * {@link augmentStackTraceWithInitialElement}.
+     * @param {Error} ex
+     * @return {?Object.<string, *>} Stack trace information.
+     */
+    function computeStackTraceByWalkingCallerChain(ex, depth) {
+        var functionName = /function\s+([_$a-zA-Z\xA0-\uFFFF][_$a-zA-Z0-9\xA0-\uFFFF]*)?\s*\(/i,
+            stack = [],
+            funcs = {},
+            recursion = false,
+            parts,
+            item,
+            source;
+
+        for (var curr = computeStackTraceByWalkingCallerChain.caller; curr && !recursion; curr = curr.caller) {
+            if (curr === computeStackTrace || curr === TraceKit.report) {
+                // console.log('skipping internal function');
+                continue;
+            }
+
+            item = {
+                'url': null,
+                'func': UNKNOWN_FUNCTION,
+                'line': null,
+                'column': null
+            };
+
+            if (curr.name) {
+                item.func = curr.name;
+            } else if ((parts = functionName.exec(curr.toString()))) {
+                item.func = parts[1];
+            }
+
+            if (typeof item.func === 'undefined') {
+              try {
+                item.func = parts.input.substring(0, parts.input.indexOf('{'));
+              } catch (e) { }
+            }
+
+            if (funcs['' + curr]) {
+                recursion = true;
+            }else{
+                funcs['' + curr] = true;
+            }
+
+            stack.push(item);
+        }
+
+        if (depth) {
+            // console.log('depth is ' + depth);
+            // console.log('stack is ' + stack.length);
+            stack.splice(0, depth);
+        }
+
+        var result = {
+            'name': ex.name,
+            'message': ex.message,
+            'url': getLocationHref(),
+            'stack': stack
+        };
+        augmentStackTraceWithInitialElement(result, ex.sourceURL || ex.fileName, ex.line || ex.lineNumber, ex.message || ex.description);
+        return result;
+    }
+
+    /**
+     * Computes a stack trace for an exception.
+     * @param {Error} ex
+     * @param {(string|number)=} depth
+     */
+    function computeStackTrace(ex, depth) {
+        var stack = null;
+        depth = (depth == null ? 0 : +depth);
+
+        try {
+            stack = computeStackTraceFromStackProp(ex);
+            if (stack) {
+                return stack;
+            }
+        } catch (e) {
+            if (TraceKit.debug) {
+                throw e;
+            }
+        }
+
+        try {
+            stack = computeStackTraceByWalkingCallerChain(ex, depth + 1);
+            if (stack) {
+                return stack;
+            }
+        } catch (e) {
+            if (TraceKit.debug) {
+                throw e;
+            }
+        }
+
+        return {
+            'name': ex.name,
+            'message': ex.message,
+            'url': getLocationHref()
+        };
+    }
+
+    computeStackTrace.augmentStackTraceWithInitialElement = augmentStackTraceWithInitialElement;
+    computeStackTrace.computeStackTraceFromStackProp = computeStackTraceFromStackProp;
+
+    return computeStackTrace;
+}());
+
+module.exports = TraceKit;
+
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(66)))
+
+/***/ }),
+/* 530 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_raven_js__ = __webpack_require__(524);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_raven_js___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_raven_js__);
+/* unused harmony export logException */
+
+
+const sentry_key = 'b204509e3dd94dcda5d04b0b42c93e57';
+const sentry_app = '140428';
+const sentry_url = `https://${sentry_key}@sentry.io/${sentry_app}`;
+/* harmony export (immutable) */ __webpack_exports__["a"] = sentry_url;
+
+
+function logException(ex, context) {
+  __WEBPACK_IMPORTED_MODULE_0_raven_js___default.a.captureException(ex, {
+    extra: context
+  });
+  /*eslint no-console:0*/
+  window && window.console && console.error && console.error(ex);
+}
 
 /***/ })
 /******/ ]);

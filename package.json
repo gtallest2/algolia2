@@ -18,6 +18,7 @@
     "babel-preset-react": "^6.23.0",
     "browser-sync": "^2.12.10",
     "css-loader": "^0.26.1",
+    "csvtojson": "^1.1.4",
     "gulp": "^3.9.1",
     "gulp-csv2json": "^0.2.5",
     "gulp-less-sourcemap": "^1.4.3",
@@ -33,10 +34,10 @@
   "dependencies": {
     "algoliasearch": "^3.21.1",
     "algoliasearch-helper": "^2.18.1",
-    "csvtojson": "^1.1.4",
     "dsv-loader": "^2.0.0",
     "haversine": "^1.0.2",
     "npm-font-open-sans": "^1.0.2",
+    "raven-js": "^3.11.0",
     "react": "^15.4.2",
     "react-dom": "^15.4.2",
     "react-onclickoutside": "^5.9.0"

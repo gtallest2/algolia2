@@ -7,5 +7,5 @@ export const index = client.initIndex('merged');
 export const helper = algoliasearchHelper(client, 'merged', {
   facets: ['food_type', 'stars_count'],
   disjunctiveFacets: ['payment_options'],
-  aroundLatLngViaIP: true
+  // aroundLatLngViaIP: true
 });

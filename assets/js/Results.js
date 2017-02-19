@@ -4,7 +4,11 @@ import { index } from './algolia'
 import Result from './Result'
 
 const Results = React.createClass({
-
+  getInitialState(){
+    return {
+      resultsPerPage: this.props.hitsPerPage
+    }
+  },
   renderResults() {
     return this.props.searchResults.hits.map((result, i) => {
           return (
@@ -29,6 +33,17 @@ const Results = React.createClass({
   handleShowMore() {
     this.props.onShowMore();
   },
+  renderResultsRange(){
+    const { hitsPerPage, nbHits: totalHits, nbPages: totalPages, page } = this.props.searchResults
+    const lowerBound = (page * hitsPerPage) + 1
+    const upperBound = ((page + 1) * hitsPerPage)
+
+    return (
+      <div className="results-range">
+        <span>Showing results {lowerBound} - {upperBound > totalHits ? totalHits : upperBound}</span>
+      </div>
+    )
+  },
   renderPagination() {
     const { page, nbPages: pageTotal } = this.props.searchResults
     return (
@@ -39,16 +54,37 @@ const Results = React.createClass({
       </div>
     )
   },
+  renderResultsPerPage() {
+    return (
+      <div className="results-per-page">
+        <span>Results per page:</span>
+        <select ref="resultsPerPage" onChange={this.updateResultsPerPage} name="results-per-page" value={this.state.resultsPerPage} >
+          <option value="3">3</option>
+          <option value="5">5</option>
+          <option value="10">10</option>
+          <option value="20">20</option>
+        </select>
+    </div>
+    )
+  },
+  updateResultsPerPage(e){
+    this.setState({ resultsPerPage: e.target.value })
+    this.props.updateResultsPerPage(parseInt(e.target.value))
+  },
   render() {
+    const searchIsEmpty = this.props.searchResults.length === 0 || this.props.searchResults.nbHits === 5000
     return (
       <div className="results">
-          {this.props.searchResults.length === 0 || this.props.searchResults.nbHits === 5000 ? (<h4>Where are you eating tonight? 🍴</h4>) : this.millisecondsMatter()}
-        {this.props.searchResults.length === 0 || this.props.searchResults.nbHits === 5000 ? '' : this.renderResults()}
+          {searchIsEmpty ? (<h4>Where are you eating tonight? 🍴</h4>) : this.millisecondsMatter()}
+        {searchIsEmpty ? '' : this.renderResults()}
         {/*<button onClick={this.handleShowMore} className="show-more" value="Show More">
           Show More
         </button>*/}
-        {(this.props.searchResults.length !== 0 && this.props.searchResults.nbHits !== 5000) && this.renderPagination()}
-
+        <div className="navigate-results">
+        {(!searchIsEmpty) && this.renderResultsRange()}
+        {(!searchIsEmpty) && this.renderPagination()}
+        {(!searchIsEmpty) && this.renderResultsPerPage()}
+        </div>
       </div>
     )
   }

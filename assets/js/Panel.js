@@ -159,6 +159,14 @@ const Panel = React.createClass({
     console.log('close?');
     (this.state.mobileMenu && this.toggleMobile())
   },
+  clearSearch(){
+    this.setState({ searchQuery: '' })
+    helper.setQuery('').search()
+  },
+  updateResultsPerPage(value){
+    this.updateHitsPerPage(value);
+    helper.setQueryParameter('hitsPerPage', value).search()
+  },
   render() {
     const geo = (
       <div className="geo-selector">
@@ -175,6 +183,7 @@ const Panel = React.createClass({
         <Search
           onSearch={this.handleSearch}
           toggleMobile={this.toggleMobile}
+          clearSearch={this.clearSearch}
         />
         <div>{this.state.location ? '' : geo}</div>
         <div className="lower-area">
@@ -195,6 +204,9 @@ const Panel = React.createClass({
             userLocation={this.state.location}
             prevPage={this.previousPage}
             nextPage={this.nextPage}
+            mobileMenu={this.state.mobileMenu}
+            hitsPerPage={this.state.hitsPerPage}
+            updateResultsPerPage={this.updateResultsPerPage}
           />
         </div>
       </div>

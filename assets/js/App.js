@@ -6,6 +6,11 @@ import Panel from './Panel'
 
 import '../scss/main.scss'
 
+import Raven from 'raven-js'
+import { sentry_url } from '../data/config'
+
+Raven.config(sentry_url).install()
+
 const App = React.createClass({
   render() {
     return (

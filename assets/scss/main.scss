@@ -1,5 +1,5 @@
-// $FontPathOpenSans: "./fonts/open-sans";
-@import '../../node_modules/npm-font-open-sans/open-sans.scss';
+$FontPathOpenSans: "./assets/fonts";
+@import './open-sans.scss';
 // @import url(http://fonts.googleapis.com/css?family=Roboto+Slab|Open+Sans:400italic,700italic,400,700);
 
 $search-blue: #1c688e;
@@ -43,6 +43,7 @@ body {
   display:flex;
   justify-content:center;
   align-items:center;
+  position: relative;
 
   .mobile-menu {
     display:none;
@@ -74,6 +75,20 @@ body {
     border-style:hidden;
     font-size:16px;
     padding:0 10px;
+  }
+
+  .search-clear {
+    position:absolute;
+    color:black;
+    padding:5px;
+    right:7%;
+    cursor:pointer;
+    background:white;
+    font-size:18px;
+  }
+
+  .invisible {
+    display:none;
   }
 }
 
@@ -129,7 +144,6 @@ body {
 
 .lower-area {
   display:flex;
-  height:60vh;
   min-height:60vh;
 
   .filters {
@@ -403,48 +417,67 @@ body {
       color:white;
     }
 
-    .pagination {
-      display: flex;
-      justify-content:center;
-      align-items:center;
-      margin:20px;
+    .navigate-results {
       left:0;
       right:0;
-      position:absolute;
       bottom:20px;
       font-size:18px;
 
-      .page-button {
+      .results-range {
+        font-size:12px;
+        font-style:italic;
+        padding-top:5px;
+        border-top:1px solid $border-grey;
+      }
+
+      .pagination {
         display: flex;
-        align-items:center;
         justify-content:center;
-        margin: 0 10px;
-        background: $search-blue;
-        border: 2px solid $border-grey;
-        border-radius: 10px;
-        color:white;
-        width:100px;
-        height:35px;
+        align-items:center;
+        margin:20px;
 
-        &:hover {
-          background: $lighter-search-blue;
+        .page-button {
+          display: flex;
+          align-items:center;
+          justify-content:center;
+          margin: 0 10px;
+          background: $search-blue;
+          border: 2px solid $border-grey;
+          border-radius: 10px;
+          color:white;
+          width:100px;
+          height:35px;
+
+          &:hover {
+            background: $lighter-search-blue;
+          }
+
+          &:active {
+            transform:translate(1px,1px);
+          }
+
+          &:focus {
+            outline:none;
+          }
+
+          &:disabled {
+            background:$border-grey;
+          }
+       }
+
+        .prev-page, .next-page {
+          @extend .page-button;
+          }
         }
 
-        &:active {
-          transform:translate(1px,1px);
-        }
+        .results-per-page {
+          display: flex;
+          justify-content:flex-end;
+          padding:0 10px;
 
-        &:focus {
-          outline:none;
-        }
-
-        &:disabled {
-          background:$border-grey;
-        }
-     }
-
-      .prev-page, .next-page {
-        @extend .page-button;
+          select {
+            margin-left:5px;
+          }
         }
       }
   }
