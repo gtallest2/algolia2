@@ -16,11 +16,11 @@ First of all, welcome to the world of search! My name is Marc and I would be hap
 
 Let's first dive into records and indexing. Records are entities of data that are stored in groupings called indexes/indices. The act of editing an index (adding, updating, clearing) is known as indexing. These concepts are what Algolia utilizes to organize the searchable data.
 
-You can think of an index like a directory/phone book, and records are like each person/phone number in it. A record can contain any amount of data that you would like, so for this example a record might contain the person's name, address, date of birth, etc., and you can have as many indices and you would like. The best part is, it's all searchable! 
+You can think of an index like a directory/phone book, and records are like each person/phone number in it. A record can contain any amount of data that you would like, so for this example a record might contain the person's name, address, date of birth, etc; and you can have as many indices and you would like. The best part is, it's all searchable! 
 
-Now on to Custom Ranking. When search results come back, they will display in a certain order. But what if we don't really like the order that comes back? Maybe we want our users to see one result more than another. This is where we can set certain properties as Custom Rankings to help us control the order of our results. Some useful metrics for custom ranking are: year, view count (for videos), or number in stock (for products). Basically, Custom Ranking helps us define specific priorities that can help us show our users more relevant results.
+Now on to Custom Ranking. When search results come back, they will display in a certain order. But what if we don't really like the order that comes back? Maybe we want our users to see one result more than another. This is where we can set certain properties as Custom Rankings to help us control the order of our results. Some useful metrics for custom ranking are: year, view count (for videos), or number in stock (for products). Basically, Custom Rankings help us define specific priorities that can help us show our users more relevant results.
 
-A short example is, say we've implemented Algolia on our DVD/Blu-Ray online store. We've created our movie index, and added each film as a record. We figure that our customers are probably looking for the latest movies to buy, so we decide that the newest releases should be appear first when our users perform a search. We could have Algolia prioritize movie release dates in the Custom Rankings, so that a search for "Star Wars", would show "Rogue One: A Star Wars Story (2016)" and "Star Wars: The Force Awakens (2015)" first.
+A short example is, say we've implemented Algolia on our DVD/Blu-Ray online store. We've created our movie index, and added each film as a record. We figure that our customers are probably looking for the latest movies to buy, so we decide that the newest releases should be appear first when our users perform a search. We could have Algolia prioritize movie release dates in the Custom Rankings, so that a search for "Star Wars", would result in "Rogue One: A Star Wars Story (2016)" and "Star Wars: The Force Awakens (2015)" showing first.
 
 Hopefully that helps clear things up. If there are any other concepts you would like to know more about, please do not hesitate to ask. Best of luck on your journey into search!
 
@@ -40,9 +40,9 @@ Answer:
 
 Hi Matt,
 
-We apologize that your experience with Algolia has not been the best that it can be. We have been trying out the new dashboard design and have decided to move clearing and deleting to a different area because {the specific reason}. But, as evidenced by your email, it may not be working as well as we thought. I will be sure to forward your feedback to our design & development team. 
+We apologize that your experience with Algolia has not been the best that it can be. We have been trying out the new dashboard design and decided to move clearing and deleting to a different area because {the specific reason}. But, as evidenced by your email, it may not be working as well as we thought. I will be sure to forward your feedback to our design & development team. 
 
-As an alternative, we do offer our users the ability to make index modifications through an API Client. This will be a bit more technical than using the dashboard, but will surely help speed up the process. I would be happy to walk you through the steps if you'd like.
+As an alternative, we do offer our users the ability to make index modifications through an API Client. This will be a bit more technical than using the dashboard, but it can help speed up the process. I would be happy to walk you through the steps if you'd like.
 
 And please do not feel bad about sending us your thoughts! Here at Algolia we truly value our customers' feedback, be it positive or constructive. Our goal is to constantly make improvements and provide our users with the best experience, so we really appreciate that you took the time to contact us.
 
@@ -80,9 +80,9 @@ And before we get too technical, I would like to ask about your development expe
 	We can set different ranking priorities for our results, ensuring a great search experience for our users. This can also be done through the dashboard.
 
 3. Website Implementation
-	The last step is to integrate Algolia with your website, which is where most of the heavy lifting takes place. This will generally involve redesigns for the site and user experience.
+	The last step is to integrate Algolia with your website, which is where most of the heavy-lifting in terms of development takes place. This will generally involve redesigns for the site the and user experience.
 
-I hope this helps clear some things up. If you would like to dive a bit deeper into the details, we can definitely schedule a time for a call. If you are interested, let me know your availability and we can go from there.
+If you would like to dive a bit deeper into the details, we can definitely schedule a time for a call. If you are interested, let me know your availability and we can go from there.
 
 We want your integration process to be as smooth as possible, so do not hesitate to reach out if you have any more questions.
 

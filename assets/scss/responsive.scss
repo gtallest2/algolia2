@@ -110,7 +110,7 @@
         transform:translate(-50vw);
         transition:0.5s;
         padding:0;
-        overflow:scroll;
+        overflow:auto;
 
         .cuisine {
 
@@ -289,6 +289,17 @@
         width:75%;
         height: 35px;
         font-size:12px;
+      }
+    }
+  }
+    @-moz-document url-prefix() {
+    .panel {
+
+      .lower-area {
+
+        .filters {
+          overflow: auto;
+        }
       }
     }
   }

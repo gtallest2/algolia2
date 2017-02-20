@@ -51,6 +51,21 @@ const Filters = onClickOutside(React.createClass({
     this.props.foodFacet('food_type', facetValue)
   },
 
+  handleRatingFilter (value) {
+    if (this.state.currentRatingFilter === 10) {
+      this.props.addRating(value)
+      this.setState({ currentRatingFilter: value })
+    } else {
+      if (this.state.currentRatingFilter === value) {
+        this.props.removeRating(value)
+        this.setState({ currentRatingFilter: 10 })
+      } else {
+        this.props.combineAddAndRemove(value, this.state.currentRatingFilter)
+        this.setState({ currentRatingFilter: value })
+      }
+    }
+  },
+
   addPaymentDisjunctive (value) {
     const paymentState = Object.assign(this.state.payments, { [value]: true })
     this.setState({ payments: paymentState })
@@ -65,21 +80,6 @@ const Filters = onClickOutside(React.createClass({
 
   handlePaymentToggle (value) {
     this.state.payments[value] ? this.removePaymentDisjunctive(value) : this.addPaymentDisjunctive(value)
-  },
-
-  handleRatingFilter (value) {
-    if (this.state.currentRatingFilter === 10) {
-      this.props.addRating(value)
-      this.setState({ currentRatingFilter: value })
-    } else {
-      if (this.state.currentRatingFilter === value) {
-        this.props.removeRating(value)
-        this.setState({ currentRatingFilter: 10 })
-      } else {
-        this.props.combineAddAndRemove(value, this.state.currentRatingFilter)
-        this.setState({ currentRatingFilter: value })
-      }
-    }
   },
 
   addPriceDisjunctive (value) {

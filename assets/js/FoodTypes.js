@@ -34,7 +34,7 @@ const FoodTypes = React.createClass({
     return (
       <div className='foodtypes-filter'>
         <h4>Cuisine/Food Type</h4>
-        {!Object.keys(this.props.searchResults).length /* || !this.props.searchResults.facets.length */ ? CuisinePlaceholder() : foodTypes}
+        {!Object.keys(this.props.searchResults).length ? CuisinePlaceholder() : foodTypes}
       </div>
     )
   }

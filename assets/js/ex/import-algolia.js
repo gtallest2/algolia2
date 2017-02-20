@@ -47,7 +47,7 @@ fs.writeFile('combined-list.json', JSON.stringify(combinedList), 'utf8', functio
 
 // Add records to index, then set settings
 
-var client = algoliasearch('AGBNR3G2XW', '40a99372e31284c63c0f37886e1a5ff9');
+var client = algoliasearch('AGBNR3G2XW', 'ADMIN-KEY');
 var index = client.initIndex('merged');
 
 index.addObjects(combinedList, function(err, content) {
@@ -58,7 +58,7 @@ index.addObjects(combinedList, function(err, content) {
 
 index.setSettings({
   'hitsPerPage': 3,
-  'attributesForFaceting': ['food_type', 'stars_count', 'payment_options'],
+  'attributesForFaceting': ['food_type', 'stars_count', 'payment_options', 'price'],
   'maxValuesPerFacet': 7
   }, function(err) {
       if (!err) {

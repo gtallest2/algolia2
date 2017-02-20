@@ -1,3 +1,8 @@
+// This component will render if the user's location
+// is not obtained from aroundLatLngViaIP.
+// The user can manually select a city they are
+// closest to from a few options
+
 import React from 'react'
 
 const { func, string } = React.PropTypes

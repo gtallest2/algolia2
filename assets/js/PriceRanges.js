@@ -35,7 +35,7 @@ const Price = React.createClass({
     this.props.onPriceRangeClick(this.props.price)
   },
 
-  renderTyDollarSigns (num) {
+  renderDollarSigns (num) {
     const signs = new Array(num + 1).join('$')
     return (
       <span>
@@ -48,7 +48,7 @@ const Price = React.createClass({
     return (
       <li className='price'>
         <input onClick={this._onClick} type='checkbox' />
-        <span className='price-symbols'>{this.renderTyDollarSigns(this.props.price)}</span>
+        <span className='price-symbols'>{this.renderDollarSigns(this.props.price)}</span>
       </li>
     )
   }

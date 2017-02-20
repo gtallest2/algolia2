@@ -20,7 +20,7 @@ const Panel = React.createClass({
   },
 
   componentWillMount () {
-    // helper.search()
+    helper.search()
     helper.on('result', (content) => {
       this.updateResults(content)
       this.determineGeoLocation()
