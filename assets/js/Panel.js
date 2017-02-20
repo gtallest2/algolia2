@@ -1,7 +1,9 @@
 import React from 'react'
 import { helper } from './algolia'
+import CSSTransitionGroup from 'react-addons-css-transition-group'
 
 import Search from './Search'
+import GeoSelector from './GeoSelector'
 import Filters from './Filters'
 import Results from './Results'
 
@@ -22,7 +24,6 @@ const Panel = React.createClass({
     helper.on('result', (content) => {
       this.updateResults(content)
       this.determineGeoLocation()
-      console.log(content)
     })
   },
 
@@ -188,16 +189,6 @@ const Panel = React.createClass({
   },
 
   render () {
-    const geo = (
-      <div className='geo-selector'>
-        <span className='geo-header'>Please select your closest city:</span>
-        <ul className='geo-list'>
-          <li onClick={this.handleSetLocation.bind(null, '37.7576948,-122.4726194')} className='geo-location'>San Francisco</li>
-          <li onClick={this.handleSetLocation.bind(null, '40.705565,-74.118086')} className='geo-location'>New York</li>
-          <li onClick={this.handleSetLocation.bind(null, '48.8588377,2.2775176')} className='geo-location'>Paris</li>
-        </ul>
-      </div>
-    )
     return (
       <div className='panel'>
         <Search
@@ -205,7 +196,11 @@ const Panel = React.createClass({
           toggleMobile={this.toggleMobile}
           clearSearch={this.clearSearch}
         />
-        <div>{this.state.location ? '' : geo}</div>
+        {this.state.location
+                ? ''
+                : <GeoSelector
+                  handleSetLocation={this.handleSetLocation}
+                  />}
         <div className='lower-area'>
           <Filters
             toggleMobile={this.toggleMobile}

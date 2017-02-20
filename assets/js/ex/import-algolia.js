@@ -1,8 +1,8 @@
 // Merge .json files then import to Algolia Database
 
 var algoliasearch = require('algoliasearch');
-var json1 = require('../../resources/dataset/restaurants_info.json');
-var json2 = require('../../resources/dataset/restaurants_list.json');
+var json1 = require('../../../resources/dataset/converted_csv.json');
+var json2 = require('../../../resources/dataset/restaurants_list.json');
 var fs = require('fs');
 
 // Sorting approach
@@ -40,7 +40,7 @@ for(var j = 0; j < json2.length; j++){
 }
 
 fs.writeFile('combined-list.json', JSON.stringify(combinedList), 'utf8', function(){
-  console.log('combined .json written');
+  console.log('Both .json files merged. Saved as combined_list.json');
 });
 
 // Add records to index, then set settings

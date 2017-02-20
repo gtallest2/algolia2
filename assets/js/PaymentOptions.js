@@ -1,6 +1,6 @@
 import React from 'react'
 
-const { func, bool } = React.PropTypes
+const { func, bool, string } = React.PropTypes
 
 const PaymentOptions = React.createClass({
   propTypes: {
@@ -17,28 +17,34 @@ const PaymentOptions = React.createClass({
       <div className='payments-filter'>
         <h4>Payment Options</h4>
         <ul className='payment-options'>
-          <li className='payment-type'>
-            <input onClick={this.handlePaymentToggle.bind(null, 'AMEX')} type='checkbox' />
-            <span className='card cc-ae' />&nbsp;
-            <span className='amex-card-name'>{this.props.mobileMenu ? 'AMEX' : 'American Express'}</span>
-          </li>
-          <li className='payment-type'>
-            <input onClick={this.handlePaymentToggle.bind(null, 'Discover')} type='checkbox' />
-            <span className='card cc-discover' />&nbsp;
-            <span className='discover-card-name'>Discover</span>
-          </li>
-          <li className='payment-type'>
-            <input onClick={this.handlePaymentToggle.bind(null, 'MasterCard')} type='checkbox' />
-            <span className='card cc-mc' />&nbsp;
-            <span className='mastercard-card-name'>MasterCard</span>
-          </li>
-          <li className='payment-type'>
-            <input onClick={this.handlePaymentToggle.bind(null, 'Visa')} type='checkbox' />
-            <span className='card cc-visa' />&nbsp;
-            <span className='visa-card-name'>Visa</span>
-          </li>
+          <PaymentOption onPaymentOptionClick={this.handlePaymentToggle} cardIcon={'cc-ae'} cardText={window.innerWidth < 768 ? 'AMEX' : 'American Express'} cardName={'AMEX'} cardClass={'amex'} />
+          <PaymentOption onPaymentOptionClick={this.handlePaymentToggle} cardIcon={'cc-discover'} cardText={'Discover'} cardName={'Discover'} cardClass={'discover'} />
+          <PaymentOption onPaymentOptionClick={this.handlePaymentToggle} cardIcon={'cc-mc'} cardText={'MasterCard'} cardName={'MasterCard'} cardClass={'mastercard'} />
+          <PaymentOption onPaymentOptionClick={this.handlePaymentToggle} cardIcon={'cc-visa'} cardText={'Visa'} cardName={'Visa'} cardClass={'visa'} />
         </ul>
       </div>
+    )
+  }
+})
+
+const PaymentOption = React.createClass({
+  propTypes: {
+    onPaymentOptionClick: func,
+    cardName: string,
+    cardIcon: string,
+    cardClass: string,
+    cardText: string
+  },
+  _onClick () {
+    this.props.onPaymentOptionClick(this.props.cardName)
+  },
+  render () {
+    return (
+      <li className='payment-type'>
+        <input onClick={this._onClick} type='checkbox' />
+        <span className={`card ${this.props.cardIcon}`} />&nbsp;
+        <span className={`${this.props.cardClass}-card-name`}>{this.props.cardText}</span>
+      </li>
     )
   }
 })

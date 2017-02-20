@@ -31,7 +31,12 @@ const Results = React.createClass({
     if (!Object.keys(this.props.searchResults).length) { return }
     return this.props.searchResults.hits.map((result, i) => {
       return (
-        <Result key={i} {...result} userLocation={this.props.userLocation} />
+        <Result
+          key={i}
+          userLocation={this.props.userLocation}
+          mobileMenu={this.state.mobileMenu}
+          {...result}
+        />
       )
     })
   },

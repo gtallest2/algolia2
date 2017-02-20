@@ -1,6 +1,6 @@
 import React from 'react'
 
-const { func, number } = React.PropTypes
+const { func, number, string } = React.PropTypes
 
 const Ratings = React.createClass({
   propTypes: {
@@ -15,14 +15,32 @@ const Ratings = React.createClass({
       <div className='ratings-filter'>
         <h4>Rating</h4>
         <ul className='ratings'>
-          <li onClick={this.handleRatingFilter.bind(null, 0)} className={this.props.currentRatingFilter === 0 ? 'active stars no-star' : 'stars no-star'} />
-          <li onClick={this.handleRatingFilter.bind(null, 1)} className={this.props.currentRatingFilter === 1 ? 'active stars one-star' : 'stars one-star'} />
-          <li onClick={this.handleRatingFilter.bind(null, 2)} className={this.props.currentRatingFilter === 2 ? 'active stars two-star' : 'stars two-star'} />
-          <li onClick={this.handleRatingFilter.bind(null, 3)} className={this.props.currentRatingFilter === 3 ? 'active stars three-star' : 'stars three-star'} />
-          <li onClick={this.handleRatingFilter.bind(null, 4)} className={this.props.currentRatingFilter === 4 ? 'active stars four-star' : 'stars four-star'} />
-          <li onClick={this.handleRatingFilter.bind(null, 5)} className={this.props.currentRatingFilter === 5 ? 'active stars five-star' : 'stars five-star'} />
+          <Rating onRatingClick={this.handleRatingFilter} number={0} currentRatingFilter={this.props.currentRatingFilter} starsClass={'no-star'} />
+          <Rating onRatingClick={this.handleRatingFilter} number={1} currentRatingFilter={this.props.currentRatingFilter} starsClass={'one-star'} />
+          <Rating onRatingClick={this.handleRatingFilter} number={2} currentRatingFilter={this.props.currentRatingFilter} starsClass={'two-star'} />
+          <Rating onRatingClick={this.handleRatingFilter} number={3} currentRatingFilter={this.props.currentRatingFilter} starsClass={'three-star'} />
+          <Rating onRatingClick={this.handleRatingFilter} number={4} currentRatingFilter={this.props.currentRatingFilter} starsClass={'four-star'} />
+          <Rating onRatingClick={this.handleRatingFilter} number={5} currentRatingFilter={this.props.currentRatingFilter} starsClass={'five-star'} />
         </ul>
       </div>
+    )
+  }
+})
+
+const Rating = React.createClass({
+  propTypes: {
+    onRatingClick: func,
+    number: number,
+    currentRatingFilter: number,
+    starsClass: string
+  },
+  _onClick () {
+    this.props.onRatingClick(this.props.number)
+  },
+  render () {
+    const className = (this.props.currentRatingFilter === this.props.number ? 'active' : '') + ' stars ' + this.props.starsClass
+    return (
+      <li onClick={this._onClick} className={className} />
     )
   }
 })

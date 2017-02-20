@@ -6,15 +6,19 @@ module.exports = {
   entry: './assets/js/App.js',
   module: {
     loaders: [
+      // {
+      //   enforce: 'pre',
+      //   test: /\.js$/,
+      //   loader: 'eslint-loader',
+      //   exclude: /node_modules/
+      // },
       {
-        enforce: 'pre',
         test: /\.js$/,
-        loader: 'eslint-loader',
-        exclude: /node_modules/
-      },
-      {
-        test: /\.js$/,
-        exclude: /node_modules/,
+        // exclude: /node_modules/,
+        include: [
+          path.resolve('assets/'),
+          path.resolve('node_modules/preact-compat/src')
+        ],
         loader: 'babel-loader'
       },
       {
@@ -49,7 +53,14 @@ module.exports = {
         'NODE_ENV': JSON.stringify('production')
       }
     }),
-    new webpack.optimize.UglifyJsPlugin(), //minify everything
-    new webpack.optimize.AggressiveMergingPlugin()//Merge chunks
-  ]
+    new webpack.optimize.UglifyJsPlugin(), // minify
+    new webpack.optimize.AggressiveMergingPlugin()// merge
+  ],
+  resolve: {
+    'alias': {
+      'react': 'preact-compat',
+      'react-dom': 'preact-compat',
+      'react-addons-css-transition-group': 'preact-css-transition-group'
+    }
+  }
 }

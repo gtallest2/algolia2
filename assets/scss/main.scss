@@ -83,11 +83,17 @@ body {
   .search-clear {
     position:absolute;
     color:black;
-    padding:5px;
     right:7%;
     cursor:pointer;
     background:white;
     font-size:18px;
+    top:0;
+    bottom:0;
+    height:20px;
+    margin-top:auto;
+    margin-bottom:auto;
+    display: flex;
+    align-items:center;
   }
 
   .invisible {

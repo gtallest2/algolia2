@@ -1,5 +1,6 @@
 import React from 'react'
 import haversine from 'haversine'
+import DOMPurify from 'dompurify'
 
 import renderStars from './stars-helper'
 
@@ -15,6 +16,7 @@ const Result = React.createClass({
     price: number,
     _geoloc: object,
     reserve_url: string,
+    mobile_reserve_url: string,
     image_url: string,
     reviews_count: number
   },
@@ -72,23 +74,24 @@ const Result = React.createClass({
     const highlightedFood = `${this.props._highlightResult.food_type.value} | `
     const highlightedArea = `${this.props._highlightResult.area.value} | `
     const highlightedCity = `${this.props._highlightResult.city.value} |&nbsp;`
+    const reserveUrl = window.innerWidth < 768 ? this.props.mobile_reserve_url : this.props.reserve_url
 
     return (
       <div className='result'>
         <div className='result-image-link'>
-          <a href={this.props.reserve_url}><img className='result-image' src={this.props.image_url} alt='Result Image' /></a>
+          <a href={reserveUrl}><img className='result-image' src={this.props.image_url} alt='Result Image' /></a>
         </div>
         <div className='result-text'>
-          <a href={this.props.reserve_url}><h4 dangerouslySetInnerHTML={{ __html: this.props._highlightResult.name.value }} /></a>
+          <a href={reserveUrl}><h4 dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(this.props._highlightResult.name.value) }} /></a>
           <span>
             <span className='rating-number'>{this.props.stars_count}</span>
             {this.renderStarsClass()}
             <span className='review-count'>({this.props.reviews_count} reviews)</span>
           </span>
           <span className='result-third-line'>
-            <span dangerouslySetInnerHTML={{ __html: highlightedFood }} className='result-foodtype' />
-            <span dangerouslySetInnerHTML={{ __html: highlightedArea }} className='result-area' />
-            <span dangerouslySetInnerHTML={{ __html: highlightedCity }} className='result-city' />
+            <span dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(highlightedFood) }} className='result-foodtype' />
+            <span dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(highlightedArea) }} className='result-area' />
+            <span dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(highlightedCity) }} className='result-city' />
             <span className='result-price-range'>{this.props.price_range}</span>
             <span className='result-price'>{this.renderTyDollarSigns(this.props.price)}</span>
           </span>

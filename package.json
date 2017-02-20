@@ -17,7 +17,8 @@
     "watch": "npm run build -- --watch",
     "test": "NODE_ENV=test jest",
     "dev-test": "NODE_ENV=development webpack-dev-server",
-    "lint": "eslint assets/js/*.js webpack.config.js"
+    "lint": "eslint assets/js/*.js webpack.config.js",
+    "convert-csv": "node assets/js/ex/csv-to-json.js && node assets/js/ex/import-algolia.js"
   },
   "devDependencies": {
     "babel-core": "^6.23.1",
@@ -58,9 +59,13 @@
   "dependencies": {
     "algoliasearch": "^3.21.1",
     "algoliasearch-helper": "^2.18.1",
+    "dompurify": "^0.8.5",
     "dsv-loader": "^2.0.0",
     "haversine": "^1.0.2",
     "npm-font-open-sans": "^1.0.2",
+    "preact": "^7.2.0",
+    "preact-compat": "^3.13.1",
+    "preact-css-transition-group": "^1.1.1",
     "raven-js": "^3.11.0",
     "react": "^15.4.2",
     "react-addons-css-transition-group": "^15.4.2",

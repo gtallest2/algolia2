@@ -16,10 +16,7 @@ const FoodTypes = React.createClass({
     const foodTypes = this.props.searchResults.getFacetValues('food_type')
     return foodTypes.map((type, i) => {
       return (
-        <li key={i} onClick={this.handleFoodTypeClick.bind(null, type.name)} className={this.props.currentFoodType === type.name ? 'active' : ''} >
-          <span className='food-type'>{type.name}</span>
-          <span className='food-type-amount'>{type.count}</span>
-        </li>
+        <FoodType key={i} onFoodTypeClick={this.handleFoodTypeClick} currentFoodType={this.props.currentFoodType} name={type.name} count={type.count} />
       )
     }, this)
   },
@@ -39,6 +36,26 @@ const FoodTypes = React.createClass({
         <h4>Cuisine/Food Type</h4>
         {!Object.keys(this.props.searchResults).length /* || !this.props.searchResults.facets.length */ ? CuisinePlaceholder() : foodTypes}
       </div>
+    )
+  }
+})
+
+const FoodType = React.createClass({
+  propTypes: {
+    onFoodTypeClick: func,
+    name: string,
+    count: string,
+    currentFoodType: string
+  },
+  _onClick () {
+    this.props.onFoodTypeClick(this.props.name)
+  },
+  render () {
+    return (
+      <li onClick={this._onClick} className={this.props.currentFoodType === this.props.name ? 'active' : ''} >
+        <span className='food-type'>{this.props.name}</span>
+        <span className='food-type-amount'>{this.props.count}</span>
+      </li>
     )
   }
 })
