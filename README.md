@@ -13,7 +13,7 @@ The answers to the customer questions can be found in `customer-questions.txt`
 ## Data Manipulation & Import
 I converted the .csv into .json, merged the .json files, and imported the data to Algolia with a couple node scripts: `csv-to-json.js` and `import-algolia.js`. They can be found in `assets/js/ex`.
 
-(The admin key has been removed from `import-algolia.js`. You can still find it by looking through the commit history... this won't happen again!)
+(The admin key has been removed from `import-algolia.js`. But you can still find it by looking through the commit history... D'oh! This won't happen again!)
 
 There is an npm script that runs both scripts in package.json: `npm run convert-csv`
 
