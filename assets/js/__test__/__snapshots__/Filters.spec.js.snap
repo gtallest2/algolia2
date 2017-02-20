@@ -1,0 +1,5 @@
+exports[`test Filters snapshot test 1`] = `
+<Filters
+  disableOnClickOutside={[Function]}
+  enableOnClickOutside={[Function]} />
+`;

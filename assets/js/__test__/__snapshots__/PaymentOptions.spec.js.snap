@@ -1,0 +1,63 @@
+exports[`test PaymentOptions snapshot test 1`] = `
+<div
+  className="payments-filter">
+  <h4>
+    Payment Options
+  </h4>
+  <ul
+    className="payment-options">
+    <li
+      className="payment-type">
+      <input
+        onClick={[Function]}
+        type="checkbox" />
+      <span
+        className="card cc-ae" />
+       
+      <span
+        className="amex-card-name">
+        American Express
+      </span>
+    </li>
+    <li
+      className="payment-type">
+      <input
+        onClick={[Function]}
+        type="checkbox" />
+      <span
+        className="card cc-discover" />
+       
+      <span
+        className="discover-card-name">
+        Discover
+      </span>
+    </li>
+    <li
+      className="payment-type">
+      <input
+        onClick={[Function]}
+        type="checkbox" />
+      <span
+        className="card cc-mc" />
+       
+      <span
+        className="mastercard-card-name">
+        MasterCard
+      </span>
+    </li>
+    <li
+      className="payment-type">
+      <input
+        onClick={[Function]}
+        type="checkbox" />
+      <span
+        className="card cc-visa" />
+       
+      <span
+        className="visa-card-name">
+        Visa
+      </span>
+    </li>
+  </ul>
+</div>
+`;

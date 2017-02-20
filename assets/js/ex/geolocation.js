@@ -1,3 +1,5 @@
+// Experimenting with Browser Geolocation
+
 import { helper } from './algolia'
 
 const formatted = [];

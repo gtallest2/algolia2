@@ -1,25 +1,21 @@
 import React from 'react'
 import { render } from 'react-dom'
-import algoliasearch from 'algoliasearch'
 
 import Panel from './Panel'
 
 import '../scss/main.scss'
 
 import Raven from 'raven-js'
-import { sentry_url } from '../data/config'
+import { sentryUrl } from '../data/config'
 
-Raven.config(sentry_url).install()
+Raven.config(sentryUrl).install()
 
 const App = React.createClass({
-  render() {
+  render () {
     return (
-      <div className="welcome-container">
-        <Panel />
-      </div>
+      <Panel />
     )
   }
 })
-
 
 render(<App />, document.getElementById('app'))

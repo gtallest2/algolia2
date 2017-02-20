@@ -1,0 +1,35 @@
+exports[`test Panel snapshot test 1`] = `
+<div
+  className="panel">
+  <Search
+    clearSearch={[Function]}
+    onSearch={[Function]}
+    toggleMobile={[Function]} />
+  <div />
+  <div
+    className="lower-area">
+    <OnClickOutside(Filters)
+      addPayment={[Function]}
+      addRating={[Function]}
+      blurMenu={[Function]}
+      combineAddAndRemove={[Function]}
+      foodFacet={[Function]}
+      mobileMenu={false}
+      removePayment={[Function]}
+      removeRating={[Function]}
+      searchResults={Object {}}
+      toggleMobile={[Function]} />
+    <Results
+      hitsPerPage={3}
+      mobileMenu={false}
+      nextPage={[Function]}
+      onShowMore={[Function]}
+      prevPage={[Function]}
+      searchQuery=""
+      searchResults={Object {}}
+      searchesMade={0}
+      updateResultsPerPage={[Function]}
+      userLocation="start" />
+  </div>
+</div>
+`;

@@ -1,0 +1,22 @@
+exports[`test Search snapshot test 1`] = `
+<div
+  className="search">
+  <div
+    className="mobile-menu"
+    onClick={[Function]}>
+    <span
+      className="filter-button">
+      Filter
+    </span>
+  </div>
+  <input
+    onChange={[Function]}
+    placeholder="Search for Restaurants by Name, Cuisine, Location"
+    type="text" />
+  <div
+    className="invisible search-clear"
+    onClick={[Function]}>
+    X
+  </div>
+</div>
+`;

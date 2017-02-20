@@ -1,7 +1,16 @@
+const path = require('path')
+
 module.exports = {
-  entry: __dirname + '/assets/js/App.js',
+  context: __dirname,
+  entry: './assets/js/App.js',
   module: {
     loaders: [
+      {
+        enforce: 'pre',
+        test: /\.js$/,
+        loader: 'eslint-loader',
+        exclude: /node_modules/
+      },
       {
         test: /\.js$/,
         exclude: /node_modules/,
@@ -10,14 +19,14 @@ module.exports = {
       {
         test: /\.scss$/,
         loaders: [
-        'style-loader',
-        {
-          loader: 'css-loader',
-          options: {
-            url: false
-          }
-        },
-        'sass-loader'
+          'style-loader',
+          {
+            loader: 'css-loader',
+            options: {
+              url: false
+            }
+          },
+          'sass-loader'
         ]
       },
       {
@@ -31,6 +40,6 @@ module.exports = {
   },
   output: {
     filename: 'bundle.js',
-    path: __dirname + '/build'
+    path: path.join(__dirname, '/build')
   }
-};
+}

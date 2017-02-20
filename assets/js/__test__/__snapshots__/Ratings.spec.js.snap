@@ -1,0 +1,29 @@
+exports[`test Ratings snapshot test 1`] = `
+<div
+  className="ratings-filter">
+  <h4>
+    Rating
+  </h4>
+  <ul
+    className="ratings">
+    <li
+      className="stars no-star"
+      onClick={[Function]} />
+    <li
+      className="stars one-star"
+      onClick={[Function]} />
+    <li
+      className="stars two-star"
+      onClick={[Function]} />
+    <li
+      className="stars three-star"
+      onClick={[Function]} />
+    <li
+      className="stars four-star"
+      onClick={[Function]} />
+    <li
+      className="stars five-star"
+      onClick={[Function]} />
+  </ul>
+</div>
+`;
