@@ -1,3 +1,5 @@
+// Convert .csv to .json
+
 const csvFilePath = 'resources/dataset/restaurants_info.csv'
 const csv = require('csvtojson')
 const converter = csv({ delimiter:";", toArrayString:true });

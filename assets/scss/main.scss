@@ -300,6 +300,15 @@ body {
     align-items:center;
     position:relative;
 
+    .results-placeholder {
+      padding-top:35px;
+
+      .emoji {
+        font-size:5em;
+        margin-top:50px;
+      }
+    }
+
     a {
       text-decoration:none;
     }

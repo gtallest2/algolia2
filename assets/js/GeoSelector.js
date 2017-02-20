@@ -10,6 +10,7 @@ const GeoSelector = React.createClass({
   handleSetLocation (coordinates) {
     this.props.handleSetLocation(coordinates)
   },
+
   render () {
     return (
       <div className='geo-selector'>
@@ -30,9 +31,11 @@ const GeoLocation = React.createClass({
     cityName: string,
     onLocationClick: func
   },
+
   _onClick () {
     this.props.onLocationClick(this.props.coord)
   },
+
   render () {
     return (
       <li onClick={this._onClick} className='geo-location'>{this.props.cityName}</li>

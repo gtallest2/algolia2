@@ -35,9 +35,11 @@ const PaymentOption = React.createClass({
     cardClass: string,
     cardText: string
   },
+
   _onClick () {
     this.props.onPaymentOptionClick(this.props.cardName)
   },
+
   render () {
     return (
       <li className='payment-type'>

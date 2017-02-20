@@ -47,9 +47,11 @@ const FoodType = React.createClass({
     count: string,
     currentFoodType: string
   },
+
   _onClick () {
     this.props.onFoodTypeClick(this.props.name)
   },
+
   render () {
     return (
       <li onClick={this._onClick} className={this.props.currentFoodType === this.props.name ? 'active' : ''} >

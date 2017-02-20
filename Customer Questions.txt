@@ -14,16 +14,15 @@ Hi George,
 
 First of all, welcome to the world of search! My name is Marc and I would be happy to help you get up to speed on all things related to search and Algolia.
 
-We'll first dive into records and indexing. These two concepts are structures which Algolia uses to organize the data that will be searched. 
+Let's first dive into records and indexing. Records are entities of data that are stored in groupings called indexes/indices. The act of editing an index (adding, updating, clearing) is known as indexing. These concepts are what Algolia utilizes to organize the searchable data.
 
-You can think of an index like a directory/phone book, and records are like each person/phone number in it. A record can contain any amount of data that you would like, and the best part is: all of it is searchable! And just like there are different directories for different places in the world, we can create different indices for different groups of data we may have.
+You can think of an index like a directory/phone book, and records are like each person/phone number in it. A record can contain any amount of data that you would like, so for this example a record might contain the person's name, address, date of birth, etc., and you can have as many indices and you would like. The best part is, it's all searchable! 
 
-Let's cover Custom Ranking next. When search results come back, they display in a certain order. Now, if we want to have more control over that order, we can set certain Custom Ranking attributes that will determine what shows up first. Examples of helpful attributes to sort with are: year, number of views (for videos), number in stock (for products). Basically, Custom Ranking helps us define specifc priorities or relevance that we would want for our searches.
+Now on to Custom Ranking. When search results come back, they will display in a certain order. But what if we don't really like the order that comes back? Maybe we want our users to see one result more than another. This is where we can set certain properties as Custom Rankings to help us control the order of our results. Some useful metrics for custom ranking are: year, view count (for videos), or number in stock (for products). Basically, Custom Ranking helps us define specific priorities that can help us show our users more relevant results.
 
-For example, say we've implemented Algolia on our DVD/Blu-Ray online store. We've created our index of movies, and added each product as a record. We figure that our customers are looking for the latest releases to buy, so we decide that when users search for movies by name, the most recent releases should be the most relevant. This is where Custom Ranking comes in. We could tell Algolia to prioritize movie release dates in the Custom Ranking, so that if a customer searches for "Star Wars", "Rogue One (2016)" and "The Force Awakens (2015)" would appear at the top.
+A short example is, say we've implemented Algolia on our DVD/Blu-Ray online store. We've created our movie index, and added each film as a record. We figure that our customers are probably looking for the latest movies to buy, so we decide that the newest releases should be appear first when our users perform a search. We could have Algolia prioritize movie release dates in the Custom Rankings, so that a search for "Star Wars", would show "Rogue One: A Star Wars Story (2016)" and "Star Wars: The Force Awakens (2015)" first.
 
-
-Hopefully that helps clear things up! If there are any other search concepts you would like to know more about, please do not hesitate to ask, I'm here to help. Good luck on your journey in search!
+Hopefully that helps clear things up. If there are any other concepts you would like to know more about, please do not hesitate to ask. Best of luck on your journey into search!
 
 Regards,
 -Marc
@@ -41,13 +40,13 @@ Answer:
 
 Hi Matt,
 
-We apologize that your experience with Algolia has not been the best that it can be. We are trying out a new dashboard design and have decided to move clearing and deleting to another area because _______. But, as evidenced by your email, it may not be having as much of a positive impact as we thought. I will be sure to forward your feedback to our design & development team. 
+We apologize that your experience with Algolia has not been the best that it can be. We have been trying out the new dashboard design and have decided to move clearing and deleting to a different area because {the specific reason}. But, as evidenced by your email, it may not be working as well as we thought. I will be sure to forward your feedback to our design & development team. 
 
-As an alternative, may I suggest utilizing an API Client to assist in the clearing and deleting of indices? I realize that this will require a bit more technical ability, but will surely speed up the process. I would be happy to walk you through it if you'd like!
+As an alternative, we do offer our users the ability to make index modifications through an API Client. This will be a bit more technical than using the dashboard, but will surely help speed up the process. I would be happy to walk you through the steps if you'd like.
 
-And please do not feel bad about sending us your thoughts! Here at Algolia we truly value our customers' feedback, be it positive or constructive. Our goal is to constantly make improvements to provide our users with the best experience, so we really appreciate that you took the time to contact us.
+And please do not feel bad about sending us your thoughts! Here at Algolia we truly value our customers' feedback, be it positive or constructive. Our goal is to constantly make improvements and provide our users with the best experience, so we really appreciate that you took the time to contact us.
 
-If there are any updates on the dashboard design, I will be sure to follow up and let you know. In the meantime, if there is anything else I can help with, or if you have some other feedback, just let me know! We're here to help.
+If I hear about any updates on the dashboard design, I will be sure to follow up and let you know. In the meantime, if there is anything else I can help with, or if you have more feedback, please let us know. We're here to help!
 
 
 Best,
@@ -66,28 +65,28 @@ Answer:
 
 Hi Leo,
 
-Thank you for reaching out to Algolia! My name is Marc and I will be happy to help you through the integration process.
+Thank you for reaching out to Algolia! My name is Marc and I will be glad to help you through the integration process.
 
-Algolia offers many different options, so the amount of development work needed will depend on what you are hoping to achieve with Algolia. Would you be able to share with me what you are hoping to do with Algolia, so that I can get a better idea of the amount of work needed?
+Algolia is widely customizable depending on your needs and development experience, so the amount of work will depend on what you are hoping to achieve with Algolia. Could you share with me what your plans are, so that I can help you plan out the next steps?
 
-And before we get too technical, I would just like to ask, how much development experience have you had in the past? [Algolia is widely customizable depending on your needs and development experience][We've designed Algolia to be as easy to use as possible for developers and non-developers alike.], so hopefully we will be able to arrive at a solution to suit your needs!
+And before we get too technical, I would like to ask about your development experience. How comfortable would you be working with code? Algolia has been designed to be easy to use, so hopefully we will be able to arrive at a solution that suits your needs.
 
- The integration process can be broken down into 3 steps, with only the 3rd step being more development heavy:
+ Overall, the integration process can be broken down into 3 steps:
 
 1. Data Synchronization
-	This is where we tell Algolia what data we will be working with. The data can easily be uploaded through the Algolia dashboard interface.
+	This is where we give Algolia the data we will be working with. The Algolia dashboard interface makes this step very easy.
 
 2. Ranking Configuration
-	Next, we configure how exactly we want Algolia to show us data. We can set different priorities for our results, ensuring a great search experience for our users.
+	We can set different ranking priorities for our results, ensuring a great search experience for our users. This can also be done through the dashboard.
 
 3. Website Implementation
-	The last step is to integrate Algolia with your website, which is where most of the heavy lifting takes place. 
+	The last step is to integrate Algolia with your website, which is where most of the heavy lifting takes place. This will generally involve redesigns for the site and user experience.
 
-I hope this helps clear some things up. If you would like to dive a bit deeper into the details, we can definitely schedule a call to chat. I will be available at these times: _____. If none of those times work, just let me know and we can work something out.
+I hope this helps clear some things up. If you would like to dive a bit deeper into the details, we can definitely schedule a time for a call. If you are interested, let me know your availability and we can go from there.
 
-We want your integration process to be as smooth as possible, so if you have any other questions, please do not hesitate to reach out!
+We want your integration process to be as smooth as possible, so do not hesitate to reach out if you have any more questions.
 
-Thanks again,
+Thanks!
 -Marc
 ###.###.####
 marc.wong@algolia.com

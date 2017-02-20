@@ -7,9 +7,11 @@ const Ratings = React.createClass({
     currentRatingFilter: number,
     handleRatingFilter: func
   },
+
   handleRatingFilter (value) {
     this.props.handleRatingFilter(value)
   },
+
   render () {
     return (
       <div className='ratings-filter'>
@@ -34,9 +36,11 @@ const Rating = React.createClass({
     currentRatingFilter: number,
     starsClass: string
   },
+
   _onClick () {
     this.props.onRatingClick(this.props.number)
   },
+
   render () {
     const className = (this.props.currentRatingFilter === this.props.number ? 'active' : '') + ' stars ' + this.props.starsClass
     return (

@@ -56,23 +56,6 @@ gulp.task('convertcsv', function() {
     .pipe(gulp.dest('resources/dataset/'));
 });
 
-gulp.task('sortJSON', function() {
-  gulp.src('resources/dataset/restaurants_info.json')
-    .sort((a, b) => a.objectID < b.objectID ? 1 : -1)
-    .pipe(gulp.dest('dist'))
-});
-
-gulp.task('mergejson', function(){
-  gulp.src('resources/dataset/*.json')
-    .pipe(merge({
-      startObj: [],
-      edit: (parsedJson, file) => {
-        return parsedJson.sort((a, b) => a.objectID < b.objectID ? 1 : -1)
-      }
-    }))
-
-    .pipe(gulp.dest('dist'))
-});
 
 
 gulp.task('default', ['serve']);

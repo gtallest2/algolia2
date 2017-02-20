@@ -138,9 +138,7 @@ const Results = React.createClass({
     }
 
     const searchIsEmpty = this.props.searchesMade < 1 || (!this.props.searchQuery && !facetsRefinements && !disjunctiveRefinements && !numericRefinements)
-    /* console.log('search is empty: ' + searchIsEmpty);
-    console.log('searches made: ' + this.props.searchesMade);
-    console.log(Object.keys(this.props.searchResults).length, facetsRefinements, disjunctiveRefinements, numericRefinements); */
+
     return (
       <div className='results'>
         {searchIsEmpty ? ResultsPlaceholder() : this.millisecondsMatter()}

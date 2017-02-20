@@ -1,3 +1,5 @@
+// Helper function to render ratings stars
+
 import React from 'react'
 
 function renderStars (starsAmount) {

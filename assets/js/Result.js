@@ -23,6 +23,7 @@ const Result = React.createClass({
     hitsPerPage: number,
     index: number
   },
+
   renderStarsClass () {
     const stars = parseFloat(this.props.stars_count)
     return renderStars(stars)
@@ -83,11 +84,15 @@ const Result = React.createClass({
       <a className='result-link' href={reserveUrl} target='_blank'>
         <div className='result'>
           <div className='result-image-link'>
-            <a href={reserveUrl}><img className='result-image' src={this.props.image_url} alt='Result Image' /></a>
+            <a href={reserveUrl} target='_blank'>
+              <img className='result-image' src={this.props.image_url} alt='Result Image' />
+            </a>
           </div>
           <div className='result-text'>
-            <a href={reserveUrl}><h4 dangerouslySetInnerHTML={{ __html: ((this.props.pageNum * this.props.hitsPerPage) + (this.props.index + 1)) + '. ' + DOMPurify.sanitize(this.props._highlightResult.name.value) }} /></a>
-            <span>
+            <a href={reserveUrl} target='_blank'>
+              <h4 dangerouslySetInnerHTML={{ __html: ((this.props.pageNum * this.props.hitsPerPage) + (this.props.index + 1)) + '. ' + DOMPurify.sanitize(this.props._highlightResult.name.value) }} />
+            </a>
+            <span className='result-second-line'>
               <span className='rating-number'>{this.props.stars_count}</span>
               {this.renderStarsClass()}
               <span className='review-count'>({this.props.reviews_count} reviews)</span>
@@ -100,10 +105,9 @@ const Result = React.createClass({
               <span className='result-price'>{this.renderTyDollarSigns(this.props.price)}</span>
             </span>
             <span className='result-fourth-line'>
-              <span className='result-distance'>{!this.props.userLocation ? 'Location Not Set' : this.renderDistance(this.props.userLocation, this.props._geoloc)} | </span>
+              <span className='result-distance'>{!this.props.userLocation ? 'User Location Not Set' : this.renderDistance(this.props.userLocation, this.props._geoloc)} | </span>
               <span className='result-payment-options'>{this.renderPaymentOptions()}</span>
             </span>
-
           </div>
         </div>
       </a>

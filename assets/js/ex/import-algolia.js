@@ -5,7 +5,8 @@ var json1 = require('../../../resources/dataset/converted_csv.json');
 var json2 = require('../../../resources/dataset/restaurants_list.json');
 var fs = require('fs');
 
-// Sorting approach
+/////////////////////////////////////////////////////////////////////////////
+// Abandoned sorting approach
 // First sort arrays so that orders match (ascending ObjectIDs)
 // Then loop through and merge
 // Time complexity: Two sorts, one loop, O(2nlogn + n) => O(nlogn)
@@ -18,6 +19,7 @@ var fs = require('fs');
 //     sortedInfo[j] = Object.assign(sortedInfo[j], sortedList[j]);
 //   }
 // }
+/////////////////////////////////////////////////////////////////////////////
 
 // Loop once through first array, storing values in a new helper array (hash)
 // Then loop through second array, checking helper array indices for corresponding
@@ -48,11 +50,11 @@ fs.writeFile('combined-list.json', JSON.stringify(combinedList), 'utf8', functio
 var client = algoliasearch('AGBNR3G2XW', '40a99372e31284c63c0f37886e1a5ff9');
 var index = client.initIndex('merged');
 
-// index.addObjects(combinedList, function(err, content) {
-//   if(err) {
-//     console.error(err);
-//   }
-// });
+index.addObjects(combinedList, function(err, content) {
+  if(err) {
+    console.error(err);
+  }
+});
 
 index.setSettings({
   'hitsPerPage': 3,
