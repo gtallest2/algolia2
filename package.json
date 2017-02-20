@@ -70,6 +70,7 @@
     "react": "^15.4.2",
     "react-addons-css-transition-group": "^15.4.2",
     "react-dom": "^15.4.2",
-    "react-onclickoutside": "^5.9.0"
+    "react-onclickoutside": "^5.9.0",
+    "smoothscroll": "^0.3.0"
   }
 }

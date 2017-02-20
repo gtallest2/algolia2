@@ -1,5 +1,6 @@
 import React from 'react'
 import CSSTransitionGroup from 'react-addons-css-transition-group'
+import SmoothScroll from 'smoothscroll'
 
 import Result from './Result'
 
@@ -33,6 +34,9 @@ const Results = React.createClass({
       return (
         <Result
           key={i}
+          index={i}
+          pageNum={this.props.searchResults.page}
+          hitsPerPage={this.props.hitsPerPage}
           userLocation={this.props.userLocation}
           mobileMenu={this.state.mobileMenu}
           {...result}
@@ -76,11 +80,22 @@ const Results = React.createClass({
     const { page, nbPages: pageTotal } = this.props.searchResults
     return (
       <div className='pagination'>
-        <button disabled={page <= 0} onClick={this.props.prevPage} className='prev-page'>Prev</button>
+        <button disabled={page <= 0} onClick={this.prevPage} className='prev-page'>Prev</button>
         <span className='page-number'>Page {page + 1} / {pageTotal}</span>
-        <button disabled={(page >= pageTotal - 1)} onClick={this.props.nextPage} className='next-page'>Next</button>
+        <button disabled={(page >= pageTotal - 1)} onClick={this.nextPage} className='next-page'>Next</button>
       </div>
     )
+  },
+
+  prevPage () {
+    this.props.prevPage()
+    SmoothScroll(this.refs.resultsCtg.base.scrollHeight, null, null, this.refs.resultsCtg.base)
+  },
+
+  nextPage () {
+    this.props.nextPage()
+    // this.refs.resultsCtg.base.scrollTop = 0
+    SmoothScroll(0, null, null, this.refs.resultsCtg.base)
   },
 
   renderResultsPerPage () {
@@ -131,6 +146,7 @@ const Results = React.createClass({
         {searchIsEmpty ? ResultsPlaceholder() : this.millisecondsMatter()}
         <CSSTransitionGroup
           className='results-ctg'
+          ref='resultsCtg'
           component='div'
           transitionName='results-ctg'
           transitionEnterTimeout={500}

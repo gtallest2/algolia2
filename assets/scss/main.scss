@@ -1,13 +1,14 @@
 $FontPathOpenSans: "./assets/fonts";
+$search-blue: #1c688e;
+$lighter-search-blue: #3793c1;
+$border-grey: #e6e6e6;
+$grey-text: #a9a9a9;
+
 @import './open-sans.scss';
 // @import url(http://fonts.googleapis.com/css?family=Roboto+Slab|Open+Sans:400italic,700italic,400,700);
 
 @import './animations';
 
-$search-blue: #1c688e;
-$lighter-search-blue: #3793c1;
-$border-grey: #e6e6e6;
-$grey-text: #a9a9a9;
 
 html {
   box-sizing: border-box;
@@ -66,7 +67,6 @@ body {
     .filter-button {
       color:white;
       font-size:18px;
-
     }
   }
 
@@ -95,7 +95,6 @@ body {
     display: flex;
     align-items:center;
   }
-
   .invisible {
     display:none;
   }
@@ -116,7 +115,6 @@ body {
     vertical-align: middle;
     width:20%;
     text-align: center;
-
   }
 
   .geo-list {
@@ -125,7 +123,6 @@ body {
     display: inline-block;
     width:80%;
     vertical-align: middle;
-
 
     .geo-location {
       list-style-type:none;
@@ -146,7 +143,6 @@ body {
         transform:translate(2px, 2px);
         box-shadow:none;
       }
-
     }
   }
 }
@@ -192,7 +188,6 @@ body {
       align-items:center;
 
       li {
-
           display:flex;
           justify-content:space-between;
           padding:3px 5px;
@@ -207,8 +202,6 @@ body {
         }
         .food-type-amount {
           color:$grey-text;
-
-
         }
 
          &:hover,
@@ -233,15 +226,8 @@ body {
         height:19px;
         background:$border-grey;
       }
-
-
-
-      }
-
-
-
     }
-
+  }
 
     .ratings {
         display:flex;
@@ -249,21 +235,16 @@ body {
 
 
         li {
-          margin:3px 15px;
+          margin:1px 15px;
           cursor:pointer;
           border-radius:5px;
           &:hover {
-            background-color:$search-blue;
-          }
-          &.active {
             background-color:$lighter-search-blue;
           }
-
-        }
-
-
-
-
+          &.active {
+            background-color:$search-blue;
+          }
+      }
     }
 
     .payment-options {
@@ -298,6 +279,16 @@ body {
       }
     }
 
+    .price-ranges {
+
+      .price {
+        margin: 5px 10px;
+      }
+
+      input {
+        margin-right:5px;
+      }
+    }
   }
 
 .results {
@@ -339,118 +330,133 @@ body {
         }
     }
 
-    .result {
-      margin:20px;
-      display:flex;
-      width:100%;
-      height:105px;
-      border-radius:10px;
-      padding:10px;
-
-      &:hover {
-        background-color:#ececec;
-
-        .result-text{
-          color:$search-blue;
-        }
-      }
-
-      em {
-        background: rgba(255, 200, 0, 0.6);
-        font-style:normal;
-      }
-
-      .result-image {
-        display:flex;
-        border-radius:5px;
-        width:85px;
-        border:1px solid #a9a9a9;
-      }
-
-      .result-text {
-        font-size:16px;
-        color:#a9a9a9;
-        display:flex;
-        flex-direction:column;
-        align-items:baseline;
-        margin-left:20px;
-        justify-content: space-between;
-        font-weight:300;
-
-        h4 {
-          font-size:16px;
-          color:black;
-          font-weight:600;
-        }
-
-        img {
-          background-size:100px;
-          width: 100px;
-          height: 19px;
-        }
-        span {
-
-        }
-        .stars {
-          display:inline-block;
-          vertical-align: top;
-        }
-
-        .result-rating {
-          background:url('./resources/graphics/all-stars-even-spacing-transparent.png');
-          background-size:100px;
-          width: 100px;
-          height: 18px;
-          vertical-align:middle;
-          display:inline-block;
-          margin:0 5px;
-        }
-
-        .rating-number {
-          color:#ffab66;
-          display:inline-block;
-        }
-
-        .review-count {
-          display:inline-block;
-        }
-        .result-city {
-          display:none;
-        }
-        .result-price {
-          display:none;
-        }
-        .result-payment-options {
-          display:inline-block;
-
-          .card {
-            width:32px;
-            height:20px;
-            display:inline-block;
-            background:url('./resources/graphics/cc-icons.png');
-            background-size:122px;
-            vertical-align:middle;
-            margin-left:5px;
-          }
-
-          .cc-ae{
-            background-position:0 20px;
-          }
-          .cc-visa{
-            background-position:32px 0;
-          }
-          .cc-discover{
-            background-position:32px 20px;
-          }
-          .cc-mc{
-            background-position:77px 0;
-          }
-
-        }
-      }
-
-
+    .results-ctg {
+      overflow:overlay;
+      max-height:500px;
     }
+
+    .result-link {
+      display:block;
+      max-width:525px;
+
+      .result {
+        margin:5px 20px;
+        display:flex;
+        width:100%;
+        max-width:525px;
+        min-height:135px;
+        border-radius:10px;
+        padding:10px;
+        align-items:center;
+
+        &:hover {
+          background-color:$lighter-search-blue;
+          transition: all 0.25s;
+
+          .result-text{
+            color:white;
+            h4 {
+              color:white;
+            }
+          }
+        }
+
+        em {
+          background: rgba(255, 200, 0, 0.6);
+          font-style:normal;
+        }
+
+        .result-image {
+          display:flex;
+          border-radius:5px;
+          width:85px;
+          border:1px solid #a9a9a9;
+        }
+
+        .result-text {
+          font-size:16px;
+          color:#a9a9a9;
+          display:flex;
+          flex-direction:column;
+          align-items:baseline;
+          margin-left:20px;
+          justify-content: space-between;
+          font-weight:300;
+          text-align: left;
+
+          h4 {
+            font-size:16px;
+            color:black;
+            font-weight:600;
+          }
+
+          img {
+            background-size:100px;
+            width: 100px;
+            height: 19px;
+          }
+          span {
+
+          }
+          .stars {
+            display:inline-block;
+            vertical-align: top;
+          }
+
+          .result-rating {
+            background:url('./resources/graphics/all-stars-even-spacing-transparent.png');
+            background-size:100px;
+            width: 100px;
+            height: 18px;
+            vertical-align:middle;
+            display:inline-block;
+            margin:0 5px;
+          }
+
+          .rating-number {
+            color:#ffab66;
+            display:inline-block;
+          }
+
+          .review-count {
+            display:inline-block;
+          }
+          .result-city {
+            display:none;
+          }
+          .result-price {
+            display:none;
+          }
+          .result-payment-options {
+            display:inline-block;
+
+            .card {
+              width:32px;
+              height:20px;
+              display:inline-block;
+              background:url('./resources/graphics/cc-icons.png');
+              background-size:122px;
+              vertical-align:middle;
+              margin-left:5px;
+            }
+
+            .cc-ae{
+              background-position:0 20px;
+            }
+            .cc-visa{
+              background-position:32px 0;
+            }
+            .cc-discover{
+              background-position:32px 20px;
+            }
+            .cc-mc{
+              background-position:77px 0;
+            }
+
+        }
+      }
+    }
+  }
 
     .show-more {
       width:180px;
@@ -474,6 +480,7 @@ body {
       right:0;
       bottom:20px;
       font-size:16px;
+      margin-top:10px;
 
       .navigate-results-top {
         border-top:1px solid $border-grey;
@@ -502,8 +509,6 @@ body {
         }
 
       }
-
-
 
       .pagination {
         display: flex;
@@ -594,228 +599,4 @@ body {
         background-position-y:-194px;
       }
 
-// Responsive / Mobile Styling
-@media only screen and (max-width:768px){
-  body {
-    background:white;
-  }
-  .panel {
-    margin:0;
-    width:100vw;
-
-    .search {
-
-      .search-clear {
-        background:none;
-      }
-
-    }
-
-     .geo-selector {
-        display: flex;
-        flex-direction: column;
-
-          .geo-header {
-            display:block;
-            font-size:16px;
-            width:100%;
-            text-align: center;
-            margin:0 0 5px;
-          }
-
-          .geo-list {
-            margin:0;
-            display: flex;
-            padding: 0;
-            justify-content: center;
-            width: 100%;
-            margin:0 0 5px;
-
-            .geo-location {
-              margin: 0 5px;
-              padding:2px 10px;
-              border-radius:5px;
-              font-size:16px;
-            }
-          }
-
-      }
-
-    .lower-area {
-      height: 80%;
-
-      .filters {
-        position:fixed;
-        top:0;
-        left:0;
-        background:white;
-        height:100vh;
-        width:50vw;
-        transform:translate(-50vw);
-        transition:0.5s;
-        padding:0;
-        overflow:scroll;
-
-        .cuisine {
-
-          li {
-            .food-type,
-            .food-type-amount{
-              padding: 0;
-            }
-
-          }
-
-        }
-
-        .mobile-header {
-          display:flex;
-          width:100%;
-          height:35px;
-          background:$search-blue;
-          margin:0;
-
-          .mobile-menu-title {
-            display: flex;
-            align-items:center;
-            color: white;
-            font-size: 16px;
-            padding-left: 10px;
-            font-weight: normal;
-          }
-
-          .mobile-menu-close {
-            font-size:20px;
-            height:100%;
-            color:white;
-            font-weight:bold;
-            cursor:pointer;
-            display: flex;
-            width:35px;
-            align-items:center;
-            justify-content:center;
-            margin-left:auto;
-          }
-        }
-      }
-      .results {
-        width:100%;
-        display:flex;
-
-
-        .search-stats {
-          margin:10px 20px;
-
-          .search-stats-text {
-            border-bottom:none;
-            margin-right:0;
-            padding-right:0;
-          }
-        }
-
-        .results-ctg {
-          width:100%;
-        }
-
-        .result {
-          margin:10px 0 20px;
-          padding:5px;
-          align-items:center;
-
-          .result-image-link {
-            margin-left:15px;
-          }
-
-          .result-image {
-            width:70px;
-          }
-
-          .result-text {
-            font-size:12px;
-            text-align:left;
-            align-items:baseline;
-            justify-content:initial;
-
-            a h4 {
-              font-size:14px;
-            }
-
-            .stars {
-              margin:0;
-              background-position-x:0px;
-            }
-            .rating-number {
-              display:none;
-            }
-            .result-area {
-              display:none;
-            }
-
-            .review-count {
-              display:none;
-            }
-            .result-city {
-              display:inline-block;
-            }
-            .result-price {
-              display:inline-block;
-           }
-            .result-price-range {
-              display:none;
-           }
-
-          .result-payment-options {
-            display:block;
-
-            .card {
-              margin-left:0;
-              margin-right:5px;
-            }
-          }
-
-        }
-
-      }
-        .navigate-results {
-          margin-top:10px;
-
-          .navigate-results-top {
-            margin:0;
-            align-items:flex-end;
-
-            .results-range {
-              padding-bottom:1px;
-            }
-
-            .results-per-page {
-              select {
-                background:white;
-              }
-            }
-          }
-
-        .pagination {
-            font-size:16px;
-            bottom:0;
-            margin-top:20px;
-           }
-
-         }
-
-      }
-  }
-
-    .search {
-      height:75px;
-
-      .mobile-menu {
-        display:flex;
-      }
-        input {
-        width:75%;
-        height: 35px;
-        font-size:12px;
-      }
-    }
-  }
-}
+@import './responsive';

@@ -4,6 +4,7 @@ import onClickOutside from 'react-onclickoutside'
 import FoodTypes from './FoodTypes'
 import Ratings from './Ratings'
 import PaymentOptions from './PaymentOptions'
+import PriceRanges from './PriceRanges'
 
 const { bool, object, func } = React.PropTypes
 
@@ -18,7 +19,9 @@ const Filters = onClickOutside(React.createClass({
     addRating: func,
     removeRating: func,
     blurMenu: func,
-    combineAddAndRemove: func
+    combineAddAndRemove: func,
+    addPrice: func,
+    removePrice: func
   },
 
   getInitialState () {
@@ -30,6 +33,13 @@ const Filters = onClickOutside(React.createClass({
         Discover: false,
         MasterCard: false,
         Visa: false
+      },
+      currentPriceRanges: {
+        1: false,
+        2: false,
+        3: false,
+        4: false,
+        5: false
       }
     }
   },
@@ -72,6 +82,22 @@ const Filters = onClickOutside(React.createClass({
     }
   },
 
+  addPriceDisjunctive (value) {
+    const priceState = Object.assign(this.state.currentPriceRanges, { [value]: true })
+    this.setState({ currentPriceRanges: priceState })
+    this.props.addPrice('price', value)
+  },
+
+  removePriceDisjunctive (value) {
+    const priceState = Object.assign(this.state.currentPriceRanges, { [value]: false })
+    this.setState({ currentPriceRanges: priceState })
+    this.props.removePrice('price', value)
+  },
+
+  handlePriceToggle (value) {
+    this.state.currentPriceRanges[value] ? this.removePriceDisjunctive(value) : this.addPriceDisjunctive(value)
+  },
+
   closeMenu () {
     this.props.toggleMobile()
   },
@@ -99,6 +125,9 @@ const Filters = onClickOutside(React.createClass({
         <PaymentOptions
           mobileMenu={this.props.mobileMenu}
           handlePaymentToggle={this.handlePaymentToggle}
+        />
+        <PriceRanges
+          handlePriceToggle={this.handlePriceToggle}
         />
       </div>
     )

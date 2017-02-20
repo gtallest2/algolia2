@@ -18,7 +18,10 @@ const Result = React.createClass({
     reserve_url: string,
     mobile_reserve_url: string,
     image_url: string,
-    reviews_count: number
+    reviews_count: number,
+    pageNum: number,
+    hitsPerPage: number,
+    index: number
   },
   renderStarsClass () {
     const stars = parseFloat(this.props.stars_count)
@@ -77,31 +80,33 @@ const Result = React.createClass({
     const reserveUrl = window.innerWidth < 768 ? this.props.mobile_reserve_url : this.props.reserve_url
 
     return (
-      <div className='result'>
-        <div className='result-image-link'>
-          <a href={reserveUrl}><img className='result-image' src={this.props.image_url} alt='Result Image' /></a>
-        </div>
-        <div className='result-text'>
-          <a href={reserveUrl}><h4 dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(this.props._highlightResult.name.value) }} /></a>
-          <span>
-            <span className='rating-number'>{this.props.stars_count}</span>
-            {this.renderStarsClass()}
-            <span className='review-count'>({this.props.reviews_count} reviews)</span>
-          </span>
-          <span className='result-third-line'>
-            <span dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(highlightedFood) }} className='result-foodtype' />
-            <span dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(highlightedArea) }} className='result-area' />
-            <span dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(highlightedCity) }} className='result-city' />
-            <span className='result-price-range'>{this.props.price_range}</span>
-            <span className='result-price'>{this.renderTyDollarSigns(this.props.price)}</span>
-          </span>
-          <span className='result-fourth-line'>
-            <span className='result-distance'>{!this.props.userLocation ? '' : this.renderDistance(this.props.userLocation, this.props._geoloc)} | </span>
-            <span className='result-payment-options'>{this.renderPaymentOptions()}</span>
-          </span>
+      <a className='result-link' href={reserveUrl} target='_blank'>
+        <div className='result'>
+          <div className='result-image-link'>
+            <a href={reserveUrl}><img className='result-image' src={this.props.image_url} alt='Result Image' /></a>
+          </div>
+          <div className='result-text'>
+            <a href={reserveUrl}><h4 dangerouslySetInnerHTML={{ __html: ((this.props.pageNum * this.props.hitsPerPage) + (this.props.index + 1)) + '. ' + DOMPurify.sanitize(this.props._highlightResult.name.value) }} /></a>
+            <span>
+              <span className='rating-number'>{this.props.stars_count}</span>
+              {this.renderStarsClass()}
+              <span className='review-count'>({this.props.reviews_count} reviews)</span>
+            </span>
+            <span className='result-third-line'>
+              <span dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(highlightedFood) }} className='result-foodtype' />
+              <span dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(highlightedArea) }} className='result-area' />
+              <span dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(highlightedCity) }} className='result-city' />
+              <span className='result-price-range'>{this.props.price_range}</span>
+              <span className='result-price'>{this.renderTyDollarSigns(this.props.price)}</span>
+            </span>
+            <span className='result-fourth-line'>
+              <span className='result-distance'>{!this.props.userLocation ? 'Location Not Set' : this.renderDistance(this.props.userLocation, this.props._geoloc)} | </span>
+              <span className='result-payment-options'>{this.renderPaymentOptions()}</span>
+            </span>
 
+          </div>
         </div>
-      </div>
+      </a>
     )
   }
 })

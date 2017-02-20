@@ -1,6 +1,6 @@
 import React from 'react'
 import { helper } from './algolia'
-import CSSTransitionGroup from 'react-addons-css-transition-group'
+import smoothScroll from 'smoothscroll'
 
 import Search from './Search'
 import GeoSelector from './GeoSelector'
@@ -35,7 +35,6 @@ const Panel = React.createClass({
     if (this.state.location === 'start') {
       if (this.state.results.aroundLatLng) {
         const coordinates = this.state.results.aroundLatLng
-        console.log(this.state.results.aroundLatLng)
         this.setState({ location: coordinates })
       } else {
         this.setState({ location: '' })
@@ -90,7 +89,6 @@ const Panel = React.createClass({
     } else {
       helper.addDisjunctiveFacetRefinement('payment_options', value).search()
     }
-    console.log(`add disj ${value}`)
   },
 
   removePaymentDisjunctive (type, value) {
@@ -103,11 +101,9 @@ const Panel = React.createClass({
     } else {
       helper.removeDisjunctiveFacetRefinement('payment_options', value).search()
     }
-    console.log(`remove disj ${value}`)
   },
 
   addRatingFilter (value) {
-    console.log(`adding filter for ${value}`)
     const lowerBound = value
     const upperBound = value + 1
     helper
@@ -117,7 +113,6 @@ const Panel = React.createClass({
   },
 
   removeRatingFilter (value) {
-    console.log(`removing filter for ${value}`)
     const lowerBound = value
     const upperBound = value + 1
     helper
@@ -139,6 +134,14 @@ const Panel = React.createClass({
       .search()
   },
 
+  addPriceDisjunctive (type, value) {
+    helper.addDisjunctiveFacetRefinement('price', value).search()
+  },
+
+  removePriceDisjunctive (type, value) {
+    helper.removeDisjunctiveFacetRefinement('price', value).search()
+  },
+
   setLocation (coordinates) {
     this.setState({ location: coordinates })
     helper.setQueryParameter('aroundLatLng', coordinates).search()
@@ -149,32 +152,31 @@ const Panel = React.createClass({
   },
 
   toggleMobile () {
-    console.log('toggling mobile menu!')
     this.setState({ mobileMenu: !this.state.mobileMenu })
   },
 
   previousPage () {
     if (this.state.results.page > 0) {
       const prevPage = helper.previousPage().getPage()
-      console.log(prevPage)
       prevPage >= 0 && helper.setPage(prevPage).search()
     } else {
-      console.log('Page at 0')
+
     }
   },
 
   nextPage () {
     if (this.state.results.page < this.state.results.nbPages - 1) {
       const nextPage = helper.nextPage().getPage()
-      console.log(nextPage)
       helper.setPage(nextPage).search()
+      if (window.innerWidth < 768) {
+        smoothScroll(0)
+      }
     } else {
-      console.log('Max page reached')
+
     }
   },
 
   closeMobileMenu (e) {
-    // console.log('close?')
     (this.state.mobileMenu && this.toggleMobile())
   },
 
@@ -212,6 +214,8 @@ const Panel = React.createClass({
             addRating={this.addRatingFilter}
             removeRating={this.removeRatingFilter}
             combineAddAndRemove={this.combineAddAndRemove}
+            addPrice={this.addPriceDisjunctive}
+            removePrice={this.removePriceDisjunctive}
             blurMenu={this.closeMobileMenu}
           />
           <Results
