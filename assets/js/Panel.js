@@ -190,6 +190,10 @@ const Panel = React.createClass({
     helper.setQueryParameter('hitsPerPage', value).search()
   },
 
+  handleFoodTypeSearch (search) {
+
+  },
+
   render () {
     return (
       <div className='panel'>
@@ -217,6 +221,8 @@ const Panel = React.createClass({
             addPrice={this.addPriceDisjunctive}
             removePrice={this.removePriceDisjunctive}
             blurMenu={this.closeMobileMenu}
+            handleFoodTypeSearch={this.handleFoodTypeSearch}
+            searchHelper={helper}
           />
           <Results
             searchResults={this.state.results}

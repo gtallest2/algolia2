@@ -21,7 +21,8 @@ const Filters = onClickOutside(React.createClass({
     blurMenu: func,
     combineAddAndRemove: func,
     addPrice: func,
-    removePrice: func
+    removePrice: func,
+    handleFoodTypeSearch: func
   },
 
   getInitialState () {
@@ -106,6 +107,10 @@ const Filters = onClickOutside(React.createClass({
     this.props.blurMenu()
   },
 
+  handleFoodTypeSearch (value) {
+
+  },
+
   render () {
     return (
       <div style={this.props.mobileMenu ? { transform: 'translateX(0)' } : {}} className='filters' >
@@ -117,6 +122,8 @@ const Filters = onClickOutside(React.createClass({
           searchResults={this.props.searchResults}
           currentFoodType={this.state.currentFoodType}
           handleFoodTypeClick={this.handleFoodTypeClick}
+          handleFoodTypeSearch={this.handleFoodTypeSearch}
+          searchHelper={this.props.searchHelper}
          />
         <Ratings
           currentRatingFilter={this.state.currentRatingFilter}

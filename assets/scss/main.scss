@@ -1,14 +1,9 @@
-$FontPathOpenSans: "./assets/fonts";
-$search-blue: #1c688e;
-$lighter-search-blue: #3793c1;
-$border-grey: #e6e6e6;
-$grey-text: #a9a9a9;
-
-@import './open-sans.scss';
 // @import url(http://fonts.googleapis.com/css?family=Roboto+Slab|Open+Sans:400italic,700italic,400,700);
 
 @import './animations';
+@import './_variables';
 
+@import './open-sans.scss';
 
 html {
   box-sizing: border-box;
@@ -179,6 +174,11 @@ body {
       list-style-type: none;
       margin:0 5px;
       padding:0;
+    }
+
+    .foodtype-search {
+      margin: 10px auto;
+      display: block;
     }
 
     .cuisine {

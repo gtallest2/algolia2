@@ -60,6 +60,16 @@ const Results = React.createClass({
     )
   },
 
+  renderNoResults () {
+    return (
+      <div className='no-results'>
+        <span className='no-results-text'>
+          No results :,(
+        </span>
+      </div>
+    )
+  },
+
   handleShowMore () {
     this.props.onShowMore()
   },
@@ -142,6 +152,7 @@ const Results = React.createClass({
     return (
       <div className='results'>
         {searchIsEmpty ? ResultsPlaceholder() : this.millisecondsMatter()}
+        {(!searchIsEmpty && !this.props.searchResults.nbHits) && this.renderNoResults()}
         <CSSTransitionGroup
           className='results-ctg'
           ref='resultsCtg'

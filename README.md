@@ -1,5 +1,13 @@
 # Post Submission: Algolia Solutions Team Hiring Assignment - Updates & Improvements
 
+## Things to Update
+- ~~Add Feedback Message for No Results~~
+- Add number totals for Ratings, Payment Options, and Price Ranges
+- Write more tests and comments
+- Rewrite SASS
+- Change search bar to fixed on mobile
+- Investigate bug where some results do not animate in
+
 ## Future Features to Add
 - A favorites/bookmarking feature
 - Adding search for facets

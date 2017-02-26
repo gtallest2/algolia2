@@ -58,9 +58,9 @@ module.exports = {
   ],
   resolve: {
     'alias': {
-      'react': 'preact-compat',
-      'react-dom': 'preact-compat',
-      'react-addons-css-transition-group': 'preact-css-transition-group'
+      // 'react': 'preact-compat',
+      // 'react-dom': 'preact-compat',
+      // 'react-addons-css-transition-group': 'preact-css-transition-group'
     }
   }
 }
