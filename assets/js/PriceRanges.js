@@ -19,9 +19,9 @@ const PriceRanges = React.createClass({
       <div className='price-filter'>
         <h4>Price Ranges</h4>
         <ul className='price-ranges'>
-          <Price onPriceRangeClick={this.handlePriceToggle} price={2} count={priceCounts[2] || '0' } />
-          <Price onPriceRangeClick={this.handlePriceToggle} price={3} count={ priceCounts[3] || '0' }/>
-          <Price onPriceRangeClick={this.handlePriceToggle} price={4} count={priceCounts[4] || '0' }/>
+          <Price onPriceRangeClick={this.handlePriceToggle} price={2} count={priceCounts[2] || '0' } isChecked={this.props.activePrices[2]} />
+          <Price onPriceRangeClick={this.handlePriceToggle} price={3} count={ priceCounts[3] || '0' } isChecked={this.props.activePrices[3]} />
+          <Price onPriceRangeClick={this.handlePriceToggle} price={4} count={priceCounts[4] || '0' } isChecked={this.props.activePrices[4]} />
         </ul>
       </div>
     )
@@ -51,7 +51,7 @@ const Price = React.createClass({
     return (
       <li className='price'>
         <span className='price-text'>
-          <input onClick={this._onClick} type='checkbox' />
+          <input onClick={this._onClick} type='checkbox' checked={this.props.isChecked} />
           <span className='price-symbols'>{this.renderDollarSigns(this.props.price)}</span>
         </span>
         <span className='price-count'>{this.props.count}</span>

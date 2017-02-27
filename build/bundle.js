@@ -26514,6 +26514,10 @@ var Filters = __WEBPACK_IMPORTED_MODULE_1_react_onclickoutside___default()(__WEB
   handleFoodTypeSearch: function handleFoodTypeSearch(value) {
     // this.props.handleFoodTypeSearch(value)
   },
+  clearFilters: function clearFilters() {
+    this.props.searchHelper.clearRefinements().search();
+    this.setState(this.getInitialState());
+  },
   render: function render() {
     return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
       'div',
@@ -26532,6 +26536,15 @@ var Filters = __WEBPACK_IMPORTED_MODULE_1_react_onclickoutside___default()(__WEB
           'x'
         )
       ),
+      __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+        'div',
+        { className: 'clear-filter' },
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+          'button',
+          { onClick: this.clearFilters, className: 'clear-button' },
+          'Clear Filters'
+        )
+      ),
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_2__FoodTypes__["a" /* default */], {
         searchResults: this.props.searchResults,
         currentFoodType: this.state.currentFoodType,
@@ -26546,11 +26559,13 @@ var Filters = __WEBPACK_IMPORTED_MODULE_1_react_onclickoutside___default()(__WEB
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_4__PaymentOptions__["a" /* default */], {
         mobileMenu: this.props.mobileMenu,
         handlePaymentToggle: this.handlePaymentToggle,
-        searchResults: this.props.searchResults
+        searchResults: this.props.searchResults,
+        activePayments: this.state.payments
       }),
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_5__PriceRanges__["a" /* default */], {
         handlePriceToggle: this.handlePriceToggle,
-        searchResults: this.props.searchResults
+        searchResults: this.props.searchResults,
+        activePrices: this.state.currentPriceRanges
       })
     );
   }
@@ -26573,7 +26588,8 @@ var Filters = __WEBPACK_IMPORTED_MODULE_1_react_onclickoutside___default()(__WEB
 var _React$PropTypes = __WEBPACK_IMPORTED_MODULE_0_react___default.a.PropTypes,
     func = _React$PropTypes.func,
     object = _React$PropTypes.object,
-    string = _React$PropTypes.string;
+    string = _React$PropTypes.string,
+    number = _React$PropTypes.number;
 
 
 var FoodTypes = __WEBPACK_IMPORTED_MODULE_0_react___default.a.createClass({
@@ -26686,7 +26702,7 @@ var FoodType = __WEBPACK_IMPORTED_MODULE_0_react___default.a.createClass({
   propTypes: {
     onFoodTypeClick: func,
     name: string,
-    count: string,
+    count: number,
     currentFoodType: string
   },
 
@@ -26823,10 +26839,10 @@ var PaymentOptions = __WEBPACK_IMPORTED_MODULE_0_react___default.a.createClass({
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         'ul',
         { className: 'payment-options' },
-        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(PaymentOption, { onPaymentOptionClick: this.handlePaymentToggle, cardIcon: 'cc-ae', cardText: window.innerWidth < 768 ? 'AMEX' : 'American Express', cardName: 'AMEX', cardClass: 'amex', count: paymentCounts['AMEX'] || '0' }),
-        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(PaymentOption, { onPaymentOptionClick: this.handlePaymentToggle, cardIcon: 'cc-discover', cardText: 'Discover', cardName: 'Discover', cardClass: 'discover', count: discoverCounts }),
-        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(PaymentOption, { onPaymentOptionClick: this.handlePaymentToggle, cardIcon: 'cc-mc', cardText: 'MasterCard', cardName: 'MasterCard', cardClass: 'mastercard', count: paymentCounts['MasterCard'] || '0' }),
-        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(PaymentOption, { onPaymentOptionClick: this.handlePaymentToggle, cardIcon: 'cc-visa', cardText: 'Visa', cardName: 'Visa', cardClass: 'visa', count: paymentCounts['Visa'] || '0' })
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(PaymentOption, { onPaymentOptionClick: this.handlePaymentToggle, cardIcon: 'cc-ae', cardText: window.innerWidth < 768 ? 'AMEX' : 'American Express', cardName: 'AMEX', cardClass: 'amex', count: paymentCounts['AMEX'] || '0', isChecked: this.props.activePayments.AMEX }),
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(PaymentOption, { onPaymentOptionClick: this.handlePaymentToggle, cardIcon: 'cc-discover', cardText: 'Discover', cardName: 'Discover', cardClass: 'discover', count: discoverCounts, isChecked: this.props.activePayments.Discover }),
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(PaymentOption, { onPaymentOptionClick: this.handlePaymentToggle, cardIcon: 'cc-mc', cardText: 'MasterCard', cardName: 'MasterCard', cardClass: 'mastercard', count: paymentCounts['MasterCard'] || '0', isChecked: this.props.activePayments.MasterCard }),
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(PaymentOption, { onPaymentOptionClick: this.handlePaymentToggle, cardIcon: 'cc-visa', cardText: 'Visa', cardName: 'Visa', cardClass: 'visa', count: paymentCounts['Visa'] || '0', isChecked: this.props.activePayments.Visa })
       )
     );
   }
@@ -26853,7 +26869,7 @@ var PaymentOption = __WEBPACK_IMPORTED_MODULE_0_react___default.a.createClass({
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         'span',
         { className: 'payment-text' },
-        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('input', { onClick: this._onClick, type: 'checkbox' }),
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('input', { onChange: this._onClick, type: 'checkbox', checked: this.props.isChecked }),
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('span', { className: 'card ' + this.props.cardIcon }),
         '\xA0',
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -26910,9 +26926,9 @@ var PriceRanges = __WEBPACK_IMPORTED_MODULE_0_react___default.a.createClass({
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         'ul',
         { className: 'price-ranges' },
-        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(Price, { onPriceRangeClick: this.handlePriceToggle, price: 2, count: priceCounts[2] || '0' }),
-        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(Price, { onPriceRangeClick: this.handlePriceToggle, price: 3, count: priceCounts[3] || '0' }),
-        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(Price, { onPriceRangeClick: this.handlePriceToggle, price: 4, count: priceCounts[4] || '0' })
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(Price, { onPriceRangeClick: this.handlePriceToggle, price: 2, count: priceCounts[2] || '0', isChecked: this.props.activePrices[2] }),
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(Price, { onPriceRangeClick: this.handlePriceToggle, price: 3, count: priceCounts[3] || '0', isChecked: this.props.activePrices[3] }),
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(Price, { onPriceRangeClick: this.handlePriceToggle, price: 4, count: priceCounts[4] || '0', isChecked: this.props.activePrices[4] })
       )
     );
   }
@@ -26944,7 +26960,7 @@ var Price = __WEBPACK_IMPORTED_MODULE_0_react___default.a.createClass({
       __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         'span',
         { className: 'price-text' },
-        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('input', { onClick: this._onClick, type: 'checkbox' }),
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('input', { onClick: this._onClick, type: 'checkbox', checked: this.props.isChecked }),
         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
           'span',
           { className: 'price-symbols' },

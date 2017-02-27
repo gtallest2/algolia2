@@ -2,7 +2,7 @@ import React from 'react'
 
 import { CuisinePlaceholder } from './placeholders'
 
-const { func, object, string } = React.PropTypes
+const { func, object, string, number } = React.PropTypes
 
 const FoodTypes = React.createClass({
   propTypes: {
@@ -112,7 +112,7 @@ const FoodType = React.createClass({
   propTypes: {
     onFoodTypeClick: func,
     name: string,
-    count: string,
+    count: number,
     currentFoodType: string
   },
 

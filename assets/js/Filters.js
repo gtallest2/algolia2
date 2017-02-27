@@ -111,12 +111,21 @@ const Filters = onClickOutside(React.createClass({
     // this.props.handleFoodTypeSearch(value)
   },
 
+  clearFilters () {
+    this.props.searchHelper.clearRefinements().search()
+    this.setState(this.getInitialState())
+  },
+
   render () {
     return (
+
       <div style={this.props.mobileMenu ? { transform: 'translateX(0)' } : {}} className='filters' >
         <div className='mobile-header'>
           <div className='mobile-menu-title'>Sort by:</div>
           <div onClick={this.closeMenu} className='mobile-menu-close'>x</div>
+        </div>
+        <div className='clear-filter'>
+          <button onClick={this.clearFilters} className='clear-button'>Clear Filters</button>
         </div>
         <FoodTypes
           searchResults={this.props.searchResults}
@@ -133,10 +142,12 @@ const Filters = onClickOutside(React.createClass({
           mobileMenu={this.props.mobileMenu}
           handlePaymentToggle={this.handlePaymentToggle}
           searchResults={this.props.searchResults}
+          activePayments={this.state.payments}
         />
         <PriceRanges
           handlePriceToggle={this.handlePriceToggle}
           searchResults={this.props.searchResults}
+          activePrices={this.state.currentPriceRanges}
         />
       </div>
     )
