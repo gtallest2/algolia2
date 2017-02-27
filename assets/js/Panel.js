@@ -24,6 +24,7 @@ const Panel = React.createClass({
     helper.on('result', (content) => {
       this.updateResults(content)
       this.determineGeoLocation()
+      console.log(content)
     })
   },
 
@@ -191,7 +192,10 @@ const Panel = React.createClass({
   },
 
   handleFoodTypeSearch (search) {
-
+    // helper.searchForFacetValues('food_type', search.target.value)
+    //   .then(res => {
+    //     console.log(res)
+    //   })
   },
 
   render () {

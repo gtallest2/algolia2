@@ -2,15 +2,16 @@
 
 ## Things to Update
 - ~~Add Feedback Message for No Results~~
-- Add number totals for Ratings, Payment Options, and Price Ranges
+- ~~Add number totals for Ratings, Payment Options, and Price Ranges~~ -- not sure how to do for ratings, need to fix payment/price styling
 - Write more tests and comments
 - Rewrite SASS
-- Change search bar to fixed on mobile
+- ~~Change search bar to fixed on mobile~~
 - Investigate bug where some results do not animate in
+- Investigate broken smooth scroll
 
 ## Future Features to Add
 - A favorites/bookmarking feature
-- Adding search for facets
+- *Adding search for facets* -- added using searchForFacetValues method, some React render flickering, need to investigate
 - Button to expand the number of food type facets available in the filters sidebar
-- A dropdown where the user could choose what to Sort By
+- *A dropdown where the user could choose what to Sort By* -- maybe not necessary?
 - Look into advanced syntax

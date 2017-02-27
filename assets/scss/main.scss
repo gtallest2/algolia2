@@ -181,6 +181,11 @@ body {
       display: block;
     }
 
+    em {
+      background: rgba(255, 200, 0, 0.6);
+      font-style:normal;
+    }
+
     .cuisine {
       min-height:195px;
       display:flex;
@@ -248,8 +253,25 @@ body {
     }
 
     .payment-options {
+
       li {
-        margin:5px 10px;
+      margin:5px 10px;
+      display:flex;
+      justify-content:space-between;
+      padding:3px 5px;
+      border-radius:5px;
+      width:90%;
+      font-weight:300;
+
+        .payment-text,
+        .payment-count{
+          display:inline-flex;
+          padding:0 5px;
+        }
+        .payment-count {
+          color:$grey-text;
+        }
+
       }
       input {
         margin-right:5px;
@@ -280,6 +302,24 @@ body {
     }
 
     .price-ranges {
+
+      li {
+          display:flex;
+          justify-content:space-between;
+          padding:3px 5px;
+          border-radius:5px;
+          width:90%;
+          font-weight:300;
+
+        .price-text,
+        .price-count {
+          display:inline-flex;
+          padding:0 5px;
+        }
+        .price-count {
+          color:$grey-text;
+        }
+      }
 
       .price {
         margin: 5px 10px;

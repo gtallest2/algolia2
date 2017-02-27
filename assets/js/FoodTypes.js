@@ -19,35 +19,34 @@ const FoodTypes = React.createClass({
   },
 
   componentWillMount () {
-    console.log("set to 1000");
-    this.props.searchHelper.setQueryParameter('maxValuesPerFacet', 1000).searchOnce()
-      .then(res => {
-        const foodTypeQueries = res.content.getFacetValues('food_type')
-        this.setState({
-          foodTypeQueries: foodTypeQueries
-        })
-      })
+    // console.log("set to 1000");
+    // this.props.searchHelper.setQueryParameter('maxValuesPerFacet', 1000).searchOnce()
+    //   .then(res => {
+    //     const foodTypeQueries = res.content.getFacetValues('food_type')
+    //     this.setState({
+    //       foodTypeQueries: foodTypeQueries
+    //     })
+    //   })
   },
 
   componentDidMount () {
-    this.props.searchHelper.setQueryParameter('maxValuesPerFacet', 7).searchOnce()
-    console.log("set back to 7");
+    // this.props.searchHelper.setQueryParameter('maxValuesPerFacet', 7).searchOnce()
+    // console.log("set back to 7");
   },
 
   renderFoodTypes () {
     if (!Object.keys(this.props.searchResults).length) { return }
     let foodTypes;
-    if(this.props.currentFoodType) {
-      foodTypes = this.props.searchResults.getFacetValues('food_type')
-      console.log('base')
+    if(this.state.foodTypeQueries.length && !this.props.currentFoodType) {
+      foodTypes = this.state.foodTypeQueries.slice(0, 7)
+      console.log(foodTypes)
     } else {
-      foodTypes = this.state.foodTypeQueries.filter(value => value.name.toLowerCase().includes(this.state.foodTypeQuery.toLowerCase())).slice(0, 7)
-      console.log('modify')
+      foodTypes = this.props.searchResults.getFacetValues('food_type')
     }
 
       return foodTypes.map((type, i) => {
         return (
-          <FoodType key={i} onFoodTypeClick={this.handleFoodTypeClick} currentFoodType={this.props.currentFoodType} name={type.name} count={type.count} />
+          <FoodType key={i} onFoodTypeClick={this.handleFoodTypeClick} currentFoodType={this.props.currentFoodType} name={type.value || type.name} count={type.count} highlighted={type.highlighted} />
         )
       }, this)
     // const foodTypes = this.props.searchResults.getFacetValues('food_type').filter(value => value.name.toLowerCase().includes(this.state.foodTypeQuery))
@@ -68,8 +67,11 @@ const FoodTypes = React.createClass({
     this.props.handleFoodTypeClick(type)
     if (Object.keys(this.props.searchResults._state.facetsRefinements).length) {
       this.refs.foodTypeSearch.value = ''
+      const event = new Event('change')
+      this.refs.foodTypeSearch.dispatchEvent(event)
       this.setState({
-        foodTypeQuery: ''
+        foodTypeQuery: '',
+        foodTypeQueries: []
       })
     } else {
       this.refs.foodTypeSearch.value = type
@@ -80,9 +82,14 @@ const FoodTypes = React.createClass({
   },
 
   handleFoodTypeSearch (search) {
-    this.setState({
-      foodTypeQuery: search.target.value
-    })
+    // this.props.handleFoodTypeSearch(search)
+    this.props.searchHelper.searchForFacetValues('food_type', search.target.value)
+      .then(res => {
+        console.log(res.facetHits)
+        this.setState({
+          foodTypeQueries: res.facetHits
+        })
+      })
   },
 
   render () {
@@ -116,7 +123,7 @@ const FoodType = React.createClass({
   render () {
     return (
       <li onClick={this._onClick} className={this.props.currentFoodType === this.props.name ? 'active' : ''} >
-        <span className='food-type'>{this.props.name}</span>
+        <span className='food-type' dangerouslySetInnerHTML={{ __html: this.props.highlighted || this.props.name }} />
         <span className='food-type-amount'>{this.props.count}</span>
       </li>
     )

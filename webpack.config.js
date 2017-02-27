@@ -47,15 +47,15 @@ module.exports = {
     filename: 'bundle.js',
     path: path.join(__dirname, '/build')
   },
-  plugins: [
-    new webpack.DefinePlugin({
-      'process.env': {
-        'NODE_ENV': JSON.stringify('production')
-      }
-    }),
-    new webpack.optimize.UglifyJsPlugin(), // minify
-    new webpack.optimize.AggressiveMergingPlugin()// merge
-  ],
+  // plugins: [
+  //   new webpack.DefinePlugin({
+  //     'process.env': {
+  //       'NODE_ENV': JSON.stringify('production')
+  //     }
+  //   }),
+  //   new webpack.optimize.UglifyJsPlugin(), // minify
+  //   new webpack.optimize.AggressiveMergingPlugin()// merge
+  // ],
   resolve: {
     'alias': {
       // 'react': 'preact-compat',

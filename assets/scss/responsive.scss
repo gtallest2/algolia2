@@ -59,6 +59,10 @@
     width:100vw;
 
     .search {
+      position: fixed;
+      top: 0;
+      z-index: 10;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
 
       .search-clear {
         background:none;
@@ -99,6 +103,7 @@
 
     .lower-area {
       height: 80%;
+      margin-top:75px;
 
       .filters {
         position:fixed;

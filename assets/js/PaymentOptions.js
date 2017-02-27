@@ -1,11 +1,12 @@
 import React from 'react'
 
-const { func, bool, string } = React.PropTypes
+const { func, bool, string, object } = React.PropTypes
 
 const PaymentOptions = React.createClass({
   propTypes: {
     mobileMenu: bool,
-    handlePaymentToggle: func
+    handlePaymentToggle: func,
+    searchResults: object
   },
 
   handlePaymentToggle (cardType) {
@@ -13,14 +14,18 @@ const PaymentOptions = React.createClass({
   },
 
   render () {
+    const paymentCounts = Object.keys(this.props.searchResults).length
+    ? this.props.searchResults.disjunctiveFacets.length ? this.props.searchResults.disjunctiveFacets[0].data : {}
+    : {}
+    const discoverCounts = Math.max(paymentCounts['Discover'], paymentCounts['Carte Blanche'], paymentCounts['Diners Club']) || '0'
     return (
       <div className='payments-filter'>
         <h4>Payment Options</h4>
         <ul className='payment-options'>
-          <PaymentOption onPaymentOptionClick={this.handlePaymentToggle} cardIcon={'cc-ae'} cardText={window.innerWidth < 768 ? 'AMEX' : 'American Express'} cardName={'AMEX'} cardClass={'amex'} />
-          <PaymentOption onPaymentOptionClick={this.handlePaymentToggle} cardIcon={'cc-discover'} cardText={'Discover'} cardName={'Discover'} cardClass={'discover'} />
-          <PaymentOption onPaymentOptionClick={this.handlePaymentToggle} cardIcon={'cc-mc'} cardText={'MasterCard'} cardName={'MasterCard'} cardClass={'mastercard'} />
-          <PaymentOption onPaymentOptionClick={this.handlePaymentToggle} cardIcon={'cc-visa'} cardText={'Visa'} cardName={'Visa'} cardClass={'visa'} />
+          <PaymentOption onPaymentOptionClick={this.handlePaymentToggle} cardIcon={'cc-ae'} cardText={window.innerWidth < 768 ? 'AMEX' : 'American Express'} cardName={'AMEX'} cardClass={'amex'} count={paymentCounts['AMEX'] || '0'} />
+          <PaymentOption onPaymentOptionClick={this.handlePaymentToggle} cardIcon={'cc-discover'} cardText={'Discover'} cardName={'Discover'} cardClass={'discover'} count={discoverCounts} />
+          <PaymentOption onPaymentOptionClick={this.handlePaymentToggle} cardIcon={'cc-mc'} cardText={'MasterCard'} cardName={'MasterCard'} cardClass={'mastercard'} count={paymentCounts['MasterCard'] || '0'} />
+          <PaymentOption onPaymentOptionClick={this.handlePaymentToggle} cardIcon={'cc-visa'} cardText={'Visa'} cardName={'Visa'} cardClass={'visa'} count={paymentCounts['Visa'] || '0'} />
         </ul>
       </div>
     )
@@ -43,9 +48,12 @@ const PaymentOption = React.createClass({
   render () {
     return (
       <li className='payment-type'>
-        <input onClick={this._onClick} type='checkbox' />
-        <span className={`card ${this.props.cardIcon}`} />&nbsp;
-        <span className={`${this.props.cardClass}-card-name`}>{this.props.cardText}</span>
+        <span className='payment-text'>
+          <input onClick={this._onClick} type='checkbox' />
+          <span className={`card ${this.props.cardIcon}`} />&nbsp;
+          <span className={`${this.props.cardClass}-card-name`}>{this.props.cardText}</span>
+        </span>
+        <span className='payment-count'>{this.props.count}</span>
       </li>
     )
   }

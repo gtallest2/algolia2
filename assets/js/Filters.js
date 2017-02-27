@@ -108,7 +108,7 @@ const Filters = onClickOutside(React.createClass({
   },
 
   handleFoodTypeSearch (value) {
-
+    // this.props.handleFoodTypeSearch(value)
   },
 
   render () {
@@ -132,9 +132,11 @@ const Filters = onClickOutside(React.createClass({
         <PaymentOptions
           mobileMenu={this.props.mobileMenu}
           handlePaymentToggle={this.handlePaymentToggle}
+          searchResults={this.props.searchResults}
         />
         <PriceRanges
           handlePriceToggle={this.handlePriceToggle}
+          searchResults={this.props.searchResults}
         />
       </div>
     )
