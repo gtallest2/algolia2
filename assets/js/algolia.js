@@ -3,10 +3,10 @@
 import algoliasearch from 'algoliasearch'
 import algoliasearchHelper from 'algoliasearch-helper'
 
-export const client = algoliasearch('AGBNR3G2XW', 'a122d4e8b5ee13c7bfdc33ab5d79284c')
+export const client = algoliasearch('EZWZX6BO9Y', 'fd8ea1c628a05204d789ebad329ecc9e')
 export const index = client.initIndex('merged')
 export const helper = algoliasearchHelper(client, 'merged', {
   facets: ['food_type', 'stars_count'],
-  disjunctiveFacets: ['payment_options', 'price'],
-  aroundLatLngViaIP: true
+  disjunctiveFacets: ['payment_options', 'price']
+  // aroundLatLngViaIP: true
 })

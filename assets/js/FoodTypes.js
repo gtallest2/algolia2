@@ -14,7 +14,8 @@ const FoodTypes = React.createClass({
   getInitialState () {
     return {
       foodTypeQuery: '',
-      foodTypeQueries: []
+      foodTypeQueries: [],
+      foodTypesNumber: 7
     }
   },
 
@@ -38,7 +39,7 @@ const FoodTypes = React.createClass({
     if (!Object.keys(this.props.searchResults).length) { return }
     let foodTypes;
     if(this.state.foodTypeQueries.length && !this.props.currentFoodType) {
-      foodTypes = this.state.foodTypeQueries.slice(0, 7)
+      foodTypes = this.state.foodTypeQueries.slice(0, this.state.foodTypesNumber)
       console.log(foodTypes)
     } else {
       foodTypes = this.props.searchResults.getFacetValues('food_type')
@@ -92,6 +93,14 @@ const FoodTypes = React.createClass({
       })
   },
 
+  handleMoreFoodTypes () {
+    const increasedFoodTypeNumber = this.state.foodTypesNumber + 3
+    this.props.searchHelper.setQueryParameter('maxValuesPerFacet', increasedFoodTypeNumber).search()
+    this.setState({
+      foodTypesNumber: increasedFoodTypeNumber
+    })
+  },
+
   render () {
     const foodTypes = (
       <ul className='cuisine'>
@@ -103,6 +112,7 @@ const FoodTypes = React.createClass({
         <h4>Cuisine/Food Type</h4>
         <input className="foodtype-search" ref="foodTypeSearch" type="text" placeholder="Search for Food Type" onChange={this.handleFoodTypeSearch} />
         {!Object.keys(this.props.searchResults).length ? CuisinePlaceholder() : foodTypes}
+        <button onClick={this.handleMoreFoodTypes} className='food-types-more'>More</button>
       </div>
     )
   }

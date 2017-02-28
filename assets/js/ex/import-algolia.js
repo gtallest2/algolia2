@@ -47,7 +47,7 @@ fs.writeFile('combined-list.json', JSON.stringify(combinedList), 'utf8', functio
 
 // Add records to index, then set settings
 
-var client = algoliasearch('AGBNR3G2XW', 'ADMIN-KEY');
+var client = algoliasearch('EZWZX6BO9Y', '4e8edb359dbf4f00bba83169f530c820');
 var index = client.initIndex('merged');
 
 index.addObjects(combinedList, function(err, content) {
